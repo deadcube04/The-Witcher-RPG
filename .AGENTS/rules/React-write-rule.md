@@ -31,6 +31,12 @@ Construa de baixo para cima: design tokens -> primitives -> components -> compos
 - Nunca use um componente puro do `antd` diretamente em pages, features ou composicoes. Crie ou reutilize um componente personalizado do projeto que encapsule a API, os estilos, os tokens e as regras de negocio necessarias.
 - Mantenha a dependencia de `antd` restrita a essa camada de componentes personalizados, para que as telas nao dependam diretamente da API da biblioteca.
 
+### Estilos exclusivamente com Tailwind CSS
+
+- Use unicamente Tailwind CSS para estilizar o projeto: layout, espacamento, tipografia, cores, responsividade, estados e demais variacoes visuais devem ser expressos por suas classes utilitarias.
+- Nao use CSS ou SCSS customizado, CSS Modules, styled-components, Emotion, outros frameworks de estilos ou estilos inline para substituir Tailwind.
+- Componentes personalizados baseados em `antd` devem encapsular qualquer configuracao visual necessaria e continuar expondo uma API orientada ao projeto; nao espalhe estilos ou overrides da biblioteca diretamente pelas pages e features.
+
 ### Vite e frontend-only
 
 - Use o ecossistema Vite: `@vitejs/plugin-react` ou `@vitejs/plugin-react-swc` e `import.meta.env`. Para comportamento de aplicacao, use Vitest e React Testing Library; nao introduza ferramentas de teste em tarefa puramente documental/configuracional sem necessidade.
