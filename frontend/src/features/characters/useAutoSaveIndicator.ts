@@ -1,0 +1,14 @@
+import { useState } from 'react'
+import { useDebouncer } from '@tanstack/react-pacer'
+
+export type AutoSaveStatus = 'saved' | 'pending'
+
+export function useAutoSaveIndicator() {
+  const [status, setStatus] = useState<AutoSaveStatus>('saved')
+  const debouncer = useDebouncer(() => setStatus('saved'), { wait: 1000 })
+  const markChanged = () => {
+    setStatus('pending')
+    debouncer.maybeExecute()
+  }
+  return { status, markChanged }
+}
