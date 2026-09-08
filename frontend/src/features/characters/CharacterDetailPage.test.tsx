@@ -17,9 +17,10 @@ test('edita a ficha localmente e atualiza o indicador após o debounce', async (
   renderFeature(<RouterProvider router={router} />)
 
   const name = await screen.findByLabelText('Nome do personagem')
+  const strength = screen.getByLabelText('Força')
   expect(screen.queryByRole('link', { name: 'Editar ficha' })).not.toBeInTheDocument()
   expect(screen.queryByLabelText('NEX (%)')).not.toBeInTheDocument()
-  expect(screen.queryByLabelText('Força')).not.toBeInTheDocument()
+  expect(strength).toHaveValue(1)
   expect(screen.queryByLabelText('Vida atual')).not.toBeInTheDocument()
   expect(screen.getByRole('region', { name: 'Recursos' })).toBeInTheDocument()
   expect(screen.getAllByRole('progressbar')).toHaveLength(3)
@@ -29,6 +30,9 @@ test('edita a ficha localmente e atualiza o indicador após o debounce', async (
   expect(screen.queryByLabelText('Campanha')).not.toBeInTheDocument()
 
   vi.useFakeTimers()
+  fireEvent.change(strength, { target: { value: '3' } })
+  expect(strength).toHaveValue(3)
+  expect(screen.getByRole('status', { name: 'Atualizando alterações locais' })).toBeInTheDocument()
   fireEvent.change(name, { target: { value: 'Helena editada' } })
   expect(screen.getByRole('status', { name: 'Atualizando alterações locais' })).toBeInTheDocument()
   act(() => vi.advanceTimersByTime(999))

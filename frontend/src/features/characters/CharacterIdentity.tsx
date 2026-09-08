@@ -13,6 +13,6 @@ export function CharacterIdentity({ character, systemName, onChange }: { charact
       <GiHoodedFigure aria-hidden="true" className="size-28 text-(--accent)" />
       <span className="sr-only">Retrato não cadastrado</span>
     </div>
-    {View && <View value={character.systemData} />}
+    {View && <View value={character.systemData} onChange={(systemData) => onChange({ ...character, systemData })} />}
   </section>
 }

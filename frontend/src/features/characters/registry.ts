@@ -6,11 +6,12 @@ import { OrdemEditor } from './ordem/OrdemEditor'
 import { OrdemView } from './ordem/OrdemView'
 
 export type SheetEditorProps = { value: CharacterInput['systemData']; onChange: (value: CharacterInput['systemData']) => void; disabled?: boolean }
+export type SheetViewProps = { value: CharacterInput['systemData']; onChange?: (value: CharacterInput['systemData']) => void }
 export type CharacterSheetDefinition = {
   slug: string; sections: readonly string[]; fields: readonly string[];
   schema: z.ZodType<CharacterInput['systemData']>;
   createData: () => CharacterInput['systemData']; Editor?: ComponentType<SheetEditorProps>;
-  View?: ComponentType<{ value: CharacterInput['systemData'] }>;
+  View?: ComponentType<SheetViewProps>;
 }
 const definitions: CharacterSheetDefinition[] = [
   { slug: 'ordem-paranormal', sections: ['Identidade', 'Atributos', 'Recursos'], fields: ['nex', 'classId', 'originId', 'creditLimit', 'attributes', 'resources'], schema: ordemDataSchema, createData: createOrdemData, Editor: OrdemEditor, View: OrdemView },

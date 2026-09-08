@@ -2,6 +2,7 @@ import { GiSprint, GiBiceps, GiBrain, GiAura, GiHeartShield } from 'react-icons/
 import type { CharacterInput } from '../../../shared/contracts/character-sheet'
 import catalog from '../../../shared/contracts/ordem-catalog.json'
 import { attributeFields, resourceFields } from './fields'
+import { RpgAttributeNumber } from '../../../components/primitives/RpgControls'
 
 const attributeIcons = { agility: GiSprint, strength: GiBiceps, intellect: GiBrain, presence: GiAura, vigor: GiHeartShield }
 const resourceColors = {
@@ -9,7 +10,7 @@ const resourceColors = {
   effort: '[&::-webkit-progress-value]:bg-amber-300 [&::-moz-progress-bar]:bg-amber-300',
   sanity: '[&::-webkit-progress-value]:bg-violet-400 [&::-moz-progress-bar]:bg-violet-400',
 }
-export function OrdemView({ value }: { value: CharacterInput['systemData'] }) {
+export function OrdemView({ value, onChange }: { value: CharacterInput['systemData']; onChange?: (value: CharacterInput['systemData']) => void }) {
   if (value.kind !== 'ordem-paranormal') return null
   return <div className="space-y-6">
     <section aria-label="Recursos" className="space-y-4">{resourceFields.map((field) => {
@@ -25,7 +26,10 @@ export function OrdemView({ value }: { value: CharacterInput['systemData'] }) {
         const Icon = attributeIcons[field.key]
         return <div key={field.key} className={'rounded-xl border border-(--edge) bg-(--canvas) px-2 py-3 text-center ' + (field.key === 'vigor' ? 'col-span-2 mx-auto w-1/2' : '')}>
           <dt className="flex flex-col items-center gap-2 text-xs"><Icon aria-hidden="true" className="size-5 text-(--accent)" />{field.label}</dt>
-          <dd className="mt-2 font-mono text-2xl text-(--accent)">{value.attributes[field.key]}</dd>
+          <dd className="mt-2 flex justify-center">{onChange
+            ? <RpgAttributeNumber label={field.label} value={value.attributes[field.key]}
+              onChange={(next) => onChange({ ...value, attributes: { ...value.attributes, [field.key]: next } })} />
+            : <span className="font-mono text-2xl text-(--accent)">{value.attributes[field.key]}</span>}</dd>
         </div>
       })}</dl>
     </section>

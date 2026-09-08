@@ -34,3 +34,7 @@ export function RpgInlineSelect({ label, value, onChange, options }: { label: st
   return <Select aria-label={label} value={value} onChange={onChange} options={options} virtual={false}
     className="min-h-10! w-32! [&_.ant-select-selection-item]:text-center!" />
 }
+export function RpgAttributeNumber({ label, value, onChange }: { label: string; value: number; onChange: (value: number) => void }) {
+  return <InputNumber aria-label={label} value={value} onChange={(next) => { if (next !== null) onChange(next) }} min={0} max={5} precision={0} controls={false} variant="borderless"
+    className="w-16! bg-transparent! shadow-none! hover:bg-(--panel)! focus-within:bg-(--panel)! [&_input]:cursor-text! [&_input]:text-center! [&_input]:font-mono! [&_input]:text-2xl! [&_input]:font-semibold! [&_input]:text-(--accent)!" />
+}
