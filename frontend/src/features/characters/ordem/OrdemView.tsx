@@ -1,23 +1,21 @@
 import { GiSprint, GiBiceps, GiBrain, GiAura, GiHeartShield } from 'react-icons/gi'
 import type { CharacterInput } from '../../../shared/contracts/character-sheet'
 import catalog from '../../../shared/contracts/ordem-catalog.json'
-import { attributeFields, resourceFields } from './fields'
+import { attributeFields } from './fields'
 import { RpgAttributeNumber } from '../../../components/primitives/RpgControls'
+import { RpgResourceBar } from '../../../components/data-display/RpgResourceBar'
 
 const attributeIcons = { agility: GiSprint, strength: GiBiceps, intellect: GiBrain, presence: GiAura, vigor: GiHeartShield }
-const resourceColors = {
-  health: '[&::-webkit-progress-value]:bg-rose-400 [&::-moz-progress-bar]:bg-rose-400',
-  effort: '[&::-webkit-progress-value]:bg-amber-300 [&::-moz-progress-bar]:bg-amber-300',
-  sanity: '[&::-webkit-progress-value]:bg-violet-400 [&::-moz-progress-bar]:bg-violet-400',
-}
+const resourceFields = [{ key: 'health', label: 'Vida' }, { key: 'sanity', label: 'Sanidade' }, { key: 'effort', label: 'Esforço' }] as const
 export function OrdemView({ value, onChange }: { value: CharacterInput['systemData']; onChange?: (value: CharacterInput['systemData']) => void }) {
   if (value.kind !== 'ordem-paranormal') return null
   return <div className="space-y-6">
     <section aria-label="Recursos" className="space-y-4">{resourceFields.map((field) => {
       const resource = value.resources[field.key]
-      return <div key={field.key}><div className="mb-2 flex justify-between gap-2 text-xs font-semibold"><span>{field.label}</span><span>{resource.current} / {resource.maximum}</span></div>
-        <progress aria-label={field.label} value={Math.max(0, Math.min(resource.current, resource.maximum))} max={Math.max(1, resource.maximum)}
-          className={'block h-2 w-full overflow-hidden rounded-full border-0 bg-(--panel) [&::-webkit-progress-bar]:bg-(--panel) [&::-webkit-progress-value]:rounded-full ' + resourceColors[field.key]} />
+      return <div key={field.key}><RpgResourceBar label={field.label} tone={field.key} current={resource.current} maximum={resource.maximum}
+        editable={Boolean(onChange)} onChange={onChange ? (next) => onChange({ ...value,
+          resources: { ...value.resources, [field.key]: { ...resource, ...next } },
+        }) : undefined} />
         {resource.temporary > 0 && <p className="mt-1 text-right text-xs opacity-60">Temporários: +{resource.temporary}</p>}
       </div>
     })}</section>

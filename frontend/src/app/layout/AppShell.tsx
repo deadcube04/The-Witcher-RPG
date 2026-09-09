@@ -15,7 +15,7 @@ export function AppShell() {
   const user = useQuery(queries.user)
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const sidebarMode = preferences.data?.sidebarMode ?? 'collapsed'
-  const collapsed = sidebarMode === 'collapsed' && !sidebarHovered && !sidebarFocused
+  const collapsed = sidebarMode === 'always-collapsed' || (sidebarMode === 'collapsed' && !sidebarHovered && !sidebarFocused)
   const theme = resolveTheme(preferences.data?.activeThemeId ?? null)
   const activeSystem = systems.data?.find((system) => system.id === preferences.data?.activeSystemId)
   return <div data-theme={theme.id} className={theme.classes + ' min-h-screen bg-(--canvas) text-(--ink) selection:bg-(--accent) selection:text-(--canvas)'}>

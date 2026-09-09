@@ -21,8 +21,8 @@ export function AppearancePage() {
   return <><PageHeader eyebrow="Configurações / Aparência" title="A atmosfera da sua história" description="Escolha um elemento. Cada tema transforma a linguagem do seu arquivo." />
     <section className="mb-6 max-w-xl space-y-4 border border-(--edge) bg-(--panel) p-5">
       <div><h2 className="text-xl font-semibold">Sidebar</h2><p className="mt-2 text-sm opacity-75">Escolha se o menu lateral permanece aberto ou expande apenas durante a interação.</p></div>
-      <RpgSelect label="Modo da sidebar" value={preferences.data.sidebarMode} onChange={(value) => { if (value === 'collapsed' || value === 'expanded') sidebarMutation.mutate({ sidebarMode: value }) }} disabled={sidebarMutation.isPending}
-        options={[{ value: 'collapsed', label: 'Retraída (expande ao passar o mouse)' }, { value: 'expanded', label: 'Expandida' }]} />
+      <RpgSelect label="Modo da sidebar" value={preferences.data.sidebarMode} onChange={(value) => { if (value === 'collapsed' || value === 'expanded' || value === 'always-collapsed') sidebarMutation.mutate({ sidebarMode: value }) }} disabled={sidebarMutation.isPending}
+        options={[{ value: 'collapsed', label: 'Retraída (expande ao passar o mouse)' }, { value: 'expanded', label: 'Expandida' }, { value: 'always-collapsed', label: 'Sempre retraída' }]} />
       <MutationFeedback error={sidebarMutation.error} success={sidebarMutation.isSuccess} />
     </section>
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{themeChoices.map((theme) => {

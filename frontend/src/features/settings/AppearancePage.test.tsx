@@ -28,7 +28,7 @@ test('tema padrão aparece na seleção e pode ser restaurado', async () => {
 test('modo da sidebar permanece após salvar a preferência', async () => {
   renderFeature(<AppearancePage />)
   await userEvent.click(await screen.findByLabelText('Modo da sidebar'))
-  await userEvent.click(await screen.findByRole('option', { name: 'Expandida' }))
+  await userEvent.click(await screen.findByRole('option', { name: 'Sempre retraída' }))
   await screen.findByText('Alterações salvas.')
-  expect((await preferencesApi.get()).sidebarMode).toBe('expanded')
+  expect((await preferencesApi.get()).sidebarMode).toBe('always-collapsed')
 })
