@@ -15,6 +15,10 @@ Todo codigo novo ou alterado deve ser TypeScript estrito, component-driven, excl
 - Prefira inferencia local, `satisfies`, imports `type`, funcoes pequenas, imutabilidade e nomes orientados ao dominio.
 - Trate loading, vazio, sucesso e erro como estados validos e impossibilite estados contraditorios pelo sistema de tipos.
 
+### Imports
+
+- Use o alias `@` para imports locais do frontend; nao use caminhos relativos com `../` ou `./` quando o modulo puder ser referenciado pelo alias.
+
 ### Component-Driven Development, sem atalhos
 
 Construa de baixo para cima: design tokens -> primitives -> components -> compositions -> features/pages.

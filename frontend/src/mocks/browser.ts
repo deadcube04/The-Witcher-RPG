@@ -1,5 +1,7 @@
-import { setupWorker } from 'msw/browser'
-import { createHandlers } from './handlers'
-import { MockRepository } from './database/repository'
+import { setupWorker } from "msw/browser";
+import { MockRepository } from "./database/repository";
+import { createHandlers } from "./handlers";
 
-export const worker = setupWorker(...createHandlers(new MockRepository(localStorage)))
+export const worker = setupWorker(
+	...createHandlers(new MockRepository(localStorage)),
+);

@@ -1,122 +1,122 @@
 {
-  "class_definition": [
-    {
-      "name": "Combatente",
-      "id": "d2222c7e-59c7-4b37-83da-b65ab68e594b"
-    },
-    {
-      "name": "Especialista",
-      "id": "c9bd6935-a5db-4cb4-b99b-0621358c1820"
-    },
-    {
-      "name": "Ocultista",
-      "id": "97b09513-32b5-4ad9-9e13-18b6ed61be29"
-    }
-  ],
-  "origin_definition": [
-    {
-      "name": "Acadêmico",
-      "id": "2e972664-8ec6-4cd2-9fa7-c74cf278d7fd"
-    },
-    {
-      "name": "Agente de Saúde",
-      "id": "0a1ef649-4dbe-4e61-adf2-8863a5a425ba"
-    },
-    {
-      "name": "Amnésico",
-      "id": "8bcbd258-0259-457a-8eb5-6314e3412491"
-    },
-    {
-      "name": "Artista",
-      "id": "d4c64c0d-b88b-42dc-9abb-f2110a6158b7"
-    },
-    {
-      "name": "Atleta",
-      "id": "1479018f-d88e-4baa-9d24-1e8e7f416bc4"
-    },
-    {
-      "name": "Chef",
-      "id": "92b069e1-c8c2-41b4-8abf-bec0dd3dffc3"
-    },
-    {
-      "name": "Criminoso",
-      "id": "17dd0e12-e007-40fc-a0db-85b78c081ce1"
-    },
-    {
-      "name": "Cultista Arrependido",
-      "id": "289ee8bb-c711-43b9-b1a5-b93f99e648ea"
-    },
-    {
-      "name": "Desgarrado",
-      "id": "097d9de7-26f3-4ebe-835c-c859280e7b1f"
-    },
-    {
-      "name": "Engenheiro",
-      "id": "883052b1-9f27-49a6-be69-3742358d44d7"
-    },
-    {
-      "name": "Executivo",
-      "id": "123fbb6c-9ed5-4f38-b6a2-6f7337b2a628"
-    },
-    {
-      "name": "Investigador",
-      "id": "d1beb8d2-c004-45d3-a6a0-eee1be25a38c"
-    },
-    {
-      "name": "Lutador",
-      "id": "882b5f8b-d41f-4e40-80c1-a7ac0c53d64a"
-    },
-    {
-      "name": "Magnata",
-      "id": "09e327c6-d066-411d-9e02-d7d0072a2903"
-    },
-    {
-      "name": "Mercenário",
-      "id": "7c562c48-86ba-49f0-9642-55d10455e35e"
-    },
-    {
-      "name": "Militar",
-      "id": "467a76cc-fb73-4598-8a19-9e77f285fc83"
-    },
-    {
-      "name": "Operário",
-      "id": "6a28b1fb-36f8-4033-b83e-af82c577aefd"
-    },
-    {
-      "name": "Policial",
-      "id": "6fa66243-9b26-44ac-84f9-79735b67b2ce"
-    },
-    {
-      "name": "Religioso",
-      "id": "662569e1-99fb-48b3-b8a2-ad3a915c3d98"
-    },
-    {
-      "name": "Servidor Público",
-      "id": "fc4f66fd-9ced-44be-a074-f53872b5c5c1"
-    },
-    {
-      "name": "Teórico da Conspiração",
-      "id": "b8fe5383-2e7f-4076-bd28-d806cbef7d02"
-    },
-    {
-      "name": "T.I.",
-      "id": "448dac9f-0ea0-4f5e-ac5c-e105776cdbf8"
-    },
-    {
-      "name": "Trabalhador Rural",
-      "id": "cc315fc5-08e9-40f4-9aad-02f882e01c1b"
-    },
-    {
-      "name": "Trambiqueiro",
-      "id": "dd7234fe-f31e-4ee4-8eee-98dac48b7431"
-    },
-    {
-      "name": "Universitário",
-      "id": "812534d9-66e1-40cb-ab22-5c8839b3e1b5"
-    },
-    {
-      "name": "Vítima",
-      "id": "e806e5b5-7626-48bd-97be-ba4fafe7ff90"
-    }
-  ]
+	"class_definition": [
+		{
+			"name": "Combatente",
+			"id": "d2222c7e-59c7-4b37-83da-b65ab68e594b"
+		},
+		{
+			"name": "Especialista",
+			"id": "c9bd6935-a5db-4cb4-b99b-0621358c1820"
+		},
+		{
+			"name": "Ocultista",
+			"id": "97b09513-32b5-4ad9-9e13-18b6ed61be29"
+		}
+	],
+	"origin_definition": [
+		{
+			"name": "Acadêmico",
+			"id": "2e972664-8ec6-4cd2-9fa7-c74cf278d7fd"
+		},
+		{
+			"name": "Agente de Saúde",
+			"id": "0a1ef649-4dbe-4e61-adf2-8863a5a425ba"
+		},
+		{
+			"name": "Amnésico",
+			"id": "8bcbd258-0259-457a-8eb5-6314e3412491"
+		},
+		{
+			"name": "Artista",
+			"id": "d4c64c0d-b88b-42dc-9abb-f2110a6158b7"
+		},
+		{
+			"name": "Atleta",
+			"id": "1479018f-d88e-4baa-9d24-1e8e7f416bc4"
+		},
+		{
+			"name": "Chef",
+			"id": "92b069e1-c8c2-41b4-8abf-bec0dd3dffc3"
+		},
+		{
+			"name": "Criminoso",
+			"id": "17dd0e12-e007-40fc-a0db-85b78c081ce1"
+		},
+		{
+			"name": "Cultista Arrependido",
+			"id": "289ee8bb-c711-43b9-b1a5-b93f99e648ea"
+		},
+		{
+			"name": "Desgarrado",
+			"id": "097d9de7-26f3-4ebe-835c-c859280e7b1f"
+		},
+		{
+			"name": "Engenheiro",
+			"id": "883052b1-9f27-49a6-be69-3742358d44d7"
+		},
+		{
+			"name": "Executivo",
+			"id": "123fbb6c-9ed5-4f38-b6a2-6f7337b2a628"
+		},
+		{
+			"name": "Investigador",
+			"id": "d1beb8d2-c004-45d3-a6a0-eee1be25a38c"
+		},
+		{
+			"name": "Lutador",
+			"id": "882b5f8b-d41f-4e40-80c1-a7ac0c53d64a"
+		},
+		{
+			"name": "Magnata",
+			"id": "09e327c6-d066-411d-9e02-d7d0072a2903"
+		},
+		{
+			"name": "Mercenário",
+			"id": "7c562c48-86ba-49f0-9642-55d10455e35e"
+		},
+		{
+			"name": "Militar",
+			"id": "467a76cc-fb73-4598-8a19-9e77f285fc83"
+		},
+		{
+			"name": "Operário",
+			"id": "6a28b1fb-36f8-4033-b83e-af82c577aefd"
+		},
+		{
+			"name": "Policial",
+			"id": "6fa66243-9b26-44ac-84f9-79735b67b2ce"
+		},
+		{
+			"name": "Religioso",
+			"id": "662569e1-99fb-48b3-b8a2-ad3a915c3d98"
+		},
+		{
+			"name": "Servidor Público",
+			"id": "fc4f66fd-9ced-44be-a074-f53872b5c5c1"
+		},
+		{
+			"name": "Teórico da Conspiração",
+			"id": "b8fe5383-2e7f-4076-bd28-d806cbef7d02"
+		},
+		{
+			"name": "T.I.",
+			"id": "448dac9f-0ea0-4f5e-ac5c-e105776cdbf8"
+		},
+		{
+			"name": "Trabalhador Rural",
+			"id": "cc315fc5-08e9-40f4-9aad-02f882e01c1b"
+		},
+		{
+			"name": "Trambiqueiro",
+			"id": "dd7234fe-f31e-4ee4-8eee-98dac48b7431"
+		},
+		{
+			"name": "Universitário",
+			"id": "812534d9-66e1-40cb-ab22-5c8839b3e1b5"
+		},
+		{
+			"name": "Vítima",
+			"id": "e806e5b5-7626-48bd-97be-ba4fafe7ff90"
+		}
+	]
 }
