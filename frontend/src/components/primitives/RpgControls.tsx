@@ -1,5 +1,7 @@
 import { Button, Input, InputNumber, Select } from "antd";
-import { type ReactNode, useId } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { IoIosArrowDown } from "react-icons/io";
+import { type ReactNode, useId, useState } from "react";
 
 type ButtonProps = {
 	children: ReactNode;
@@ -212,6 +214,12 @@ export function RpgInlineSelect({
 	onChange: (value: string) => void;
 	options: SelectOption[];
 }) {
+	const [open, setOpen] = useState(false);
+	const [closing, setClosing] = useState(false);
+	const reduced = useReducedMotion();
+	const popupOpen = open || closing;
+	const transition = { duration: reduced ? 0 : 0.18 };
+
 	return (
 		<Select
 			aria-label={label}
@@ -219,6 +227,57 @@ export function RpgInlineSelect({
 			onChange={onChange}
 			options={options}
 			virtual={false}
+			open={popupOpen}
+			onOpenChange={(nextOpen) => {
+				if (nextOpen) {
+					setClosing(false);
+					setOpen(true);
+				} else {
+					setClosing(true);
+				}
+			}}
+			suffixIcon={
+				<motion.span
+					initial={false}
+					animate={{ rotate: open ? 180 : 0 }}
+					transition={transition}
+					className="inline-flex text-base"
+				>
+					<IoIosArrowDown aria-hidden="true" />
+				</motion.span>
+			}
+			popupRender={(menu) => (
+				<AnimatePresence
+					initial={false}
+					onExitComplete={() => {
+						if (closing) {
+							setClosing(false);
+							setOpen(false);
+						}
+					}}
+				>
+					{!closing && (
+						<motion.div
+							key="inline-select-menu"
+							initial={
+								reduced
+									? false
+									: { opacity: 0, height: 0, scaleY: 0.96 }
+							}
+							animate={{ opacity: 1, height: "auto", scaleY: 1 }}
+							exit={
+								reduced
+									? undefined
+									: { opacity: 0, height: 0, scaleY: 0.96 }
+							}
+							transition={transition}
+							className="origin-top overflow-hidden"
+						>
+							{menu}
+						</motion.div>
+					)}
+				</AnimatePresence>
+			)}
 			className="min-h-10! w-32! [&_.ant-select-selection-item]:text-center!"
 		/>
 	);

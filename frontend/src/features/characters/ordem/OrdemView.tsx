@@ -8,7 +8,6 @@ import {
 import { RpgResourceBar } from "../../../components/data-display/RpgResourceBar";
 import { RpgAttributeNumber } from "../../../components/primitives/RpgControls";
 import type { CharacterInput } from "../../../shared/contracts/character-sheet";
-import catalog from "../../../shared/contracts/ordem-catalog.json";
 import { attributeFields } from "./fields";
 
 const attributeIcons = {
@@ -111,30 +110,6 @@ export function OrdemView({
 					})}
 				</dl>
 			</section>
-			<dl className="grid grid-cols-2 gap-4 border-t border-(--edge) pt-5 text-sm">
-				{[
-					["NEX", `${value.nex}%`],
-					[
-						"Classe",
-						catalog.class_definition.find((entry) => entry.id === value.classId)
-							?.name ?? "Não definida",
-					],
-					[
-						"Origem",
-						catalog.origin_definition.find(
-							(entry) => entry.id === value.originId,
-						)?.name ?? "Não definida",
-					],
-					["Crédito", value.creditLimit ?? "Não definido"],
-				].map(([label, text]) => (
-					<div key={label}>
-						<dt className="text-[10px] uppercase tracking-widest opacity-60">
-							{label}
-						</dt>
-						<dd className="mt-1">{text}</dd>
-					</div>
-				))}
-			</dl>
 		</div>
 	);
 }

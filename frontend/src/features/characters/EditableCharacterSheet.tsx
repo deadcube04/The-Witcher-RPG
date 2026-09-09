@@ -9,6 +9,7 @@ import { CharacterDeleteAction } from "./CharacterDeleteAction";
 import { CharacterIdentity } from "./CharacterIdentity";
 import { CharacterPanels } from "./CharacterPanels";
 import { type CharacterSkill, createMockSkills } from "./character-skills";
+import { OrdemHeaderStats } from "./ordem/OrdemHeaderStats";
 import { useAutoSaveIndicator } from "./useAutoSaveIndicator";
 
 type Props = {
@@ -51,35 +52,37 @@ export function EditableCharacterSheet({
 	};
 	return (
 		<div className="font-sans">
-			<header className="sticky top-0 z-40 mb-4 flex h-15 min-w-0 items-center justify-between gap-2 border-b border-(--edge) bg-(--canvas)">
-				<nav
-					aria-label="Caminho da ficha"
-					className="min-w-0 font-mono text-xs uppercase tracking-[0.24em] text-(--accent)"
-				>
-					<ol className="flex min-w-0 items-center gap-2">
-						<li className="shrink-0">
-							<Link
-								to="/characters"
-								className="inline-flex min-h-11 items-center hover:underline focus-visible:outline-2 focus-visible:outline-(--accent)"
+			<header className="sticky top-0 z-40 mb-4 min-w-0 bg-(--canvas)">
+				<div className="flex min-h-15 min-w-0 items-center justify-between gap-2 border-b border-(--edge)">
+					<nav
+						aria-label="Caminho da ficha"
+						className="min-w-0 shrink-0 font-mono text-xs uppercase tracking-[0.24em] text-(--accent)"
+					>
+						<ol className="flex min-w-0 items-center gap-2">
+							<li className="shrink-0">
+								<Link
+									to="/characters"
+									className="inline-flex min-h-11 items-center hover:underline focus-visible:outline-2 focus-visible:outline-(--accent)"
+								>
+									Fichas
+								</Link>
+							</li>
+							<li aria-hidden="true" className="opacity-50">
+								/
+							</li>
+							<li
+								aria-current="page"
+								title={draft.name}
+								className="max-w-32 truncate font-medium sm:max-w-56"
 							>
-								Fichas
-							</Link>
-						</li>
-						<li aria-hidden="true" className="opacity-50">
-							/
-						</li>
-						<li
-							aria-current="page"
-							title={draft.name}
-							className="truncate font-medium"
-						>
-							{draft.name || "Sem nome"}
-						</li>
-					</ol>
-				</nav>
-				<div className="flex shrink-0 items-center gap-1 sm:gap-2">
-					<AutoSaveIndicator status={status} />
-					<CharacterDeleteAction character={character} />
+								{draft.name || "Sem nome"}
+							</li>
+						</ol>
+					</nav>
+					<div className="flex shrink-0 items-center gap-1 sm:gap-2">
+						<AutoSaveIndicator status={status} />
+						<CharacterDeleteAction character={character} />
+					</div>
 				</div>
 			</header>
 			<div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(240px,300px)_minmax(0,1fr)]">
@@ -94,6 +97,12 @@ export function EditableCharacterSheet({
 					</p>
 				</div>
 				<div className="relative min-w-0">
+					{draft.systemData.kind === "ordem-paranormal" && (
+						<OrdemHeaderStats
+							value={draft.systemData}
+							onChange={(systemData) => updateDraft({ ...draft, systemData })}
+						/>
+					)}
 					<CharacterPanels
 						character={draft}
 						skills={skills}
