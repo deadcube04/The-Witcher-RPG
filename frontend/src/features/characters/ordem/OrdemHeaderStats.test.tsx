@@ -16,7 +16,9 @@ test("exibe os dados resumidos na ordem do cabeçalho", () => {
 
 	const stats = screen.getByRole("region", { name: "Resumo da ficha" });
 	expect(
-		within(stats).getAllByRole("term").map((term) => term.textContent),
+		within(stats)
+			.getAllByRole("term")
+			.map((term) => term.textContent),
 	).toEqual(["NEX", "Classe", "Origem", "Crédito", "Deslocamento"]);
 	expect(stats).toHaveTextContent("35%");
 	expect(stats).toHaveTextContent("Combatente");

@@ -1,7 +1,7 @@
 import { Button, Input, InputNumber, Select } from "antd";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { IoIosArrowDown } from "react-icons/io";
 import { type ReactNode, useId, useState } from "react";
+import { IoIosArrowDown } from "react-icons/io";
 
 const rpgSelectScrollbarClasses =
 	"[scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) [&_.rc-virtual-list-holder]:[scrollbar-color:var(--edge)_var(--canvas)] [&_.rc-virtual-list-holder::-webkit-scrollbar]:w-3 [&_.rc-virtual-list-holder::-webkit-scrollbar-track]:bg-(--canvas) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb]:bg-(--edge) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb:hover]:bg-(--accent)";
@@ -278,15 +278,11 @@ export function RpgInlineSelect({
 						<motion.div
 							key="inline-select-menu"
 							initial={
-								reduced
-									? false
-									: { opacity: 0, height: 0, scaleY: 0.96 }
+								reduced ? false : { opacity: 0, height: 0, scaleY: 0.96 }
 							}
 							animate={{ opacity: 1, height: "auto", scaleY: 1 }}
 							exit={
-								reduced
-									? undefined
-									: { opacity: 0, height: 0, scaleY: 0.96 }
+								reduced ? undefined : { opacity: 0, height: 0, scaleY: 0.96 }
 							}
 							transition={transition}
 							className="origin-top overflow-hidden"

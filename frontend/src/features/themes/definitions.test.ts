@@ -32,11 +32,17 @@ describe("temas da aplicação", () => {
 
 	test("todos os temas aplicam a scrollbar com as cores do tema ativo", () => {
 		for (const theme of [resolveTheme(null), ...themes]) {
-			expect(theme.classes).toContain("[scrollbar-color:var(--edge)_var(--canvas)]");
+			expect(theme.classes).toContain(
+				"[scrollbar-color:var(--edge)_var(--canvas)]",
+			);
 			expect(theme.classes).toContain("[scrollbar-width:thin]");
 			expect(theme.classes).toContain("[&::-webkit-scrollbar]:w-3");
-			expect(theme.classes).toContain("[&::-webkit-scrollbar-track]:bg-(--canvas)");
-			expect(theme.classes).toContain("[&::-webkit-scrollbar-thumb]:bg-(--edge)");
+			expect(theme.classes).toContain(
+				"[&::-webkit-scrollbar-track]:bg-(--canvas)",
+			);
+			expect(theme.classes).toContain(
+				"[&::-webkit-scrollbar-thumb]:bg-(--edge)",
+			);
 			expect(theme.classes).toContain(
 				"[&::-webkit-scrollbar-thumb:hover]:bg-(--accent)",
 			);
