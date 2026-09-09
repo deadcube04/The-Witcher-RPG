@@ -3,7 +3,12 @@ import {
 	RpgInlineNumber,
 	RpgInlineSelect,
 } from "../../components/primitives/RpgControls";
-import { type CharacterSkill, modifierOptions } from "./character-skills";
+import {
+	type CharacterSkill,
+	modifierOptions,
+	trainingLevelOptions,
+	trainingLevelValues,
+} from "./character-skills";
 
 export function CharacterSkills({
 	skills,
@@ -41,10 +46,10 @@ export function CharacterSkills({
 								Atributo modificador
 							</th>
 							<th scope="col" className="px-4 py-3 font-semibold">
-								Bônus atual
+								Nível de treinamento
 							</th>
 							<th scope="col" className="px-4 py-3 font-semibold">
-								Treino
+								Bônus atual
 							</th>
 							<th scope="col" className="px-4 py-3 font-semibold">
 								Outros
@@ -57,12 +62,12 @@ export function CharacterSkills({
 							return (
 								<tr key={skill.id} className="bg-(--panel)">
 									<th scope="row" className="px-4 py-3 font-normal">
-										<span className="inline-flex items-center justify-center gap-3">
+										<span className="mx-auto grid w-full max-w-56 grid-cols-[1.25rem_1fr] items-center gap-3 text-left">
 											<GiDiceTwentyFacesTwenty
 												aria-hidden="true"
 												className="size-5 shrink-0 text-(--accent)"
 											/>
-											{skill.name}
+											<span>{skill.name}</span>
 										</span>
 									</th>
 									<td className="px-4 py-3">
@@ -82,21 +87,31 @@ export function CharacterSkills({
 											options={modifierOptions}
 										/>
 									</td>
+									<td className="px-4 py-3">
+										<RpgInlineSelect
+											label={`Nível de treinamento de ${skill.name}`}
+											value={skill.nivelTreinamento}
+											onChange={(value) => {
+												if (
+													value === "Leigo" ||
+													value === "Treinado" ||
+													value === "Veterano" ||
+													value === "Expert"
+												)
+													update(skill.id, {
+														nivelTreinamento: value,
+														treino: trainingLevelValues[value],
+													});
+											}}
+											options={trainingLevelOptions}
+										/>
+									</td>
 									<td
 										aria-label={`Bônus atual de ${skill.name}`}
 										className="px-4 py-3 font-mono font-semibold text-(--accent)"
 									>
 										{bonusAtual >= 0 ? "+" : ""}
 										{bonusAtual}
-									</td>
-									<td className="px-4 py-3">
-										<RpgInlineNumber
-											label={`Treino de ${skill.name}`}
-											value={skill.treino}
-											onChange={(treino) => update(skill.id, { treino })}
-											min={0}
-											max={99}
-										/>
 									</td>
 									<td className="px-4 py-3">
 										<RpgInlineNumber

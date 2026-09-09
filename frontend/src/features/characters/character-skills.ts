@@ -4,10 +4,12 @@ export type ModifierAttribute =
 	| "Intelecto"
 	| "Presença"
 	| "Vigor";
+export type TrainingLevel = "Leigo" | "Treinado" | "Veterano" | "Expert";
 export type CharacterSkill = {
 	id: string;
 	name: string;
 	atributoModificador: ModifierAttribute;
+	nivelTreinamento: TrainingLevel;
 	treino: number;
 	outros: number;
 };
@@ -19,6 +21,15 @@ export const modifierOptions = [
 	"Presença",
 	"Vigor",
 ].map((value) => ({ value, label: value }));
+export const trainingLevelOptions = ["Leigo", "Treinado", "Veterano", "Expert"].map(
+	(value) => ({ value, label: value }),
+);
+export const trainingLevelValues: Record<TrainingLevel, number> = {
+	Leigo: 0,
+	Treinado: 5,
+	Veterano: 10,
+	Expert: 15,
+};
 const mockSkills = [
 	["investigacao", "Investigação", "Intelecto"],
 	["intimidacao", "Intimidação", "Presença"],
@@ -41,6 +52,7 @@ export function createMockSkills(): CharacterSkill[] {
 		id,
 		name,
 		atributoModificador,
+		nivelTreinamento: "Leigo",
 		treino: 0,
 		outros: 0,
 	}));
