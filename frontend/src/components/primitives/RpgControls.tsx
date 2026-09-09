@@ -3,6 +3,18 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { IoIosArrowDown } from "react-icons/io";
 import { type ReactNode, useId, useState } from "react";
 
+const rpgSelectScrollbarClasses =
+	"[scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) [&_.rc-virtual-list-holder]:[scrollbar-color:var(--edge)_var(--canvas)] [&_.rc-virtual-list-holder::-webkit-scrollbar]:w-3 [&_.rc-virtual-list-holder::-webkit-scrollbar-track]:bg-(--canvas) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb]:bg-(--edge) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb:hover]:bg-(--accent)";
+const rpgSelectPopupAlign = {
+	points: ["tl", "bl"],
+	offset: [0, 4],
+	overflow: { adjustX: false, adjustY: false },
+};
+
+function getRpgSelectPopupContainer(triggerNode: HTMLElement): HTMLElement {
+	return triggerNode.parentElement ?? document.body;
+}
+
 type ButtonProps = {
 	children: ReactNode;
 	onClick?: () => void;
@@ -137,6 +149,9 @@ export function RpgSelect({
 					onChange={onChange}
 					options={options}
 					disabled={disabled}
+					getPopupContainer={getRpgSelectPopupContainer}
+					classNames={{ popup: { root: rpgSelectScrollbarClasses } }}
+					popupAlign={rpgSelectPopupAlign}
 					className="min-h-11! w-full!"
 					virtual={false}
 				/>
@@ -227,6 +242,9 @@ export function RpgInlineSelect({
 			onChange={onChange}
 			options={options}
 			virtual={false}
+			getPopupContainer={getRpgSelectPopupContainer}
+			classNames={{ popup: { root: rpgSelectScrollbarClasses } }}
+			popupAlign={rpgSelectPopupAlign}
 			open={popupOpen}
 			onOpenChange={(nextOpen) => {
 				if (nextOpen) {

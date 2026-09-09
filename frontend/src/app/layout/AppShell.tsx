@@ -31,7 +31,7 @@ export function AppShell() {
 			data-theme={theme.id}
 			className={
 				theme.classes +
-				" min-h-screen bg-(--canvas) text-(--ink) selection:bg-(--accent) selection:text-(--canvas)"
+				" min-h-screen max-h-screen overflow-y-auto bg-(--canvas) text-(--ink) selection:bg-(--accent) selection:text-(--canvas)"
 			}
 		>
 			<RpgVisualProvider theme={theme}>
@@ -69,7 +69,7 @@ export function AppShell() {
 							(isCharacterSheet
 								? "px-4 pb-8 md:px-6 "
 								: "px-4 py-8 md:px-8 lg:py-12 xl:px-12 ") +
-							(collapsed ? "ml-[72px]" : "ml-[72px] md:ml-[248px]")
+							(collapsed ? "ml-18" : "ml-18 md:ml-62")
 						}
 					>
 						{(preferences.isError || systems.isError || user.isError) && (

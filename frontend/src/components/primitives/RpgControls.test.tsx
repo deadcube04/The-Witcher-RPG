@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { expect, test } from "vitest";
 import { RpgResourceBar } from "../data-display/RpgResourceBar";
-import { RpgButton, RpgInput } from "./RpgControls";
+import { RpgButton, RpgInput, RpgSelect } from "./RpgControls";
 
 function Harness() {
 	const [value, setValue] = useState("");
@@ -19,6 +19,27 @@ test("campo acessível por label habilita a ação ao editar", async () => {
 	expect(screen.getByRole("button", { name: "Salvar" })).toBeDisabled();
 	await userEvent.type(screen.getByLabelText("Nome"), "Agente");
 	expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
+});
+
+test("select aplica a scrollbar temática no dropdown aberto", async () => {
+	render(
+		<RpgSelect
+			label="Tema"
+			value="arquivo"
+			onChange={() => {}}
+			options={[
+				{ value: "arquivo", label: "Arquivo" },
+				{ value: "sangue", label: "Sangue" },
+			]}
+		/>,
+	);
+
+	await userEvent.click(screen.getByRole("combobox"));
+
+	const dropdown = document.querySelector(".ant-select-dropdown");
+	expect(dropdown).toHaveClass("[scrollbar-width:thin]");
+	expect(dropdown).toHaveClass("[&::-webkit-scrollbar]:w-3");
+	expect(dropdown).toHaveClass("ant-select-dropdown-placement-bottomLeft");
 });
 
 function ResourceHarness({ tone }: { tone: "health" | "effort" | "sanity" }) {
