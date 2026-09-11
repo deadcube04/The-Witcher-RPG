@@ -26,7 +26,7 @@ Construa de baixo para cima: design tokens -> primitives -> components -> compos
 - Um componente possui uma responsabilidade, API de props pequena e nenhuma dependencia acidental da pagina.
 - Separe estado/orquestracao de apresentacao. Pages podem compor layout e features, mas nao concentram componentes reutilizaveis, regras de dominio, acesso a dados e toda a orquestracao da navegacao.
 - Antes de integrar um componente, implemente e valide isoladamente seus estados relevantes: default, loading, empty, error, disabled e variacoes responsivas/acessiveis.
-- Mantenha story ou harness isolado e teste de comportamento para componentes reutilizaveis. Use Storybook com builder Vite quando o projeto adotar Storybook.
+- Valide componentes reutilizaveis isoladamente por story ou harness quando o projeto adotar uma dessas ferramentas, sem criar testes.
 - Reutilize tokens, primitives e componentes existentes antes de criar variantes. Nao copie markup ou estilos para ganhar tempo.
 
 ### Componentes personalizados baseados em Ant Design
@@ -49,7 +49,7 @@ Construa de baixo para cima: design tokens -> primitives -> components -> compos
 
 ### Vite e frontend-only
 
-- Use o ecossistema Vite: `@vitejs/plugin-react` ou `@vitejs/plugin-react-swc` e `import.meta.env`. Para comportamento de aplicacao, use Vitest e React Testing Library; nao introduza ferramentas de teste em tarefa puramente documental/configuracional sem necessidade.
+- Use o ecossistema Vite: `@vitejs/plugin-react` ou `@vitejs/plugin-react-swc` e `import.meta.env`.
 - Nunca use Create React App, APIs Node no browser, server functions, SSR ou segredos no bundle. Variaveis `VITE_*` sao publicas.
 - O frontend consome APIs por contratos tipados e valida respostas externas em runtime.
 
@@ -89,7 +89,7 @@ Uma pagina de usuarios nao e um `UsersPage.tsx` monolitico. Componha `UserFilter
 
 ## Verificacao antes de concluir
 
-- Rode typecheck, lint e build Vite conforme os scripts existentes. Quando a tarefa afetar comportamento, rode tambem os testes de componentes/hooks relevantes.
+- Rode typecheck, lint e build Vite conforme os scripts existentes.
 - Valide acessibilidade, teclado, responsividade e todos os estados isolados afetados.
 - Confirme que nao entrou JavaScript novo, `any`, concorrente TanStack, dependencia critica ou logica de servidor.
 
