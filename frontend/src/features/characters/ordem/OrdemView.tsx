@@ -36,32 +36,27 @@ export function OrdemView({
 				{resourceFields.map((field) => {
 					const resource = value.resources[field.key];
 					return (
-						<div key={field.key}>
-							<RpgResourceBar
-								label={field.label}
-								tone={field.key}
-								current={resource.current}
-								maximum={resource.maximum}
-								editable={Boolean(onChange)}
-								onChange={
-									onChange
-										? (next) =>
-												onChange({
-													...value,
-													resources: {
-														...value.resources,
-														[field.key]: { ...resource, ...next },
-													},
-												})
-										: undefined
-								}
-							/>
-							{resource.temporary > 0 && (
-								<p className="mt-1 text-right text-xs opacity-60">
-									Temporários: +{resource.temporary}
-								</p>
-							)}
-						</div>
+						<RpgResourceBar
+							key={field.key}
+							label={field.label}
+							tone={field.key}
+							current={resource.current}
+							maximum={resource.maximum}
+							temporary={resource.temporary}
+							editable={Boolean(onChange)}
+							onChange={
+								onChange
+									? (next) =>
+											onChange({
+												...value,
+												resources: {
+													...value.resources,
+													[field.key]: { ...resource, ...next },
+												},
+											})
+									: undefined
+							}
+						/>
 					);
 				})}
 			</section>
