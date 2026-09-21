@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 7GtLPCQQmNpHsAa6Jeaulfp4doISXfpEdgLl7ZLMg9wq17pO9ZrVfLEMQRh0HVI
+\restrict iORI8glI9UZmcbFCG9jPjozbdCwaVOwF8PkGzOPr92Aet3SSeSO5nCWe4ecNaBd
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -377,6 +377,22 @@ $$;
 
 
 ALTER FUNCTION core.search_items(p_query text, p_rpg_system_id uuid, p_item_type_id uuid, p_limit integer, p_offset integer, p_fuzzy_threshold real) OWNER TO postgres;
+
+--
+-- Name: set_updated_at(); Type: FUNCTION; Schema: core; Owner: postgres
+--
+
+CREATE FUNCTION core.set_updated_at() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION core.set_updated_at() OWNER TO postgres;
 
 --
 -- Name: trg_refresh_item_fuzzy_from_item(); Type: FUNCTION; Schema: core; Owner: postgres
@@ -1125,6 +1141,18 @@ CREATE TABLE core.character_resource (
 ALTER TABLE core.character_resource OWNER TO postgres;
 
 --
+-- Name: character_sheet; Type: TABLE; Schema: core; Owner: postgres
+--
+
+CREATE TABLE core.character_sheet (
+    character_id uuid NOT NULL,
+    owner_user_id uuid NOT NULL
+);
+
+
+ALTER TABLE core.character_sheet OWNER TO postgres;
+
+--
 -- Name: character_skill; Type: TABLE; Schema: core; Owner: postgres
 --
 
@@ -1432,11 +1460,27 @@ CREATE TABLE core.rpg_system (
     description text,
     source_ref text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    is_active boolean DEFAULT true NOT NULL
 );
 
 
 ALTER TABLE core.rpg_system OWNER TO postgres;
+
+--
+-- Name: rpg_theme; Type: TABLE; Schema: core; Owner: postgres
+--
+
+CREATE TABLE core.rpg_theme (
+    rpg_system_id uuid NOT NULL,
+    theme_id character varying(100) NOT NULL,
+    display_name character varying(100) NOT NULL,
+    CONSTRAINT rpg_theme_display_name_not_empty CHECK ((length(TRIM(BOTH FROM display_name)) > 0)),
+    CONSTRAINT rpg_theme_id_slug CHECK (((theme_id)::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text))
+);
+
+
+ALTER TABLE core.rpg_theme OWNER TO postgres;
 
 --
 -- Name: search_synonym; Type: TABLE; Schema: core; Owner: postgres
@@ -1518,6 +1562,54 @@ CREATE TABLE core.stat_definition (
 
 
 ALTER TABLE core.stat_definition OWNER TO postgres;
+
+--
+-- Name: user_preferences; Type: TABLE; Schema: core; Owner: postgres
+--
+
+CREATE TABLE core.user_preferences (
+    user_id uuid NOT NULL,
+    active_rpg_system_id uuid,
+    active_theme_id character varying(100),
+    sidebar_mode character varying(30) DEFAULT 'collapsed'::character varying NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT user_preferences_sidebar_mode CHECK (((sidebar_mode)::text = ANY ((ARRAY['collapsed'::character varying, 'expanded'::character varying, 'always-collapsed'::character varying])::text[]))),
+    CONSTRAINT user_preferences_theme_requires_system CHECK (((active_theme_id IS NULL) OR (active_rpg_system_id IS NOT NULL)))
+);
+
+
+ALTER TABLE core.user_preferences OWNER TO postgres;
+
+--
+-- Name: users; Type: TABLE; Schema: core; Owner: postgres
+--
+
+CREATE TABLE core.users (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    email character varying(255),
+    username character varying(40) NOT NULL,
+    password_hash character varying(60) NOT NULL,
+    auth_provider character varying(30) DEFAULT 'LOCAL'::character varying NOT NULL,
+    display_name character varying(160) NOT NULL,
+    avatar_url text,
+    bio character varying(500),
+    role character varying(30) DEFAULT 'USER'::character varying NOT NULL,
+    status character varying(30) DEFAULT 'ACTIVE'::character varying NOT NULL,
+    last_login_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone,
+    CONSTRAINT users_display_name_not_empty CHECK ((length(TRIM(BOTH FROM display_name)) > 0)),
+    CONSTRAINT users_email_not_empty CHECK (((email IS NULL) OR (length(TRIM(BOTH FROM email)) > 0))),
+    CONSTRAINT users_password_hash_bcrypt CHECK (((password_hash)::text ~ '^\$2[aby]\$(0[4-9]|[12][0-9]|3[01])\$[./A-Za-z0-9]{53}$'::text)),
+    CONSTRAINT users_role_check CHECK (((role)::text = ANY ((ARRAY['USER'::character varying, 'ADMIN'::character varying])::text[]))),
+    CONSTRAINT users_status_check CHECK (((status)::text = ANY ((ARRAY['ACTIVE'::character varying, 'INACTIVE'::character varying, 'SUSPENDED'::character varying])::text[]))),
+    CONSTRAINT users_username_slug CHECK ((((length((username)::text) >= 2) AND (length((username)::text) <= 40)) AND ((username)::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text)))
+);
+
+
+ALTER TABLE core.users OWNER TO postgres;
 
 --
 -- Name: ammunition; Type: TABLE; Schema: ordem; Owner: postgres
@@ -2424,6 +2516,14 @@ ALTER TABLE ONLY core.character_resource
 
 
 --
+-- Name: character_sheet character_sheet_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.character_sheet
+    ADD CONSTRAINT character_sheet_pkey PRIMARY KEY (character_id);
+
+
+--
 -- Name: character_skill character_skill_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -2664,6 +2764,14 @@ ALTER TABLE ONLY core.rpg_system
 
 
 --
+-- Name: rpg_theme rpg_theme_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.rpg_theme
+    ADD CONSTRAINT rpg_theme_pkey PRIMARY KEY (rpg_system_id, theme_id);
+
+
+--
 -- Name: search_synonym search_synonym_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -2717,6 +2825,22 @@ ALTER TABLE ONLY core.stat_definition
 
 ALTER TABLE ONLY core.stat_definition
     ADD CONSTRAINT stat_definition_rpg_system_id_slug_key UNIQUE (rpg_system_id, slug);
+
+
+--
+-- Name: user_preferences user_preferences_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.user_preferences
+    ADD CONSTRAINT user_preferences_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -3382,6 +3506,27 @@ CREATE INDEX idx_search_synonym_term ON core.search_synonym USING btree (lower(b
 
 
 --
+-- Name: ix_character_sheet_owner_user_id; Type: INDEX; Schema: core; Owner: postgres
+--
+
+CREATE INDEX ix_character_sheet_owner_user_id ON core.character_sheet USING btree (owner_user_id);
+
+
+--
+-- Name: ix_users_role; Type: INDEX; Schema: core; Owner: postgres
+--
+
+CREATE INDEX ix_users_role ON core.users USING btree (role) WHERE (deleted_at IS NULL);
+
+
+--
+-- Name: ix_users_status; Type: INDEX; Schema: core; Owner: postgres
+--
+
+CREATE INDEX ix_users_status ON core.users USING btree (status) WHERE (deleted_at IS NULL);
+
+
+--
 -- Name: uq_ability_definition_id_system; Type: INDEX; Schema: core; Owner: postgres
 --
 
@@ -3529,6 +3674,20 @@ CREATE UNIQUE INDEX uq_stat_definition_id_system ON core.stat_definition USING b
 
 
 --
+-- Name: ux_users_email; Type: INDEX; Schema: core; Owner: postgres
+--
+
+CREATE UNIQUE INDEX ux_users_email ON core.users USING btree (lower((email)::text)) WHERE ((email IS NOT NULL) AND (deleted_at IS NULL));
+
+
+--
+-- Name: ux_users_username; Type: INDEX; Schema: core; Owner: postgres
+--
+
+CREATE UNIQUE INDEX ux_users_username ON core.users USING btree (username);
+
+
+--
 -- Name: idx_ordem_combat_maneuver_action; Type: INDEX; Schema: ordem; Owner: postgres
 --
 
@@ -3662,6 +3821,13 @@ CREATE TRIGGER trg_item_search_from_type AFTER UPDATE OF name ON core.item_type 
 
 
 --
+-- Name: rpg_character trg_rpg_character_updated_at; Type: TRIGGER; Schema: core; Owner: postgres
+--
+
+CREATE TRIGGER trg_rpg_character_updated_at BEFORE UPDATE ON core.rpg_character FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+
+--
 -- Name: rpg_character trg_threat_fuzzy_from_character; Type: TRIGGER; Schema: core; Owner: postgres
 --
 
@@ -3673,6 +3839,20 @@ CREATE TRIGGER trg_threat_fuzzy_from_character AFTER UPDATE OF name, description
 --
 
 CREATE TRIGGER trg_threat_search_from_character AFTER UPDATE OF name, description ON core.rpg_character FOR EACH ROW EXECUTE FUNCTION ordem.trg_refresh_threat_search_from_character();
+
+
+--
+-- Name: user_preferences trg_user_preferences_updated_at; Type: TRIGGER; Schema: core; Owner: postgres
+--
+
+CREATE TRIGGER trg_user_preferences_updated_at BEFORE UPDATE ON core.user_preferences FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+
+--
+-- Name: users trg_users_updated_at; Type: TRIGGER; Schema: core; Owner: postgres
+--
+
+CREATE TRIGGER trg_users_updated_at BEFORE UPDATE ON core.users FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 
 --
@@ -3948,6 +4128,22 @@ ALTER TABLE ONLY core.character_resource
 
 ALTER TABLE ONLY core.character_resource
     ADD CONSTRAINT character_resource_resource_id_fkey FOREIGN KEY (resource_id) REFERENCES core.resource_definition(id) ON DELETE CASCADE;
+
+
+--
+-- Name: character_sheet character_sheet_character_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.character_sheet
+    ADD CONSTRAINT character_sheet_character_id_fkey FOREIGN KEY (character_id) REFERENCES core.rpg_character(id) ON DELETE CASCADE;
+
+
+--
+-- Name: character_sheet character_sheet_owner_user_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.character_sheet
+    ADD CONSTRAINT character_sheet_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES core.users(id) ON DELETE RESTRICT;
 
 
 --
@@ -4479,6 +4675,14 @@ ALTER TABLE ONLY core.rpg_character
 
 
 --
+-- Name: rpg_theme rpg_theme_rpg_system_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.rpg_theme
+    ADD CONSTRAINT rpg_theme_rpg_system_id_fkey FOREIGN KEY (rpg_system_id) REFERENCES core.rpg_system(id) ON DELETE CASCADE;
+
+
+--
 -- Name: skill_definition skill_definition_base_attribute_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
 --
 
@@ -4508,6 +4712,30 @@ ALTER TABLE ONLY core.skill_training_level
 
 ALTER TABLE ONLY core.stat_definition
     ADD CONSTRAINT stat_definition_rpg_system_id_fkey FOREIGN KEY (rpg_system_id) REFERENCES core.rpg_system(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_preferences user_preferences_active_rpg_system_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.user_preferences
+    ADD CONSTRAINT user_preferences_active_rpg_system_id_fkey FOREIGN KEY (active_rpg_system_id) REFERENCES core.rpg_system(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: user_preferences user_preferences_active_theme_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.user_preferences
+    ADD CONSTRAINT user_preferences_active_theme_fkey FOREIGN KEY (active_rpg_system_id, active_theme_id) REFERENCES core.rpg_theme(rpg_system_id, theme_id) ON DELETE RESTRICT;
+
+
+--
+-- Name: user_preferences user_preferences_user_id_fkey; Type: FK CONSTRAINT; Schema: core; Owner: postgres
+--
+
+ALTER TABLE ONLY core.user_preferences
+    ADD CONSTRAINT user_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES core.users(id) ON DELETE CASCADE;
 
 
 --
@@ -4842,5 +5070,5 @@ ALTER TABLE ONLY ordem.weapon
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 7GtLPCQQmNpHsAa6Jeaulfp4doISXfpEdgLl7ZLMg9wq17pO9ZrVfLEMQRh0HVI
+\unrestrict iORI8glI9UZmcbFCG9jPjozbdCwaVOwF8PkGzOPr92Aet3SSeSO5nCWe4ecNaBd
 
