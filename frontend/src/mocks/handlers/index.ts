@@ -1,10 +1,13 @@
 import { HttpResponse, http } from "msw";
-import { preferencesPatchSchema } from "../../shared/contracts/preferences";
-import { profileInputSchema } from "../../shared/contracts/user";
-import type { MockRepository } from "../database/repository";
-import { campaignHandlers } from "./campaigns";
-import { characterHandlers } from "./characters";
-import { body, fail, safe } from "./common";
+import { preferencesPatchSchema } from "@/shared/contracts/preferences";
+import { profileInputSchema } from "@/shared/contracts/user";
+import type { MockRepository } from "@/mocks/database/repository";
+import { campaignHandlers } from "@/mocks/handlers/campaigns";
+import { characterHandlers } from "@/mocks/handlers/characters";
+import { attackHandlers } from "@/mocks/handlers/attacks";
+import { inventoryHandlers } from "@/mocks/handlers/inventory";
+import { ritualHandlers } from "@/mocks/handlers/rituals";
+import { body, fail, safe } from "@/mocks/handlers/common";
 
 export function createHandlers(repo: MockRepository) {
 	return [
@@ -51,5 +54,8 @@ export function createHandlers(repo: MockRepository) {
 		),
 		...campaignHandlers(repo),
 		...characterHandlers(repo),
+		...inventoryHandlers(repo),
+		...ritualHandlers(repo),
+		...attackHandlers(repo),
 	];
 }

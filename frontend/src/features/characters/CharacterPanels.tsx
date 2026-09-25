@@ -4,24 +4,30 @@ import {
 	GiDiceTwentyFacesTwenty,
 	GiSpellBook,
 } from "react-icons/gi";
-import { RpgSheetDrawers } from "../../components/navigation/RpgSheetDrawers";
-import type { CharacterInput } from "../../shared/contracts/character-sheet";
-import { DiceRoller } from "../dice/DiceRoller";
-import { CharacterNarrative } from "./CharacterNarrative";
-import { CharacterSkills } from "./CharacterSkills";
-import type { CharacterSkill } from "./character-skills";
+import { RpgSheetDrawers } from "@/components/navigation/RpgSheetDrawers";
+import type { CharacterInput } from "@/shared/contracts/character-sheet";
+import { DiceRoller } from "@/features/dice/DiceRoller";
+import { CharacterNarrative } from "@/features/characters/CharacterNarrative";
+import { CharacterSkills } from "@/features/characters/CharacterSkills";
+import type { CharacterSkill } from "@/features/characters/character-skills";
+import { AttacksPanel } from "@/features/characters/ordem/content/AttacksPanel";
+import { InventoryPanel } from "@/features/characters/ordem/content/InventoryPanel";
+import { RitualsPanel } from "@/features/characters/ordem/content/RitualsPanel";
 
 export function CharacterPanels({
 	character,
+	characterId,
 	skills,
 	onCharacterChange,
 	onSkillsChange,
 }: {
 	character: CharacterInput;
+	characterId: string;
 	skills: CharacterSkill[];
 	onCharacterChange: (character: CharacterInput) => void;
 	onSkillsChange: (skills: CharacterSkill[]) => void;
 }) {
+	const ordem = character.systemData.kind === "ordem-paranormal";
 	return (
 		<div className="space-y-8">
 			<div className="relative min-h-[560px]">
@@ -34,19 +40,19 @@ export function CharacterPanels({
 							key: "inventory",
 							label: "Inventário",
 							icon: <GiBackpack aria-hidden="true" />,
-							children: <UnavailablePanel name="Inventário" />,
+							children: ordem ? <InventoryPanel characterId={characterId} /> : <UnavailablePanel name="Inventário" />,
 						},
 						{
 							key: "rituals",
 							label: "Rituais",
 							icon: <GiSpellBook aria-hidden="true" />,
-							children: <UnavailablePanel name="Rituais" />,
+							children: ordem ? <RitualsPanel characterId={characterId} /> : <UnavailablePanel name="Rituais" />,
 						},
 						{
 							key: "attacks",
 							label: "Ataques",
 							icon: <GiCrossedSwords aria-hidden="true" />,
-							children: <UnavailablePanel name="Ataques" />,
+							children: ordem ? <AttacksPanel characterId={characterId} /> : <UnavailablePanel name="Ataques" />,
 						},
 						{
 							key: "dice",

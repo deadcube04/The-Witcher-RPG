@@ -1,7 +1,7 @@
 import { HttpResponse } from "msw";
 import type { ZodType } from "zod";
-import { ApiError } from "../../shared/api/client";
-import type { ErrorCode } from "../../shared/contracts/api-error";
+import { ApiError } from "@/shared/api/client";
+import type { ErrorCode } from "@/shared/contracts/api-error";
 
 export function fail(code: ErrorCode): never {
 	throw new ApiError(code);
@@ -28,7 +28,9 @@ export async function safe(
 			? 404
 			: code === "INTERNAL_ERROR"
 				? 500
-				: code === "CONFLICT"
+				: code === "CONFLICT" ||
+						code === "CONTENT_IN_USE" ||
+						code === "CONTENT_ALREADY_ADDED"
 					? 409
 					: 400;
 		return HttpResponse.json(

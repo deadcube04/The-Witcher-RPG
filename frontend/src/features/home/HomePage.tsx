@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ResourceLinks } from "../../components/data-display/ResourceLinks";
+import { RpgErrorState, RpgSkeleton } from "@/components/feedback/RemoteState";
 import {
-	RpgErrorState,
-	RpgSkeleton,
-} from "../../components/feedback/RemoteState";
-import { PageHeader } from "../../components/navigation/PageHeader";
-import { queries } from "../../shared/api/queries";
-import { readRecentAccess } from "../../shared/lib/recent-access";
-import { resolveTheme } from "../themes/definitions";
+	RecentCampaigns,
+	RecentCharacters,
+} from "@/features/home/HomeRecentSections";
+import { resolveTheme } from "@/features/themes/definitions";
+import { queries } from "@/shared/api/queries";
+import { readRecentAccess } from "@/shared/lib/recent-access";
 
 export function HomePage() {
 	const campaigns = useQuery(queries.campaigns);
@@ -55,80 +54,88 @@ export function HomePage() {
 		);
 	return (
 		<>
-			<PageHeader
-				eyebrow="01 / Seu arquivo de histórias"
-				title="Seu próximo capítulo"
-				description="Retome uma investigação, dê vida a um personagem ou comece algo que ainda não tem nome."
-			/>
-			<section
-				className={
-					theme.decoration +
-					" relative mb-10 flex min-h-72 flex-col justify-between gap-8 bg-(--panel) p-7 md:p-10"
-				}
-			>
-				<div className="flex justify-between font-mono text-xs uppercase tracking-widest">
-					<span>{active?.name}</span>
-					<span aria-hidden="true">{theme.mark}</span>
-				</div>
-				<div className="max-w-lg">
-					<p className="mb-5 text-3xl leading-tight md:text-5xl">
-						Há histórias esperando
-						<br />
-						por você.
-					</p>
-					<div className="flex flex-wrap gap-3">
+			<header className="mb-8 border-b border-(--edge) pb-7">
+				<p className="text-sm text-(--accent)">
+					{active?.name ?? "Sistema não selecionado"}
+				</p>
+				<h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-5xl">
+					Sua mesa de jogo
+				</h2>
+				<p className="mt-3 max-w-xl text-sm leading-6 opacity-70">
+					{latestCampaigns.length}{" "}
+					{latestCampaigns.length === 1
+						? "campanha recente"
+						: "campanhas recentes"}{" "}
+					e {latestCharacters.length}{" "}
+					{latestCharacters.length === 1 ? "personagem" : "personagens"} à mão.
+				</p>
+			</header>
+
+			<div className="mb-12 grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+				<section
+					className={
+						theme.decoration +
+						" flex min-h-64 flex-col justify-between gap-8 bg-(--panel) p-7 md:p-9"
+					}
+				>
+					<div>
+						<p className="text-sm opacity-65">
+							{resumable ? "Último acesso" : "Comece por aqui"}
+						</p>
+						<h3 className="mt-3 max-w-2xl text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+							{resumable && recent
+								? recent.name
+								: "Crie a primeira campanha da sua mesa"}
+						</h3>
+					</div>
+					<Link
+						to={
+							resumable && recent
+								? `/${recent.kind}/${recent.id}`
+								: "/campaigns/new"
+						}
+						className="inline-flex min-h-11 w-fit items-center bg-(--accent) px-5 text-sm font-bold text-(--canvas) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--accent) active:translate-y-px"
+					>
+						{resumable ? "Continuar" : "Criar campanha"}
+					</Link>
+				</section>
+
+				<section
+					aria-labelledby="quick-actions-title"
+					className="border border-(--edge) p-6"
+				>
+					<h3 id="quick-actions-title" className="text-lg font-semibold">
+						Criar algo novo
+					</h3>
+					<div className="mt-5 grid gap-3">
 						<Link
 							to="/campaigns/new"
-							className="inline-flex min-h-11 items-center bg-(--accent) px-5 font-sans text-sm font-bold text-(--canvas)"
+							className="flex min-h-14 items-center justify-between border-b border-(--edge) py-3 hover:text-(--accent) focus-visible:outline-2 focus-visible:outline-(--accent)"
 						>
-							Nova campanha ↗
+							<span>Nova campanha</span>
+							<span aria-hidden="true">→</span>
 						</Link>
 						<Link
 							to="/characters/new"
-							className="inline-flex min-h-11 items-center border border-(--edge) px-5 font-sans text-sm"
+							className="flex min-h-14 items-center justify-between border-b border-(--edge) py-3 hover:text-(--accent) focus-visible:outline-2 focus-visible:outline-(--accent)"
 						>
-							Criar ficha
+							<span>Novo personagem</span>
+							<span aria-hidden="true">→</span>
 						</Link>
 					</div>
-				</div>
-			</section>
-			{resumable && recent && (
-				<p className="mb-8 border-l-2 border-(--accent) pl-4 text-sm">
-					Continuar de onde parou:{" "}
-					<Link to={`/${recent.kind}/${recent.id}`} className="underline">
-						{recent.name}
+					<Link
+						to="/systems"
+						className="mt-5 inline-flex min-h-11 items-center text-sm text-(--accent) underline underline-offset-4"
+					>
+						Trocar sistema
 					</Link>
-				</p>
-			)}
-			<div className="grid gap-10 xl:grid-cols-[1.2fr_1fr]">
-				<section>
-					<div className="flex justify-between gap-3">
-						<h3 className="text-xl">Campanhas recentes</h3>
-						<Link to="/campaigns" className="text-sm text-(--accent) underline">
-							Ver todas
-						</Link>
-					</div>
-					<ResourceLinks items={latestCampaigns} kind="campaigns" />
-				</section>
-				<section>
-					<div className="flex justify-between gap-3">
-						<h3 className="text-xl">Seus personagens</h3>
-						<Link
-							to="/characters"
-							className="text-sm text-(--accent) underline"
-						>
-							Ver todos
-						</Link>
-					</div>
-					<ResourceLinks items={latestCharacters} kind="characters" />
 				</section>
 			</div>
-			<Link
-				to="/systems"
-				className="mt-8 inline-block min-h-11 py-3 text-sm text-(--accent) underline"
-			>
-				Explorar outros sistemas →
-			</Link>
+
+			<div className="grid gap-10 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
+				<RecentCampaigns items={latestCampaigns} />
+				<RecentCharacters items={latestCharacters} />
+			</div>
 		</>
 	);
 }

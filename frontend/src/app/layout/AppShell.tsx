@@ -95,10 +95,6 @@ export function AppShell() {
 						>
 							<Outlet />
 						</AnimatedPage>
-						<footer className="mt-16 flex justify-between border-t border-(--edge) pt-5 font-mono text-[10px] uppercase tracking-widest opacity-60">
-							<span>Suas histórias começam aqui.</span>
-							<span>RPG / 0.1</span>
-						</footer>
 					</main>
 				</div>
 			</RpgVisualProvider>

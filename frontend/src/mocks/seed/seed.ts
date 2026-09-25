@@ -1,11 +1,30 @@
-import type { RpgSystem } from "../../shared/contracts/rpg-system";
-import { createOrdemInput } from "../factories/character";
+import type { RpgSystem } from "@/shared/contracts/rpg-system";
+import { createOrdemInput } from "@/mocks/factories/character";
+import {
+	dndId,
+	ordemId,
+	ownerId,
+	seedCampaignId,
+	seedCharacterId,
+	witcherId,
+} from "@/mocks/seed/identifiers";
+import {
+	characterAttackEntries,
+	characterInventoryEntries,
+	characterRitualEntries,
+	ordemAttackDefinitions,
+	ordemInventoryDefinitions,
+	ordemRitualDefinitions,
+} from "@/mocks/seed/ordem-content";
 
-export const ordemId = "1e9480ec-e177-4b33-90c7-ea576c87b9af";
-export const dndId = "d92e15b0-2475-4651-8082-cae231a4a6f0";
-export const witcherId = "f1a91d8e-114d-46e7-8dc0-0fd197adcba9";
-export const ownerId = "b9095a83-d2cc-4f27-bb23-4b642f2f1157";
-export const seedCampaignId = "f9f735f0-f83c-4835-aec5-4f8734f47f4d";
+export {
+	dndId,
+	ordemId,
+	ownerId,
+	seedCampaignId,
+	seedCharacterId,
+	witcherId,
+} from "@/mocks/seed/identifiers";
 export const systems: RpgSystem[] = [
 	{
 		id: ordemId,
@@ -45,7 +64,7 @@ export function createSeed() {
 		updatedAt: "2026-09-01T12:00:00.000Z",
 	};
 	return {
-		version: 1 as const,
+		version: 2 as const,
 		user: {
 			id: ownerId,
 			name: "Investigador",
@@ -73,10 +92,16 @@ export function createSeed() {
 			{
 				...createOrdemInput(ordemId, seedCampaignId),
 				...metadata,
-				id: "e85e3e7c-ab09-479d-924a-e81575526681",
+				id: seedCharacterId,
 				name: "Helena Vasconcelos",
 				background: "Um arquivo desaparecido levou Helena até Santa Aurora.",
 			},
 		],
+		inventoryDefinitions: ordemInventoryDefinitions,
+		ritualDefinitions: ordemRitualDefinitions,
+		attackDefinitions: ordemAttackDefinitions,
+		characterInventoryEntries,
+		characterRitualEntries,
+		characterAttackEntries,
 	};
 }

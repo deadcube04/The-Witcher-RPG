@@ -11,6 +11,17 @@ export type RollResult = {
 	total: number;
 	expression: string;
 };
+export function parseDiceExpression(expression: string): DiceInput | null {
+	const match = /^\s*(\d+)\s*d\s*(\d+)\s*([+-]\s*\d+)?\s*$/i.exec(expression);
+	if (!match) return null;
+	const candidate = {
+		quantity: Number(match[1]),
+		sides: Number(match[2]),
+		modifier: Number((match[3] ?? "0").replaceAll(" ", "")),
+	};
+	const parsed = diceInputSchema.safeParse(candidate);
+	return parsed.success ? parsed.data : null;
+}
 export function rollDice(
 	input: DiceInput,
 	random: () => number = Math.random,
@@ -29,7 +40,8 @@ export function rollDice(
 			quantity +
 			"D" +
 			sides +
-			(modifier >= 0 ? " + " : " − ") +
-			Math.abs(modifier),
+			(modifier === 0
+				? ""
+				: (modifier > 0 ? " + " : " − ") + Math.abs(modifier)),
 	};
 }

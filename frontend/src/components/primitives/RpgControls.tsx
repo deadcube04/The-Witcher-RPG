@@ -1,4 +1,4 @@
-import { Button, Input, InputNumber, Select } from "antd";
+import { Button, Checkbox, Input, InputNumber, Select } from "antd";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useId, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
@@ -319,5 +319,28 @@ export function RpgAttributeNumber({
 			variant="borderless"
 			className="w-16! bg-transparent! shadow-none! hover:bg-(--panel)! focus-within:bg-(--panel)! [&_input]:cursor-text! [&_input]:text-center! [&_input]:font-mono! [&_input]:text-2xl! [&_input]:font-semibold! [&_input]:text-(--accent)!"
 		/>
+	);
+}
+
+export function RpgCheckbox({
+	label,
+	checked,
+	onChange,
+	disabled,
+}: {
+	label: string;
+	checked: boolean;
+	onChange: (checked: boolean) => void;
+	disabled?: boolean;
+}) {
+	return (
+		<Checkbox
+			checked={checked}
+			disabled={disabled}
+			onChange={(event) => onChange(event.target.checked)}
+			className="text-(--ink)!"
+		>
+			{label}
+		</Checkbox>
 	);
 }

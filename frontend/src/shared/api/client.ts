@@ -1,5 +1,5 @@
 import type { ZodType } from "zod";
-import { apiErrorSchema, type ErrorCode } from "../contracts/api-error";
+import { apiErrorSchema, type ErrorCode } from "@/shared/contracts/api-error";
 
 const messages: Record<ErrorCode, string> = {
 	INVALID_REQUEST: "Confira os campos informados.",
@@ -8,6 +8,9 @@ const messages: Record<ErrorCode, string> = {
 	CHARACTER_NOT_FOUND: "Ficha não encontrada.",
 	RPG_SYSTEM_NOT_FOUND: "Sistema não encontrado.",
 	SYSTEM_MISMATCH: "A ficha e a campanha precisam usar o mesmo sistema.",
+	CONTENT_NOT_FOUND: "Este conteúdo não está mais disponível.",
+	CONTENT_IN_USE: "Este conteúdo ainda está em uso por uma ou mais fichas.",
+	CONTENT_ALREADY_ADDED: "Este conteúdo já foi adicionado à ficha.",
 	CONFLICT: "Esta alteração conflita com os dados existentes.",
 	INTERNAL_ERROR: "Não foi possível concluir a operação.",
 };

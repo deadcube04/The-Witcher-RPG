@@ -3,14 +3,14 @@ import { type ReactNode, useState } from "react";
 import type {
 	CharacterInput,
 	CharacterSheet,
-} from "../../shared/contracts/character-sheet";
-import { AutoSaveIndicator } from "./AutoSaveIndicator";
-import { CharacterDeleteAction } from "./CharacterDeleteAction";
-import { CharacterIdentity } from "./CharacterIdentity";
-import { CharacterPanels } from "./CharacterPanels";
-import { type CharacterSkill, createMockSkills } from "./character-skills";
-import { OrdemHeaderStats } from "./ordem/OrdemHeaderStats";
-import { useAutoSaveIndicator } from "./useAutoSaveIndicator";
+} from "@/shared/contracts/character-sheet";
+import { AutoSaveIndicator } from "@/features/characters/AutoSaveIndicator";
+import { CharacterDeleteAction } from "@/features/characters/CharacterDeleteAction";
+import { CharacterIdentity } from "@/features/characters/CharacterIdentity";
+import { CharacterPanels } from "@/features/characters/CharacterPanels";
+import { type CharacterSkill, createMockSkills } from "@/features/characters/character-skills";
+import { OrdemHeaderStats } from "@/features/characters/ordem/OrdemHeaderStats";
+import { useAutoSaveIndicator } from "@/features/characters/useAutoSaveIndicator";
 
 type Props = {
 	character: CharacterSheet;
@@ -105,6 +105,7 @@ export function EditableCharacterSheet({
 					)}
 					<CharacterPanels
 						character={draft}
+						characterId={character.id}
 						skills={skills}
 						onCharacterChange={updateDraft}
 						onSkillsChange={updateSkills}
