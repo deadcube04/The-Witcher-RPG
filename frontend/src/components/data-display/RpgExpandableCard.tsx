@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
-import { IoIosArrowDown } from "react-icons/io";
+import { PiCaretDownThin } from "react-icons/pi";
 
 export function RpgExpandableCard({
 	id,
@@ -52,7 +52,7 @@ export function RpgExpandableCard({
 						animate={{ rotate: expanded ? 180 : 0 }}
 						transition={{ duration: reduced ? 0 : 0.18 }}
 					>
-						<IoIosArrowDown aria-hidden="true" />
+						<PiCaretDownThin aria-hidden="true" />
 					</motion.span>
 				</button>
 			</div>
@@ -61,11 +61,11 @@ export function RpgExpandableCard({
 				{expanded && (
 					<motion.div
 						id={regionId}
-						initial={reduced ? false : { height: 0, opacity: 0 }}
-						animate={{ height: "auto", opacity: 1 }}
-						exit={reduced ? undefined : { height: 0, opacity: 0 }}
+						initial={reduced ? false : { opacity: 0, y: -8, scaleY: 0.98 }}
+						animate={{ opacity: 1, y: 0, scaleY: 1 }}
+						exit={reduced ? undefined : { opacity: 0, y: -8, scaleY: 0.98 }}
 						transition={{ duration: reduced ? 0 : 0.2 }}
-						className="overflow-hidden"
+						className="origin-top overflow-hidden"
 					>
 						<div className="space-y-4 border-t border-(--edge) p-4">
 							{children}

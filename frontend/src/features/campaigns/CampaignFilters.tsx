@@ -12,7 +12,7 @@ export function CampaignFilters({
 	onChange: (patch: Partial<ListFilters>) => void;
 }) {
 	return (
-		<div className="mb-8 grid gap-4 md:grid-cols-[2fr_1fr]">
+		<div className="mb-8 grid gap-4 rounded-2xl border border-(--edge)/60 bg-(--surface) p-4 md:grid-cols-[2fr_1fr] md:p-5">
 			<RpgInput
 				label="Buscar campanha"
 				value={filters.q}

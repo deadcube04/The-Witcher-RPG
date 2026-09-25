@@ -53,7 +53,7 @@ export function EditableCharacterSheet({
 	return (
 		<div className="font-sans">
 			<header className="sticky top-0 z-40 mb-4 min-w-0 bg-(--canvas)">
-				<div className="flex min-h-15 min-w-0 items-center justify-between gap-2 border-b border-(--edge)">
+				<div className="flex min-h-15 min-w-0 items-center justify-between gap-2 rounded-b-2xl border-b border-(--edge)/60 bg-(--canvas)/95 px-2 shadow-[0_16px_40px_var(--shadow)]">
 					<nav
 						aria-label="Caminho da ficha"
 						className="min-w-0 shrink-0 font-mono text-xs uppercase tracking-[0.24em] text-(--accent)"
@@ -86,7 +86,7 @@ export function EditableCharacterSheet({
 				</div>
 			</header>
 			<div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(240px,300px)_minmax(0,1fr)]">
-				<div className="min-w-0 xl:border-r xl:border-(--edge) xl:pr-7">
+				<div className="min-w-0 rounded-3xl border border-(--edge)/60 bg-(--surface)/55 p-5 xl:sticky xl:top-20 xl:h-fit xl:p-6">
 					<CharacterIdentity
 						character={draft}
 						systemName={systemName}

@@ -1,22 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "motion/react";
 import type { FocusEventHandler, MouseEventHandler } from "react";
 import {
-	GiCrossedSwords,
-	GiDiceTwentyFacesTwenty,
-	GiHoodedFigure,
-	GiScrollUnfurled,
-	GiSpellBook,
-} from "react-icons/gi";
-import { LuSettings } from "react-icons/lu";
+	PiArchiveThin,
+	PiBooksThin,
+	PiGearThin,
+	PiHouseLineThin,
+	PiScrollThin,
+	PiSwordThin,
+	PiUserCircleThin,
+} from "react-icons/pi";
 
 const navigation = [
-	{ to: "/", label: "Início", Icon: GiDiceTwentyFacesTwenty },
-	{ to: "/campaigns", label: "Campanhas", Icon: GiCrossedSwords },
-	{ to: "/characters", label: "Fichas", Icon: GiScrollUnfurled },
-	{ to: "/systems", label: "Sistemas", Icon: GiSpellBook },
-	{ to: "/settings", label: "Configurações", Icon: LuSettings },
-];
+	{ to: "/", label: "Início", Icon: PiHouseLineThin },
+	{ to: "/campaigns", label: "Campanhas", Icon: PiSwordThin },
+	{ to: "/characters", label: "Fichas", Icon: PiScrollThin },
+	{ to: "/systems", label: "Sistemas", Icon: PiBooksThin },
+	{ to: "/settings", label: "Configurações", Icon: PiGearThin },
+] as const;
+
 type Props = {
 	collapsed: boolean;
 	onMouseEnter: MouseEventHandler<HTMLElement>;
@@ -27,114 +28,57 @@ type Props = {
 	userName?: string;
 	avatarUrl?: string | null;
 };
-export function AppSidebar({
-	collapsed,
-	onMouseEnter,
-	onMouseLeave,
-	onFocus,
-	onBlur,
-	systemName,
-	userName,
-	avatarUrl,
-}: Props) {
-	const reduced = useReducedMotion();
+
+function NavigationLink({ to, label, Icon, collapsed }: (typeof navigation)[number] & { collapsed: boolean }) {
 	return (
-		<motion.aside
-			aria-label="Menu da aplicação"
-			onMouseEnter={onMouseEnter}
-			onMouseLeave={onMouseLeave}
-			onFocus={onFocus}
-			onBlur={onBlur}
-			initial={false}
-			animate={{ width: collapsed ? 72 : 248 }}
-			transition={{ duration: reduced ? 0 : 0.22, ease: "easeInOut" }}
-			className="fixed inset-y-0 left-0 z-40 flex h-dvh flex-col overflow-hidden border-r border-(--edge) bg-(--panel) shadow-xl"
+		<Link
+			to={to}
+			aria-label={label}
+			title={collapsed ? label : undefined}
+			activeOptions={{ exact: to === "/" }}
+			className={`group flex min-h-12 items-center gap-3 rounded-2xl text-sm text-(--muted) transition-[color,background-color,transform] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white/5 hover:text-(--ink) active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-(--accent) ${collapsed ? "justify-center" : "px-3"}`}
+			activeProps={{ className: "bg-(--accent)! text-(--canvas)! shadow-[0_10px_30px_color-mix(in_srgb,var(--accent)_22%,transparent)]", "aria-current": "page" }}
 		>
-			<div className="flex min-h-24 items-center gap-3 border-b border-(--edge) px-3">
-				<Link
-					to="/"
-					aria-label="RPG Manager — início"
-					className="flex min-h-11 min-w-0 items-center gap-3 text-(--accent) focus-visible:outline-2"
-				>
-					<GiDiceTwentyFacesTwenty
-						aria-hidden="true"
-						className="size-11 shrink-0"
-					/>
-					<div className={collapsed ? "sr-only" : ""}>
-						<h1 className="font-serif text-xl font-semibold text-(--ink)">
-							RPG Manager
-						</h1>
-						<p className="mt-1 text-[10px] uppercase tracking-[0.2em]">
-							Arquivo de aventuras
-						</p>
-					</div>
-				</Link>
-			</div>
-			<nav
-				id="main-navigation"
-				aria-label="Navegação principal"
-				className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-6"
+			<Icon aria-hidden="true" className="size-5 shrink-0" />
+			{!collapsed && <span className="truncate">{label}</span>}
+		</Link>
+	);
+}
+
+export function AppSidebar({ collapsed, onMouseEnter, onMouseLeave, onFocus, onBlur, systemName, userName, avatarUrl }: Props) {
+	return (
+		<>
+			<aside
+				aria-label="Menu da aplicação"
+				onMouseEnter={onMouseEnter}
+				onMouseLeave={onMouseLeave}
+				onFocus={onFocus}
+				onBlur={onBlur}
+				className={`fixed inset-y-4 left-4 z-40 hidden flex-col overflow-hidden rounded-3xl border border-white/8 bg-(--surface)/96 p-2 shadow-[0_24px_80px_var(--shadow)] md:flex ${collapsed ? "w-[76px]" : "w-[248px]"}`}
 			>
+				<Link to="/" aria-label="RPG Manager — início" className={`flex min-h-15 items-center gap-3 rounded-2xl px-3 text-(--accent) focus-visible:outline-2 ${collapsed ? "justify-center px-0" : ""}`}>
+					<PiArchiveThin aria-hidden="true" className="size-7 shrink-0" />
+					{!collapsed && <div className="min-w-0"><p className="truncate font-serif text-xl text-(--ink)">RPG Manager</p><p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-[0.2em] text-(--muted)">Arquivo de aventuras</p></div>}
+				</Link>
+				<nav className="mt-6 min-h-0 flex-1 space-y-2 overflow-y-auto">
+					{navigation.map((item) => <NavigationLink key={item.to} {...item} collapsed={collapsed} />)}
+				</nav>
+				<div className="space-y-2 border-t border-(--edge)/60 pt-3">
+					{!collapsed && <p className="px-3 py-2 font-mono text-[9px] uppercase tracking-[0.2em] text-(--muted)">{systemName ?? "Selecionando universo…"}</p>}
+					<Link to="/settings/profile" aria-label={userName ?? "Seu perfil"} className={`flex min-h-12 items-center gap-3 rounded-2xl text-sm hover:bg-white/5 focus-visible:outline-2 ${collapsed ? "justify-center" : "px-2"}`}>
+						{avatarUrl ? <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="size-9 rounded-xl object-cover ring-1 ring-(--edge)" /> : <PiUserCircleThin aria-hidden="true" className="size-8 text-(--accent)" />}
+						{!collapsed && <span className="truncate">{userName ?? "Seu perfil"}</span>}
+					</Link>
+				</div>
+			</aside>
+
+			<nav aria-label="Navegação principal" className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-white/10 bg-(--surface)/96 p-1.5 shadow-[0_20px_60px_var(--shadow)] md:hidden">
 				{navigation.map(({ to, label, Icon }) => (
-					<Link
-						key={to}
-						to={to}
-						aria-label={label}
-						title={collapsed ? label : undefined}
-						activeOptions={{ exact: to === "/" }}
-						className={
-							"flex min-h-11 items-center gap-3 rounded-sm border border-transparent text-sm text-(--ink) hover:border-(--edge) hover:bg-(--canvas) focus-visible:outline-2 focus-visible:outline-(--accent) " +
-							(collapsed ? "justify-center" : "px-3")
-						}
-						activeProps={{
-							className:
-								"border-(--edge)! bg-(--canvas) font-semibold text-(--accent)!",
-							"aria-current": "page",
-						}}
-					>
-						<Icon aria-hidden="true" className="size-5 shrink-0" />
-						{!collapsed && <span>{label}</span>}
+					<Link key={to} to={to} aria-label={label} activeOptions={{ exact: to === "/" }} className="grid min-h-12 place-items-center rounded-xl text-(--muted) focus-visible:outline-2" activeProps={{ className: "bg-(--accent)! text-(--canvas)!", "aria-current": "page" }}>
+						<Icon aria-hidden="true" className="size-5" />
 					</Link>
 				))}
 			</nav>
-			<div className="space-y-4 border-t border-(--edge) px-3 py-4">
-				{!collapsed && (
-					<div className="px-3">
-						<p className="text-[10px] uppercase tracking-[0.2em] opacity-60">
-							Universo atual
-						</p>
-						<p className="mt-2 text-sm text-(--accent)">
-							{systemName ?? "Selecionando universo…"}
-						</p>
-					</div>
-				)}
-				<Link
-					to="/settings/profile"
-					aria-label={userName ?? "Seu perfil"}
-					title={collapsed ? (userName ?? "Seu perfil") : undefined}
-					className={
-						"flex min-h-11 items-center gap-3 rounded-sm text-sm hover:bg-(--canvas) focus-visible:outline-2 focus-visible:outline-(--accent) " +
-						(collapsed ? "justify-center" : "px-2")
-					}
-				>
-					{avatarUrl ? (
-						<img
-							src={avatarUrl}
-							alt=""
-							referrerPolicy="no-referrer"
-							className="size-9 shrink-0 rounded-sm border border-(--edge) object-cover"
-						/>
-					) : (
-						<GiHoodedFigure
-							aria-hidden="true"
-							className="size-9 shrink-0 text-(--accent)"
-						/>
-					)}
-					{!collapsed && (
-						<span className="truncate">{userName ?? "Seu perfil"}</span>
-					)}
-				</Link>
-			</div>
-		</motion.aside>
+		</>
 	);
 }

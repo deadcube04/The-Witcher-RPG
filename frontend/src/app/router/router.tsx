@@ -57,20 +57,22 @@ const AppearancePage = lazyRouteComponent(
 const rootRoute = createRootRoute({
 	component: AppShell,
 	notFoundComponent: () => (
-		<section className="space-y-5">
-			<h2 className="text-3xl">Página não encontrada</h2>
-			<p>Este endereço não corresponde a um recurso válido.</p>
-			<Link to="/" className="inline-block py-3 text-(--accent) underline">
+		<section className="grid min-h-[60dvh] place-items-center rounded-3xl border border-dashed border-(--edge) bg-(--surface)/50 p-8 text-center">
+			<div><p className="font-mono text-[10px] uppercase tracking-[0.22em] text-(--accent)">Registro / 404</p><h2 className="mt-4 font-serif text-5xl">Página não encontrada</h2>
+			<p className="mt-4 text-(--muted)">Este endereço não corresponde a um recurso válido.</p>
+			<Link to="/" className="mt-7 inline-flex min-h-11 items-center rounded-full bg-(--accent) px-6 font-semibold text-(--canvas)">
 				Voltar para o início
 			</Link>
+			</div>
 		</section>
 	),
 	errorComponent: ({ reset }) => (
-		<section role="alert" className="space-y-5">
-			<h2 className="text-3xl">Não foi possível abrir esta página</h2>
-			<button type="button" onClick={reset} className="underline">
+		<section role="alert" className="grid min-h-[60dvh] place-items-center rounded-3xl border border-(--edge) bg-(--surface) p-8 text-center">
+			<div><p className="font-mono text-[10px] uppercase tracking-[0.22em] text-(--danger)">Interferência detectada</p><h2 className="mt-4 font-serif text-5xl">Não foi possível abrir esta página</h2>
+			<button type="button" onClick={reset} className="mt-7 min-h-11 rounded-full bg-(--accent) px-6 font-semibold text-(--canvas)">
 				Tentar novamente
 			</button>
+			</div>
 		</section>
 	),
 });

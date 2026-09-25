@@ -13,10 +13,10 @@ export function AnimatedPage({
 	const reduced = useReducedMotion();
 	return (
 		<motion.div
-			initial={reduced ? false : { opacity: 0, y: offset }}
+			initial={reduced ? false : { opacity: 0, y: Math.max(offset, 20) }}
 			animate={{ opacity: 1, y: 0 }}
 			exit={reduced ? undefined : { opacity: 0 }}
-			transition={{ duration: reduced ? 0 : duration }}
+			transition={{ duration: reduced ? 0 : Math.max(duration, 0.48), ease: [0.32, 0.72, 0, 1] }}
 		>
 			{children}
 		</motion.div>

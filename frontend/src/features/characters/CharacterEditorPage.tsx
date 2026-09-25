@@ -13,6 +13,8 @@ import { createCharacterInput } from "../../shared/contracts/defaults";
 import { useListFilters } from "../../shared/hooks/useListFilters";
 import { CharacterForm } from "./CharacterForm";
 import { characterSheetRegistry } from "./registry";
+import { ArchiveEyebrow, ArchivePanel } from "@/components/layout/ArchiveSurface";
+import { PiUserCircleThin } from "react-icons/pi";
 
 export function CharacterEditorPage() {
 	const { characterId = "" } = useParams({ strict: false });
@@ -102,7 +104,8 @@ export function CharacterEditorPage() {
 				eyebrow="Fichas / Registro"
 				title={characterId ? "Editar personagem" : "Dê vida a um personagem"}
 			/>
-			<CharacterForm
+			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
+			<ArchivePanel className="p-5 md:p-8" label="Dados do personagem"><CharacterForm
 				initial={initial}
 				campaigns={campaigns.data}
 				systems={systems.data}
@@ -115,7 +118,9 @@ export function CharacterEditorPage() {
 						.catch(() => undefined);
 					if (saved) await navigate({ to: `/characters/${saved.id}` });
 				}}
-			/>
+			/></ArchivePanel>
+			<aside className="rounded-3xl border border-(--edge)/60 bg-(--surface) p-6 xl:sticky xl:top-24"><ArchiveEyebrow>Resumo da ficha</ArchiveEyebrow><div className="my-8 grid place-items-center"><div className="grid size-36 place-items-center rounded-full border border-(--accent)/40 bg-(--canvas)"><PiUserCircleThin aria-hidden="true" className="size-20 text-(--accent)" /></div></div><p className="font-serif text-3xl leading-none">{initial.name || "Personagem sem nome"}</p><p className="mt-3 text-sm text-(--muted)">{system.name}</p><p className="mt-6 border-t border-(--edge)/60 pt-5 text-xs leading-6 text-(--muted)">Identidade, regras e narrativa permanecem em uma única página contínua.</p></aside>
+			</div>
 		</>
 	);
 }

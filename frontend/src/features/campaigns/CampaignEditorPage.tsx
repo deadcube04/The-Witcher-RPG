@@ -9,6 +9,8 @@ import { campaignApi } from "../../shared/api/domains";
 import { keys, queries, useDomainMutation } from "../../shared/api/queries";
 import type { CampaignInput } from "../../shared/contracts/campaign";
 import { CampaignForm } from "./CampaignForm";
+import { ArchiveEyebrow, ArchivePanel, MediaFrame } from "@/components/layout/ArchiveSurface";
+import { systemArt } from "@/shared/lib/system-art";
 
 export function CampaignEditorPage() {
 	const { campaignId = "" } = useParams({ strict: false });
@@ -77,8 +79,8 @@ export function CampaignEditorPage() {
 				eyebrow="Campanhas / Registro"
 				title={campaignId ? "Editar campanha" : "Uma nova história"}
 			/>
-			<div className="max-w-3xl">
-				<CampaignForm
+			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+				<ArchivePanel className="p-5 md:p-8" label="Dados da campanha"><CampaignForm
 					initial={initial}
 					systems={systems.data}
 					pending={mutation.isPending}
@@ -92,7 +94,11 @@ export function CampaignEditorPage() {
 							.catch(() => undefined);
 						if (saved) await navigate({ to: `/campaigns/${saved.id}` });
 					}}
-				/>
+				/></ArchivePanel>
+				<div className="space-y-4 xl:sticky xl:top-24">
+					<MediaFrame src={systemArt(systems.data.find((entry) => entry.id === initial.systemId)?.slug)} alt="Prévia visual do dossier" className="min-h-64"><div className="flex min-h-64 flex-col justify-between p-6"><ArchiveEyebrow>Prévia do dossier</ArchiveEyebrow><p className="font-serif text-3xl leading-none text-white">{initial.name || "Uma história sem título"}</p></div></MediaFrame>
+					<p className="px-2 text-xs leading-6 text-(--muted)">A imagem representa o universo selecionado. Nenhum campo de mídia é necessário.</p>
+				</div>
 			</div>
 		</>
 	);

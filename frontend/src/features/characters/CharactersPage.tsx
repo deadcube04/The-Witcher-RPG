@@ -46,10 +46,11 @@ export function CharactersPage() {
 			<PageHeader
 				eyebrow="03 / fichas"
 				title="Quem vive a história"
+				description="Identidades, vínculos e documentos ativos de cada universo."
 				actions={
 					<Link
 						to="/characters/new"
-						className="bg-(--accent) px-5 py-3 text-sm font-bold text-(--canvas)"
+						className="inline-flex min-h-12 items-center rounded-full bg-(--accent) px-6 text-sm font-bold text-(--canvas) active:scale-[0.98]"
 					>
 						Nova ficha
 					</Link>

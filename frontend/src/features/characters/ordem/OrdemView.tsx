@@ -1,21 +1,21 @@
 import {
-	GiAura,
-	GiBiceps,
-	GiBrain,
-	GiHeartShield,
-	GiSprint,
-} from "react-icons/gi";
+	PiBrainThin,
+	PiHeartbeatThin,
+	PiLightningThin,
+	PiPersonSimpleRunThin,
+	PiPersonSimpleThrowThin,
+} from "react-icons/pi";
 import { RpgResourceBar } from "../../../components/data-display/RpgResourceBar";
 import { RpgAttributeNumber } from "../../../components/primitives/RpgControls";
 import type { CharacterInput } from "../../../shared/contracts/character-sheet";
 import { attributeFields } from "./fields";
 
 const attributeIcons = {
-	agility: GiSprint,
-	strength: GiBiceps,
-	intellect: GiBrain,
-	presence: GiAura,
-	vigor: GiHeartShield,
+	agility: PiPersonSimpleRunThin,
+	strength: PiPersonSimpleThrowThin,
+	intellect: PiBrainThin,
+	presence: PiLightningThin,
+	vigor: PiHeartbeatThin,
 };
 const resourceFields = [
 	{ key: "health", label: "Vida" },

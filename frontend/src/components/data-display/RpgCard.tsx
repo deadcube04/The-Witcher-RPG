@@ -11,7 +11,7 @@ export function RpgCard({
 	return (
 		<Card
 			className={
-				"h-full! rounded-sm! border-(--edge)! bg-(--panel)! text-(--ink)! shadow-none! " +
+				"h-full! rounded-2xl! border-(--edge)! bg-(--surface)! text-(--ink)! shadow-[0_22px_70px_var(--shadow)]! " +
 				className
 			}
 		>

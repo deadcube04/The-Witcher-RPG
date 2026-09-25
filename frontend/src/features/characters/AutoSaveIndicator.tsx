@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { LuCloud, LuCloudUpload } from "react-icons/lu";
+import { PiCloudArrowUpThin, PiCloudCheckThin } from "react-icons/pi";
 import type { AutoSaveStatus } from "./useAutoSaveIndicator";
 
 const labels: Record<AutoSaveStatus, string> = {
@@ -10,7 +10,7 @@ const labels: Record<AutoSaveStatus, string> = {
 export function AutoSaveIndicator({ status }: { status: AutoSaveStatus }) {
 	const reduced = useReducedMotion();
 	const label = labels[status];
-	const Icon = status === "saved" ? LuCloud : LuCloudUpload;
+	const Icon = status === "saved" ? PiCloudCheckThin : PiCloudArrowUpThin;
 	return (
 		<div
 			role="status"

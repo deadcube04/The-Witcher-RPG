@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { IconType } from "react-icons";
 import {
-	GiAllSeeingEye,
-	GiBlood,
-	GiElectric,
-	GiGhost,
-	GiSpiralShell,
-} from "react-icons/gi";
+	PiDropThin,
+	PiEyeThin,
+	PiGhostThin,
+	PiLightningThin,
+	PiSpiralThin,
+} from "react-icons/pi";
 import { RpgExpandableCard } from "@/components/data-display/RpgExpandableCard";
 import { RpgStatChip } from "@/components/data-display/RpgStatChip";
 import { RpgButton, RpgInput } from "@/components/primitives/RpgControls";
@@ -23,31 +23,31 @@ const elementDetails: Record<
 > = {
 	blood: {
 		label: "Sangue",
-		icon: GiBlood,
+		icon: PiDropThin,
 		classes:
 			"border-red-500/60 bg-[radial-gradient(circle_at_left,#7f1d1d_0%,#231013_55%,#0b0b0d_100%)] [--accent:#ff7167]",
 	},
 	death: {
 		label: "Morte",
-		icon: GiSpiralShell,
+		icon: PiSpiralThin,
 		classes:
 			"border-stone-400/60 bg-[repeating-radial-gradient(circle_at_left,#57534e_0px,#292524_18px,#0c0a09_36px)] [--accent:#e7e0c3]",
 	},
 	knowledge: {
 		label: "Conhecimento",
-		icon: GiAllSeeingEye,
+		icon: PiEyeThin,
 		classes:
 			"border-amber-400/60 bg-[linear-gradient(120deg,#713f12_0%,#29200e_45%,#0b0b0d_100%)] [--accent:#f7cc63]",
 	},
 	energy: {
 		label: "Energia",
-		icon: GiElectric,
+		icon: PiLightningThin,
 		classes:
 			"border-fuchsia-500/60 bg-[linear-gradient(135deg,#581c87_0%,#25103a_48%,#08070a_100%)] [--accent:#d88cff]",
 	},
 	fear: {
 		label: "Medo",
-		icon: GiGhost,
+		icon: PiGhostThin,
 		classes:
 			"border-slate-200/50 bg-[radial-gradient(ellipse_at_top,#475569_0%,#17181d_45%,#050506_100%)] [--accent:#f1f0ed]",
 	},

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GiCrossedSwords } from "react-icons/gi";
+import { PiSwordThin } from "react-icons/pi";
 import { RpgExpandableCard } from "@/components/data-display/RpgExpandableCard";
 import { RpgStatChip } from "@/components/data-display/RpgStatChip";
 import { RpgButton, RpgInput } from "@/components/primitives/RpgControls";
@@ -32,7 +32,7 @@ export function AttackCard({
 			id={`attack-${attack.entry.id}`}
 			expanded={expanded}
 			onToggle={onToggle}
-			leading={<GiCrossedSwords aria-hidden="true" />}
+			leading={<PiSwordThin aria-hidden="true" />}
 			title={definition.name}
 			subtitle={`${attack.sourceInventory?.name ?? "Ataque independente"} · ${definition.source.kind === "official" ? "Oficial" : "Homebrew"}`}
 			summary={

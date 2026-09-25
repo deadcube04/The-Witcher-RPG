@@ -15,7 +15,7 @@ export function CharacterFilters({
 	onChange: (patch: Partial<ListFilters>) => void;
 }) {
 	return (
-		<div className="mb-8 grid gap-4 md:grid-cols-3">
+		<div className="mb-8 grid gap-4 rounded-2xl border border-(--edge)/60 bg-(--surface) p-4 md:grid-cols-3 md:p-5">
 			<RpgInput
 				label="Buscar ficha"
 				value={filters.q}

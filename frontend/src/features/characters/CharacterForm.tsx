@@ -53,7 +53,7 @@ export function CharacterForm({
 	});
 	return (
 		<RpgForm onSubmit={() => form.handleSubmit()}>
-			<section className="space-y-6">
+			<section className="space-y-6 rounded-2xl border border-(--edge)/60 bg-(--canvas)/35 p-5 md:p-6">
 				<h3 className="border-b border-(--edge) pb-3 text-xl">
 					01 / Identidade
 				</h3>
@@ -126,7 +126,7 @@ export function CharacterForm({
 					);
 				}}
 			</form.Field>
-			<section className="space-y-5">
+			<section className="space-y-5 rounded-2xl border border-(--edge)/60 bg-(--canvas)/35 p-5 md:p-6">
 				<h3 className="border-b border-(--edge) pb-3 text-xl">
 					História do personagem
 				</h3>

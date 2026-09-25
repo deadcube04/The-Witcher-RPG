@@ -1,9 +1,4 @@
-import {
-	GiBackpack,
-	GiCrossedSwords,
-	GiDiceTwentyFacesTwenty,
-	GiSpellBook,
-} from "react-icons/gi";
+import { PiBackpackThin, PiDiceFiveThin, PiMagicWandThin, PiSwordThin } from "react-icons/pi";
 import { RpgSheetDrawers } from "@/components/navigation/RpgSheetDrawers";
 import type { CharacterInput } from "@/shared/contracts/character-sheet";
 import { DiceRoller } from "@/features/dice/DiceRoller";
@@ -39,25 +34,25 @@ export function CharacterPanels({
 						{
 							key: "inventory",
 							label: "Inventário",
-							icon: <GiBackpack aria-hidden="true" />,
+							icon: <PiBackpackThin aria-hidden="true" />,
 							children: ordem ? <InventoryPanel characterId={characterId} /> : <UnavailablePanel name="Inventário" />,
 						},
 						{
 							key: "rituals",
 							label: "Rituais",
-							icon: <GiSpellBook aria-hidden="true" />,
+							icon: <PiMagicWandThin aria-hidden="true" />,
 							children: ordem ? <RitualsPanel characterId={characterId} /> : <UnavailablePanel name="Rituais" />,
 						},
 						{
 							key: "attacks",
 							label: "Ataques",
-							icon: <GiCrossedSwords aria-hidden="true" />,
+							icon: <PiSwordThin aria-hidden="true" />,
 							children: ordem ? <AttacksPanel characterId={characterId} /> : <UnavailablePanel name="Ataques" />,
 						},
 						{
 							key: "dice",
 							label: "Dados",
-							icon: <GiDiceTwentyFacesTwenty aria-hidden="true" />,
+							icon: <PiDiceFiveThin aria-hidden="true" />,
 							children: <DiceRoller />,
 						},
 					]}

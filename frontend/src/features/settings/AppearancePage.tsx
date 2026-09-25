@@ -12,6 +12,8 @@ import { preferencesApi } from "../../shared/api/domains";
 import { keys, queries, useDomainMutation } from "../../shared/api/queries";
 import { defaultTheme, themes } from "../themes/definitions";
 import { useThemeMutation } from "../themes/useThemeMutation";
+import { ArchiveEyebrow, ArchivePanel } from "@/components/layout/ArchiveSurface";
+import { archiveArt } from "@/shared/lib/system-art";
 
 export function AppearancePage() {
 	const preferences = useQuery(queries.preferences);
@@ -49,7 +51,7 @@ export function AppearancePage() {
 				title="A atmosfera da sua história"
 				description="Escolha um elemento. Cada tema transforma a linguagem do seu arquivo."
 			/>
-			<section className="mb-6 max-w-xl space-y-4 border border-(--edge) bg-(--panel) p-5">
+			<ArchivePanel className="mb-8 max-w-2xl space-y-4 p-5 md:p-7">
 				<div>
 					<h2 className="text-xl font-semibold">Sidebar</h2>
 					<p className="mt-2 text-sm opacity-75">
@@ -82,7 +84,7 @@ export function AppearancePage() {
 					error={sidebarMutation.error}
 					success={sidebarMutation.isSuccess}
 				/>
-			</section>
+			</ArchivePanel>
 			<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 				{themeChoices.map((theme) => {
 					const activeThemeId = theme.id === "neutral" ? null : theme.id;
@@ -90,22 +92,17 @@ export function AppearancePage() {
 					return (
 						<section
 							key={theme.id}
-							className={`${theme.classes} flex flex-col bg-(--canvas) p-5 text-(--ink)`}
+							className={`${theme.classes} flex flex-col overflow-hidden rounded-3xl border border-(--edge)/70 bg-(--canvas) p-2 text-(--ink) shadow-[0_22px_70px_var(--shadow)] ${active ? "md:col-span-2 xl:col-span-2" : ""}`}
 						>
 							<div
-								aria-hidden="true"
-								className={
-									theme.decoration +
-									" mb-6 flex min-h-40 flex-col justify-between p-5"
-								}
+								className="relative mb-2 min-h-48 overflow-hidden rounded-[1.15rem]"
 							>
-								<span className="font-mono text-[10px] tracking-widest">
-									{theme.mark}
-								</span>
-								<span className="text-3xl">O outro lado.</span>
+								<img src={archiveArt.ordem} alt="" loading="lazy" className="absolute inset-0 size-full object-cover opacity-55 mix-blend-luminosity" />
+								<div className={`absolute inset-0 ${theme.decoration}`} />
+								<div className="relative flex min-h-48 flex-col justify-between p-5"><span className="font-mono text-[10px] tracking-widest">{theme.mark}</span><span className="font-serif text-3xl">O outro lado.</span></div>
 							</div>
-							<h3 className="text-2xl">{theme.name}</h3>
-							<p className="my-4 grow text-sm leading-6 opacity-80">
+							<div className="flex grow flex-col p-4"><ArchiveEyebrow>{active ? "Tema ativo" : "Atmosfera disponível"}</ArchiveEyebrow><h3 className="mt-2 font-serif text-3xl">{theme.name}</h3>
+							<p className="my-4 grow text-sm leading-6 text-(--muted)">
 								{theme.description}
 							</p>
 							<RpgVisualProvider theme={theme}>
@@ -116,6 +113,7 @@ export function AppearancePage() {
 									{active ? `${theme.name} ativo` : `Aplicar ${theme.name}`}
 								</RpgButton>
 							</RpgVisualProvider>
+							</div>
 						</section>
 					);
 				})}

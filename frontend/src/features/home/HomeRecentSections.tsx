@@ -34,7 +34,7 @@ function EmptyRecent({ kind }: { kind: "campaigns" | "characters" }) {
 
 export function RecentCampaigns({ items }: { items: readonly RecentItem[] }) {
 	return (
-		<section aria-labelledby="recent-campaigns-title">
+		<section aria-labelledby="recent-campaigns-title" className="rounded-2xl border border-(--edge)/60 bg-(--surface) p-6 md:p-8">
 			<div className="flex items-baseline justify-between gap-4 border-b border-(--edge) pb-4">
 				<h3
 					id="recent-campaigns-title"
@@ -83,7 +83,7 @@ export function RecentCharacters({ items }: { items: readonly RecentItem[] }) {
 	return (
 		<section
 			aria-labelledby="recent-characters-title"
-			className="bg-(--panel) p-6 md:p-7"
+			className="rounded-2xl border border-(--edge)/60 bg-(--surface-raised) p-6 md:p-8 shadow-[0_22px_70px_var(--shadow)]"
 		>
 			<div className="flex items-baseline justify-between gap-4">
 				<h3

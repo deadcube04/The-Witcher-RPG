@@ -129,10 +129,10 @@ export function RpgResourceBar({
 						<motion.div
 							role="status"
 							aria-label={`${label}: ${temporaryAmount} pontos temporários`}
-							className={`flex h-5 items-center justify-center overflow-hidden text-[0.625rem] font-bold tracking-wider text-white ${temporaryColors[tone]}`}
-							initial={reduced ? false : { height: 0, opacity: 0 }}
-							animate={{ height: 20, opacity: 1 }}
-							exit={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+							className={`flex h-5 origin-top items-center justify-center overflow-hidden text-[0.625rem] font-bold tracking-wider text-white ${temporaryColors[tone]}`}
+							initial={reduced ? false : { scaleY: 0, opacity: 0 }}
+							animate={{ scaleY: 1, opacity: 1 }}
+							exit={reduced ? { opacity: 0 } : { scaleY: 0, opacity: 0 }}
 							transition={reduced ? { duration: 0 } : { duration: 0.18 }}
 						>
 							<span aria-hidden="true" className="tabular-nums">

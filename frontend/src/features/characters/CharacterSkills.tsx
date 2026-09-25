@@ -1,4 +1,4 @@
-import { GiDiceTwentyFacesTwenty } from "react-icons/gi";
+import { PiDiceFiveThin } from "react-icons/pi";
 import {
 	RpgInlineNumber,
 	RpgInlineSelect,
@@ -30,12 +30,12 @@ export function CharacterSkills({
 	return (
 		<section
 			aria-label="Perícias"
-			className="min-h-[560px] rounded-3xl border border-(--edge) bg-(--panel) p-5 md:p-7"
+			className="min-h-[560px] rounded-3xl border border-(--edge)/60 bg-(--surface) p-5 shadow-[0_24px_80px_var(--shadow)] md:p-7"
 		>
 			<h3 className="mb-5 border-b border-(--edge) pb-4 text-xl font-semibold">
 				Perícias
 			</h3>
-			<div className="overflow-x-auto rounded-xl border border-(--edge)">
+			<div className="overflow-x-auto rounded-2xl border border-(--edge)/60">
 				<table className="w-full min-w-[680px] text-center text-sm">
 					<thead className="border-b border-(--edge) bg-(--canvas) text-xs uppercase tracking-wider opacity-75">
 						<tr>
@@ -63,7 +63,7 @@ export function CharacterSkills({
 								<tr key={skill.id} className="bg-(--panel)">
 									<th scope="row" className="px-4 py-3 font-normal">
 										<span className="mx-auto grid w-full max-w-56 grid-cols-[1.25rem_1fr] items-center gap-3 text-left">
-											<GiDiceTwentyFacesTwenty
+											<PiDiceFiveThin
 												aria-hidden="true"
 												className="size-5 shrink-0 text-(--accent)"
 											/>

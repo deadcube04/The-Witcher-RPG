@@ -44,7 +44,7 @@ export function RpgSheetDrawers({ items }: { items: SheetDrawer[] }) {
 					))}
 				</div>
 			) : (
-				<div className="pointer-events-auto absolute inset-y-0 right-0 grid w-[clamp(72px,7vw,112px)] grid-rows-[repeat(4,minmax(0,1fr))] gap-4">
+				<div className="pointer-events-auto absolute inset-y-0 right-0 grid w-[clamp(72px,7vw,104px)] grid-rows-[repeat(4,minmax(0,1fr))] gap-3">
 					{items.map((item) => (
 						<button
 							key={item.key}
@@ -52,7 +52,7 @@ export function RpgSheetDrawers({ items }: { items: SheetDrawer[] }) {
 							aria-label={`Abrir ${item.label}`}
 							aria-expanded={false}
 							onClick={() => setActiveKey(item.key)}
-							className="grid h-full w-full place-items-center rounded-l-3xl border border-r-0 border-(--edge) bg-(--panel) text-3xl text-(--ink) shadow-xl hover:text-(--accent) focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-(--accent) md:text-4xl"
+							className="grid h-full w-full place-items-center rounded-l-3xl border border-r-0 border-(--edge)/60 bg-(--surface) text-3xl text-(--muted) shadow-[0_18px_50px_var(--shadow)] transition-colors duration-500 hover:text-(--accent) focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-(--accent) md:text-4xl"
 						>
 							{item.icon}
 							<span className="sr-only">{item.label}</span>

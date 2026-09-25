@@ -11,10 +11,14 @@ export type ThemeDefinition = {
 	offset: number;
 	palette: {
 		accent: string;
-		background: string;
-		panel: string;
+		canvas: string;
+		surface: string;
+		surfaceRaised: string;
 		ink: string;
+		muted: string;
 		edge: string;
+		danger: string;
+		success: string;
 	};
 };
 export type ResolvedTheme = Omit<ThemeDefinition, "id"> & {
@@ -25,18 +29,22 @@ export const defaultTheme = {
 	name: "Arquivo",
 	description: "Uma base digital para qualquer história.",
 	classes:
-		"[--accent:#9fe87b] [--canvas:#0b1217] [--panel:#14212a] [--ink:#e1f2f6] [--edge:#335967] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-mono",
+		"[--accent:#a8f58b] [--canvas:#080d10] [--panel:#111a1f] [--surface:#111a1f] [--surface-raised:#18252b] [--ink:#edf6f3] [--muted:#9bada9] [--edge:#294149] [--danger:#ff8178] [--success:#a8f58b] [--shadow:#02050699] [--scrim:#071014] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 	decoration:
 		"border border-dashed border-(--accent) shadow-[6px_6px_0_#335967] bg-[linear-gradient(#33596733_1px,transparent_1px),linear-gradient(90deg,#33596733_1px,transparent_1px)] bg-size-[24px_24px]",
 	mark: "00 / LOCAL",
 	duration: 0.2,
 	offset: 6,
 	palette: {
-		accent: "#9fe87b",
-		background: "#0b1217",
-		panel: "#14212a",
-		ink: "#e1f2f6",
-		edge: "#335967",
+		accent: "#a8f58b",
+		canvas: "#080d10",
+		surface: "#111a1f",
+		surfaceRaised: "#18252b",
+		ink: "#edf6f3",
+		muted: "#9bada9",
+		edge: "#294149",
+		danger: "#ff8178",
+		success: "#a8f58b",
 	},
 } satisfies ResolvedTheme;
 export const themes: ThemeDefinition[] = [
@@ -45,7 +53,7 @@ export const themes: ThemeDefinition[] = [
 		name: "Sangue",
 		description: "O impulso precede a razão. Cortes, contraste e matéria viva.",
 		classes:
-			"[--accent:#ff8676] [--canvas:#160d0e] [--panel:#241214] [--ink:#ffe9e3] [--edge:#603236] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
+			"[--accent:#ff8676] [--canvas:#160d0e] [--panel:#241214] [--surface:#241214] [--surface-raised:#32191c] [--ink:#ffe9e3] [--muted:#c6aaa6] [--edge:#603236] [--danger:#ff8676] [--success:#b6df9d] [--shadow:#08030499] [--scrim:#120708] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 		decoration:
 			"border-l-[12px] border-l-(--accent) rounded-tr-[5rem] bg-[radial-gradient(ellipse_at_top_right,#661c2e,transparent_65%)]",
 		mark: "I / PULSO",
@@ -53,10 +61,14 @@ export const themes: ThemeDefinition[] = [
 		offset: 14,
 		palette: {
 			accent: "#ff8676",
-			background: "#160d0e",
-			panel: "#241214",
+			canvas: "#160d0e",
+			surface: "#241214",
+			surfaceRaised: "#32191c",
 			ink: "#ffe9e3",
+			muted: "#c6aaa6",
 			edge: "#603236",
+			danger: "#ff8676",
+			success: "#b6df9d",
 		},
 	},
 	{
@@ -64,7 +76,7 @@ export const themes: ThemeDefinition[] = [
 		name: "Morte",
 		description: "O tempo consome tudo. Camadas, vestígios e espirais.",
 		classes:
-			"[--accent:#c7c0a3] [--canvas:#10120f] [--panel:#1d201a] [--ink:#edeedf] [--edge:#4e5343] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-serif",
+			"[--accent:#c7c0a3] [--canvas:#10120f] [--panel:#1d201a] [--surface:#1d201a] [--surface-raised:#292d24] [--ink:#edeedf] [--muted:#afb0a2] [--edge:#4e5343] [--danger:#e27d72] [--success:#b8cf9b] [--shadow:#05060499] [--scrim:#0b0d0a] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 		decoration:
 			"border-double border-4 border-(--edge) rounded-tl-[4rem] bg-[repeating-radial-gradient(circle_at_90%_50%,transparent_0px,transparent_20px,#4e534322_21px,#4e534322_23px)]",
 		mark: "II / VESTÍGIO",
@@ -72,10 +84,14 @@ export const themes: ThemeDefinition[] = [
 		offset: 3,
 		palette: {
 			accent: "#c7c0a3",
-			background: "#10120f",
-			panel: "#1d201a",
+			canvas: "#10120f",
+			surface: "#1d201a",
+			surfaceRaised: "#292d24",
 			ink: "#edeedf",
+			muted: "#afb0a2",
 			edge: "#4e5343",
+			danger: "#e27d72",
+			success: "#b8cf9b",
 		},
 	},
 	{
@@ -84,7 +100,7 @@ export const themes: ThemeDefinition[] = [
 		description:
 			"Todo registro guarda um segredo. Documentos, margens e sinais.",
 		classes:
-			"[--accent:#f0c66c] [--canvas:#17150f] [--panel:#252116] [--ink:#f5edda] [--edge:#655431] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-serif",
+			"[--accent:#f0c66c] [--canvas:#17150f] [--panel:#252116] [--surface:#252116] [--surface-raised:#332c1d] [--ink:#f5edda] [--muted:#bcb09a] [--edge:#655431] [--danger:#e98274] [--success:#bed795] [--shadow:#08070399] [--scrim:#121008] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 		decoration:
 			"border-y-4 border-double border-(--accent) bg-[repeating-linear-gradient(0deg,transparent_0px,transparent_31px,#65543144_32px)]",
 		mark: "III / ARQUIVO",
@@ -92,10 +108,14 @@ export const themes: ThemeDefinition[] = [
 		offset: 0,
 		palette: {
 			accent: "#f0c66c",
-			background: "#17150f",
-			panel: "#252116",
+			canvas: "#17150f",
+			surface: "#252116",
+			surfaceRaised: "#332c1d",
 			ink: "#f5edda",
+			muted: "#bcb09a",
 			edge: "#655431",
+			danger: "#e98274",
+			success: "#bed795",
 		},
 	},
 	{
@@ -104,7 +124,7 @@ export const themes: ThemeDefinition[] = [
 		description:
 			"Nada permanece estável. Sinais digitais e deslocamentos precisos.",
 		classes:
-			"[--accent:#c77dff] [--canvas:#100817] [--panel:#20102b] [--ink:#f5e9ff] [--edge:#70418c] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-mono",
+			"[--accent:#c77dff] [--canvas:#100817] [--panel:#20102b] [--surface:#20102b] [--surface-raised:#2d173c] [--ink:#f5e9ff] [--muted:#b9a4c6] [--edge:#70418c] [--danger:#ff7b8d] [--success:#a9da9b] [--shadow:#05020899] [--scrim:#0b0510] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 		decoration:
 			"border border-dashed border-(--accent) shadow-[6px_6px_0_#70418c] bg-[linear-gradient(#70418c33_1px,transparent_1px),linear-gradient(90deg,#70418c33_1px,transparent_1px)] bg-size-[24px_24px]",
 		mark: "IV / SINAL",
@@ -112,10 +132,14 @@ export const themes: ThemeDefinition[] = [
 		offset: 6,
 		palette: {
 			accent: "#c77dff",
-			background: "#100817",
-			panel: "#20102b",
+			canvas: "#100817",
+			surface: "#20102b",
+			surfaceRaised: "#2d173c",
 			ink: "#f5e9ff",
+			muted: "#b9a4c6",
 			edge: "#70418c",
+			danger: "#ff7b8d",
+			success: "#a9da9b",
 		},
 	},
 	{
@@ -123,7 +147,7 @@ export const themes: ThemeDefinition[] = [
 		name: "Medo",
 		description: "O que você não vê também está aqui. Silêncio e espaço.",
 		classes:
-			"[--accent:#e0dfda] [--canvas:#101012] [--panel:#19191d] [--ink:#f1f0ed] [--edge:#45454e] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
+			"[--accent:#e0dfda] [--canvas:#101012] [--panel:#19191d] [--surface:#19191d] [--surface-raised:#232329] [--ink:#f1f0ed] [--muted:#aaa9a6] [--edge:#45454e] [--danger:#e6827b] [--success:#b3d29f] [--shadow:#04040599] [--scrim:#0b0b0d] [scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) font-sans",
 		decoration:
 			"border-t border-(--ink) bg-[radial-gradient(ellipse_at_bottom,#ffffff0a,transparent_70%)]",
 		mark: "V / AUSÊNCIA",
@@ -131,10 +155,14 @@ export const themes: ThemeDefinition[] = [
 		offset: 0,
 		palette: {
 			accent: "#e0dfda",
-			background: "#101012",
-			panel: "#19191d",
+			canvas: "#101012",
+			surface: "#19191d",
+			surfaceRaised: "#232329",
 			ink: "#f1f0ed",
+			muted: "#aaa9a6",
 			edge: "#45454e",
+			danger: "#e6827b",
+			success: "#b3d29f",
 		},
 	},
 ];

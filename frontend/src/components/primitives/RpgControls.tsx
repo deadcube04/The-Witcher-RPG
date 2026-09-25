@@ -1,7 +1,7 @@
 import { Button, Checkbox, Input, InputNumber, Select } from "antd";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { type ReactNode, useId, useState } from "react";
-import { IoIosArrowDown } from "react-icons/io";
+import { PiCaretDownThin } from "react-icons/pi";
 
 const rpgSelectScrollbarClasses =
 	"[scrollbar-color:var(--edge)_var(--canvas)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-(--canvas) [&::-webkit-scrollbar-thumb]:bg-(--edge) [&::-webkit-scrollbar-thumb:hover]:bg-(--accent) [&_.rc-virtual-list-holder]:[scrollbar-color:var(--edge)_var(--canvas)] [&_.rc-virtual-list-holder::-webkit-scrollbar]:w-3 [&_.rc-virtual-list-holder::-webkit-scrollbar-track]:bg-(--canvas) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb]:bg-(--edge) [&_.rc-virtual-list-holder::-webkit-scrollbar-thumb:hover]:bg-(--accent)";
@@ -42,7 +42,7 @@ export function RpgButton({
 			danger={danger}
 			type={secondary ? "default" : "primary"}
 			className={
-				"min-h-11! rounded-sm! px-5! font-semibold! shadow-none! focus-visible:outline-2! focus-visible:outline-offset-4! " +
+				"min-h-11! rounded-full! px-6! font-semibold! shadow-none! transition-transform! duration-500! ease-[cubic-bezier(0.32,0.72,0,1)]! active:scale-[0.98]! focus-visible:outline-2! focus-visible:outline-offset-4! " +
 				(!secondary && !danger && !disabled
 					? "bg-(--accent)! text-(--canvas)!"
 					: "")
@@ -108,7 +108,7 @@ export function RpgInput({
 						rows={4}
 						aria-invalid={!!error}
 						aria-describedby={error ? `${id}-error` : undefined}
-						className="rounded-sm!"
+						className="rounded-xl!"
 					/>
 				) : (
 					<Input
@@ -119,7 +119,7 @@ export function RpgInput({
 						disabled={disabled}
 						aria-invalid={!!error}
 						aria-describedby={error ? `${id}-error` : undefined}
-						className="min-h-11! rounded-sm!"
+						className="min-h-11! rounded-xl!"
 					/>
 				)
 			}
@@ -152,7 +152,7 @@ export function RpgSelect({
 					getPopupContainer={getRpgSelectPopupContainer}
 					classNames={{ popup: { root: rpgSelectScrollbarClasses } }}
 					popupAlign={rpgSelectPopupAlign}
-					className="min-h-11! w-full!"
+					className="min-h-11! w-full! [&_.ant-select-selector]:rounded-xl!"
 					virtual={false}
 				/>
 			)}
@@ -185,7 +185,7 @@ export function RpgNumber({
 					max={max}
 					precision={0}
 					disabled={disabled}
-					className="min-h-11! w-full! rounded-sm!"
+					className="min-h-11! w-full! rounded-xl!"
 				/>
 			)}
 		</RpgField>
@@ -261,7 +261,7 @@ export function RpgInlineSelect({
 					transition={transition}
 					className="inline-flex text-base"
 				>
-					<IoIosArrowDown aria-hidden="true" />
+					<PiCaretDownThin aria-hidden="true" />
 				</motion.span>
 			}
 			popupRender={(menu) => (
@@ -278,11 +278,11 @@ export function RpgInlineSelect({
 						<motion.div
 							key="inline-select-menu"
 							initial={
-								reduced ? false : { opacity: 0, height: 0, scaleY: 0.96 }
+								reduced ? false : { opacity: 0, y: -6, scaleY: 0.96 }
 							}
-							animate={{ opacity: 1, height: "auto", scaleY: 1 }}
+							animate={{ opacity: 1, y: 0, scaleY: 1 }}
 							exit={
-								reduced ? undefined : { opacity: 0, height: 0, scaleY: 0.96 }
+								reduced ? undefined : { opacity: 0, y: -6, scaleY: 0.96 }
 							}
 							transition={transition}
 							className="origin-top overflow-hidden"

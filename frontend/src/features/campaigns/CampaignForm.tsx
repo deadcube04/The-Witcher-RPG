@@ -35,6 +35,7 @@ export function CampaignForm({
 	});
 	return (
 		<RpgForm onSubmit={() => form.handleSubmit()}>
+			<p className="font-mono text-[10px] uppercase tracking-[0.22em] text-(--accent)">01 / Identificação do registro</p>
 			<form.Field name="name">
 				{(field) => (
 					<RpgInput

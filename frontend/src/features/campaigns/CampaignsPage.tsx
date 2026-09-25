@@ -39,11 +39,12 @@ export function CampaignsPage() {
 		<>
 			<PageHeader
 				eyebrow="02 / Campanhas"
-				title="Histórias em curso"
+				title="Dossiers em curso"
+				description="Histórias abertas, ocorrências arquivadas e os rastros que ainda precisam ser seguidos."
 				actions={
 					<Link
 						to="/campaigns/new"
-						className="bg-(--accent) px-5 py-3 text-sm font-bold text-(--canvas)"
+						className="inline-flex min-h-12 items-center rounded-full bg-(--accent) px-6 text-sm font-bold text-(--canvas) active:scale-[0.98]"
 					>
 						Nova campanha
 					</Link>

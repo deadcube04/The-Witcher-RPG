@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { IconType } from "react-icons";
 import {
-	GiArmorVest,
-	GiBackpack,
-	GiBroadsword,
-	GiBullets,
-	GiCardboardBox,
-	GiCrystalGrowth,
-	GiToolbox,
-} from "react-icons/gi";
+	PiBackpackThin,
+	PiCubeThin,
+	PiDiamondThin,
+	PiShieldThin,
+	PiSwordThin,
+	PiToolboxThin,
+	PiTargetThin,
+} from "react-icons/pi";
 import { RpgExpandableCard } from "@/components/data-display/RpgExpandableCard";
 import { RpgStatChip } from "@/components/data-display/RpgStatChip";
 import {
@@ -24,13 +24,13 @@ import type {
 import { parseDiceExpression } from "@/features/dice/roll";
 
 const kindDetails: Record<InventoryKind, { label: string; icon: IconType }> = {
-	weapon: { label: "Arma", icon: GiBroadsword },
-	protection: { label: "Proteção", icon: GiArmorVest },
-	ammunition: { label: "Munição", icon: GiBullets },
-	accessory: { label: "Acessório", icon: GiToolbox },
-	equipment: { label: "Equipamento", icon: GiBackpack },
-	paranormal: { label: "Paranormal", icon: GiCrystalGrowth },
-	other: { label: "Outro", icon: GiCardboardBox },
+	weapon: { label: "Arma", icon: PiSwordThin },
+	protection: { label: "Proteção", icon: PiShieldThin },
+	ammunition: { label: "Munição", icon: PiTargetThin },
+	accessory: { label: "Acessório", icon: PiToolboxThin },
+	equipment: { label: "Equipamento", icon: PiBackpackThin },
+	paranormal: { label: "Paranormal", icon: PiDiamondThin },
+	other: { label: "Outro", icon: PiCubeThin },
 };
 
 export function InventoryCard({
