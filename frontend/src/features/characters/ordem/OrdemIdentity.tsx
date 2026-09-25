@@ -1,9 +1,7 @@
-import {
-	RpgNumber,
-	RpgSelect,
-} from "../../../components/primitives/RpgControls";
+import { useQuery } from "@tanstack/react-query";
+import { RpgSelect } from "@/components/primitives/RpgControls";
+import { queries } from "@/shared/api/queries";
 import type { OrdemData } from "../../../shared/contracts/character-sheet";
-import catalog from "../../../shared/contracts/ordem-catalog.json";
 
 export function OrdemIdentity({
 	value,
@@ -14,19 +12,19 @@ export function OrdemIdentity({
 	onChange: (value: OrdemData) => void;
 	disabled?: boolean;
 }) {
+	const options = useQuery(queries.characterOptions);
 	return (
 		<section className="space-y-5">
 			<h3 className="border-b border-(--edge) pb-3 text-xl">
 				02 / Agente da Ordem
 			</h3>
 			<div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-				<RpgNumber
+				<RpgSelect
 					label="NEX (%)"
-					value={value.nex}
-					onChange={(nex) => onChange({ ...value, nex })}
-					min={0}
-					max={99}
-					disabled={disabled}
+					value={String(value.nex)}
+					onChange={(nex) => onChange({ ...value, nex: Number(nex) })}
+					options={(options.data?.nex ?? []).map((entry) => ({ value: String(entry.value), label: `${entry.value}%` }))}
+					disabled={disabled || options.isPending || !!options.error}
 				/>
 				<RpgSelect
 					label="Classe"
@@ -34,10 +32,10 @@ export function OrdemIdentity({
 					onChange={(classId) =>
 						onChange({ ...value, classId: classId || null })
 					}
-					disabled={disabled}
+					disabled={disabled || options.isPending || !!options.error}
 					options={[
 						{ value: "", label: "Não definida" },
-						...catalog.class_definition.map((entry) => ({
+						...(options.data?.classes ?? []).map((entry) => ({
 							value: entry.id,
 							label: entry.name,
 						})),
@@ -49,10 +47,10 @@ export function OrdemIdentity({
 					onChange={(originId) =>
 						onChange({ ...value, originId: originId || null })
 					}
-					disabled={disabled}
+					disabled={disabled || options.isPending || !!options.error}
 					options={[
 						{ value: "", label: "Não definida" },
-						...catalog.origin_definition.map((entry) => ({
+						...(options.data?.origins ?? []).map((entry) => ({
 							value: entry.id,
 							label: entry.name,
 						})),

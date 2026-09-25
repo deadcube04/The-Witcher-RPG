@@ -1,22 +1,20 @@
 import { z } from "zod";
 import { entityMetadata, idSchema, nameSchema, textSchema } from "./common";
-import catalog from "./ordem-catalog.json";
 
 const attribute = z.number().int().min(0).max(5);
 const resource = z.strictObject({
 	current: z.number().int(),
 	maximum: z.number().int().min(0),
 	temporary: z.number().int().min(0),
+	baseMaximum: z.number().int().min(0),
+	maxAdjustment: z.number().int(),
 });
 export const ordemDataSchema = z.strictObject({
 	kind: z.literal("ordem-paranormal"),
 	nex: z.number().int().min(0).max(99),
-	classId: idSchema
-		.refine((id) => catalog.class_definition.some((entry) => entry.id === id))
-		.nullable(),
-	originId: idSchema
-		.refine((id) => catalog.origin_definition.some((entry) => entry.id === id))
-		.nullable(),
+	classId: idSchema.nullable(),
+	originId: idSchema.nullable(),
+	peLimit: z.number().int().min(0),
 	creditLimit: z.enum(["BAIXO", "MEDIO", "ALTO", "ILIMITADO"]).nullable(),
 	attributes: z.strictObject({
 		agility: attribute,
@@ -33,7 +31,7 @@ export const ordemDataSchema = z.strictObject({
 });
 const systemDataSchema = z.discriminatedUnion("kind", [
 	ordemDataSchema,
-	z.strictObject({ kind: z.literal("dnd") }),
+	z.strictObject({ kind: z.literal("dungeons-and-dragons") }),
 	z.strictObject({ kind: z.literal("witcher") }),
 ]);
 export const characterInputSchema = z.strictObject({

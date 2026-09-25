@@ -16,7 +16,8 @@ export const emptyInventoryInput: OrdemInventoryInput = {
 export const emptyAttackInput: OrdemAttackInput = {
 	name: "",
 	description: "",
-	skillName: "Luta",
+	skillId: null,
+	skillName: "",
 	testExpression: "1d20",
 	damageExpression: "1d6",
 	damageType: "",

@@ -28,7 +28,7 @@ export async function request<T>(
 	init: RequestInit = {},
 ): Promise<T> {
 	const response = await fetch(
-		new URL(`/api/v1${path}`, window.location.origin),
+		new URL(`/api/v1${path}`, import.meta.env.VITE_API_BASE_URL || window.location.origin),
 		{
 			...init,
 			headers: {

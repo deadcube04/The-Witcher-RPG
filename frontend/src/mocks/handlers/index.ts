@@ -7,6 +7,7 @@ import { characterHandlers } from "@/mocks/handlers/characters";
 import { attackHandlers } from "@/mocks/handlers/attacks";
 import { inventoryHandlers } from "@/mocks/handlers/inventory";
 import { ritualHandlers } from "@/mocks/handlers/rituals";
+import { skillHandlers } from "@/mocks/handlers/skills";
 import { body, fail, safe } from "@/mocks/handlers/common";
 
 export function createHandlers(repo: MockRepository) {
@@ -56,6 +57,7 @@ export function createHandlers(repo: MockRepository) {
 		...characterHandlers(repo),
 		...inventoryHandlers(repo),
 		...ritualHandlers(repo),
+		...skillHandlers(repo),
 		...attackHandlers(repo),
 	];
 }

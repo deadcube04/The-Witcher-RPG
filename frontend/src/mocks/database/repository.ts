@@ -35,6 +35,32 @@ const databaseSchema = z.strictObject({
 export type MockDatabase = z.infer<typeof databaseSchema>;
 type Persistence = Pick<Storage, "getItem" | "setItem">;
 export const persistenceKey = "rpg-manager:mock:v1";
+function record(value: unknown): Record<string, unknown> | null {
+	return value !== null && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
+}
+function normalizeLegacy(value: unknown): unknown {
+	const data = record(value);
+	if (!data) return value;
+	const systems = Array.isArray(data.systems) ? data.systems.map((entry: unknown) => {
+		const system = record(entry);
+		return system?.slug === "dnd" ? { ...system, slug: "dungeons-and-dragons" } : entry;
+	}) : data.systems;
+	const characters = Array.isArray(data.characters) ? data.characters.map((entry: unknown) => {
+		const character = record(entry);
+		const systemData = record(character?.systemData);
+		if (!character || !systemData) return entry;
+		if (systemData.kind === "dnd") return { ...character, systemData: { kind: "dungeons-and-dragons" } };
+		if (systemData.kind !== "ordem-paranormal") return entry;
+		const resources = record(systemData.resources);
+		const normalizeResource = (resource: unknown) => {
+			const r = record(resource);
+			if (!r) return resource;
+			return { ...r, baseMaximum: r.baseMaximum ?? r.maximum ?? 0, maxAdjustment: r.maxAdjustment ?? 0 };
+		};
+		return { ...character, systemData: { ...systemData, peLimit: systemData.peLimit ?? 0, resources: resources ? { health: normalizeResource(resources.health), effort: normalizeResource(resources.effort), sanity: normalizeResource(resources.sanity) } : systemData.resources } };
+	}) : data.characters;
+	return { ...data, systems, characters };
+}
 export class MockRepository {
 	private readonly storage: Persistence;
 	constructor(storage: Persistence) {
@@ -47,9 +73,12 @@ export class MockRepository {
 			this.storage.setItem(persistenceKey, JSON.stringify(seed));
 			return seed;
 		}
-		const data: unknown = JSON.parse(saved);
+		const data: unknown = normalizeLegacy(JSON.parse(saved));
 		const current = databaseSchema.safeParse(data);
-		if (current.success) return current.data;
+		if (current.success) {
+			if (JSON.stringify(data) !== saved) this.storage.setItem(persistenceKey, JSON.stringify(current.data));
+			return current.data;
+		}
 		const previous = databaseV1Schema.safeParse(data);
 		if (!previous.success) return databaseSchema.parse(data);
 		const seed = createSeed();

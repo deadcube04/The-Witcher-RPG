@@ -6,6 +6,7 @@ export function createOrdemData(): OrdemData {
 		classId: null,
 		originId: null,
 		creditLimit: null,
+		peLimit: 0,
 		attributes: {
 			agility: 1,
 			strength: 1,
@@ -14,9 +15,9 @@ export function createOrdemData(): OrdemData {
 			vigor: 1,
 		},
 		resources: {
-			health: { current: 0, maximum: 0, temporary: 0 },
-			effort: { current: 0, maximum: 0, temporary: 0 },
-			sanity: { current: 0, maximum: 0, temporary: 0 },
+			health: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
+			effort: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
+			sanity: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
 		},
 	};
 }

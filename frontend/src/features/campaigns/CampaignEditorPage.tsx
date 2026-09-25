@@ -54,6 +54,8 @@ export function CampaignEditorPage() {
 			/>
 		);
 	if (!systems.data || !preferences.data) return null;
+	const selectedSystem = systems.data.find((entry) => entry.id === (campaign.data?.systemId ?? preferences.data.activeSystemId));
+	if (!campaignId && selectedSystem?.status === "preview") return <div className="space-y-4 p-6"><h1 className="text-2xl">Sistema em prévia</h1><p>A criação de campanhas está disponível em Ordem Paranormal 1.1.</p><Link to="/campaigns" className="underline">Voltar para campanhas</Link></div>;
 	const initial: CampaignInput = campaign.data
 		? {
 				name: campaign.data.name,
@@ -82,7 +84,7 @@ export function CampaignEditorPage() {
 			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
 				<ArchivePanel className="p-5 md:p-8" label="Dados da campanha"><CampaignForm
 					initial={initial}
-					systems={systems.data}
+					systems={systems.data.filter((entry) => entry.status === "available")}
 					pending={mutation.isPending}
 					error={mutation.error}
 					systemLocked={

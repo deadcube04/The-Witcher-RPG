@@ -45,3 +45,12 @@ export function rollDice(
 				: (modifier > 0 ? " + " : " − ") + Math.abs(modifier)),
 	};
 }
+export function rollOrdemTest(input: { diceCount: number; keep: "highest" | "lowest"; bonus: number }): RollResult {
+	const rolled = rollDice({ sides: 20, quantity: input.diceCount, modifier: 0 });
+	const selected = input.keep === "highest" ? Math.max(...rolled.individual) : Math.min(...rolled.individual);
+	return {
+		individual: rolled.individual,
+		total: selected + input.bonus,
+		expression: `${input.diceCount}D20 (${input.keep === "highest" ? "maior" : "menor"})${input.bonus === 0 ? "" : input.bonus > 0 ? ` + ${input.bonus}` : ` − ${Math.abs(input.bonus)}`}`,
+	};
+}

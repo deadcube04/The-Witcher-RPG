@@ -10,7 +10,7 @@ import { useRpgRollFeedback } from "@/components/feedback/RpgRollFeedback";
 import { RpgModal } from "@/components/overlay/RpgModal";
 import { RpgConfirmDialog } from "@/components/overlay/RpgConfirmDialog";
 import { RpgButton } from "@/components/primitives/RpgControls";
-import { parseDiceExpression, rollDice } from "@/features/dice/roll";
+import { parseDiceExpression, rollDice, rollOrdemTest } from "@/features/dice/roll";
 import { attackApi } from "@/shared/api/domains";
 import { keys, queries, useDomainMutation } from "@/shared/api/queries";
 import type {
@@ -34,12 +34,13 @@ function toInput(definition: OrdemAttackDefinition): OrdemAttackInput {
 	return {
 		name: definition.name,
 		description: definition.description,
+		skillId: definition.skillId ?? null,
 		skillName: definition.skillName,
-		testExpression: definition.testExpression,
+		testExpression: definition.testExpression ?? "",
 		damageExpression: definition.damageExpression,
 		damageType: definition.damageType,
-		criticalThreshold: definition.criticalThreshold,
-		criticalMultiplier: definition.criticalMultiplier,
+		criticalThreshold: definition.criticalThreshold ?? 20,
+		criticalMultiplier: definition.criticalMultiplier ?? 2,
 		rangeText: definition.rangeText,
 		special: definition.special,
 		sourceItemDefinitionId: definition.sourceItemDefinitionId,
@@ -204,6 +205,7 @@ export function AttacksPanel({ characterId }: { characterId: string }) {
 										)
 									}
 									onRoll={roll}
+									onTestRoll={() => { if (attack.test) feedback.show(`Ataque · ${attack.definition.name}`, rollOrdemTest(attack.test)); }}
 									onNotesChange={(notes) =>
 										updateEntry.mutate({ entryId: attack.entry.id, notes })
 									}

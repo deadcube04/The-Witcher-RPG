@@ -210,11 +210,11 @@ export function attackHandlers(repo: MockRepository) {
 									? "Luta"
 									: "Pontaria",
 							testExpression: "1d20",
-							damageExpression: inventoryDefinition.damageExpression,
-							damageType: inventoryDefinition.damageType,
-							criticalThreshold: inventoryDefinition.criticalThreshold,
-							criticalMultiplier: inventoryDefinition.criticalMultiplier,
-							rangeText: inventoryDefinition.rangeText,
+							damageExpression: inventoryDefinition.damageExpression ?? "",
+							damageType: inventoryDefinition.damageType ?? "",
+							criticalThreshold: inventoryDefinition.criticalThreshold ?? 20,
+							criticalMultiplier: inventoryDefinition.criticalMultiplier ?? 2,
+							rangeText: inventoryDefinition.rangeText ?? "",
 							special: "",
 							sourceItemDefinitionId: inventoryDefinition.id,
 						};
@@ -224,6 +224,7 @@ export function attackHandlers(repo: MockRepository) {
 							attackDefinitions: [...data.attackDefinitions, generated],
 						}));
 					}
+					if (!definition) fail("CONTENT_NOT_FOUND");
 					return addAttack(repo, characterId, definition.id, inventoryEntry.id);
 				}),
 		),

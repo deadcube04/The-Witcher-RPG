@@ -31,6 +31,8 @@ import {
 	ordemRitualDefinitionSchema,
 } from "@/shared/contracts/ordem-ritual";
 import { request } from "@/shared/api/client";
+import { characterOptionsSchema } from "@/shared/contracts/character-options";
+import { characterSkillSchema, type CharacterSkillUpdate } from "@/shared/contracts/character-skill";
 
 function withSearch(
 	path: string,
@@ -86,6 +88,9 @@ export const campaignApi = {
 		}),
 };
 export const characterApi = {
+	options: (signal?: AbortSignal) => request("/ordem/character-options", characterOptionsSchema, { signal }),
+	skills: (id: string, signal?: AbortSignal) => request(`/character-sheets/${encodeURIComponent(id)}/skills`, z.array(characterSkillSchema), { signal }),
+	updateSkills: (id: string, updates: CharacterSkillUpdate[]) => request(`/character-sheets/${encodeURIComponent(id)}/skills`, z.array(characterSkillSchema), { method: "PUT", body: JSON.stringify(updates) }),
 	list: (signal?: AbortSignal) =>
 		request("/character-sheets", z.array(characterSchema), { signal }),
 	get: (id: string, signal?: AbortSignal) =>

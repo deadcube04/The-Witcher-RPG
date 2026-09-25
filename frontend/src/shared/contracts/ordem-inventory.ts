@@ -41,37 +41,48 @@ const definitionFields = {
 	id: idSchema,
 	systemId: idSchema,
 	source: contentSourceSchema,
-	createdAt: z.iso.datetime(),
-	updatedAt: z.iso.datetime(),
+	createdAt: z.iso.datetime().nullable(),
+	updatedAt: z.iso.datetime().nullable(),
+};
+
+const inventoryDefinitionBaseSchema = inventoryBaseSchema.extend({
+	spaces: z.number().int().min(0).max(99).nullable(),
+});
+const weaponDefinitionFields = {
+	damageExpression: z.string().nullable(),
+	criticalThreshold: z.number().int().nullable(),
+	criticalMultiplier: z.number().int().nullable(),
+	rangeText: z.string().nullable(),
+	damageType: z.string().nullable(),
 };
 
 export const ordemInventoryDefinitionSchema = z.discriminatedUnion("kind", [
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("weapon"),
-		...weaponFields,
+		...weaponDefinitionFields,
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("protection"),
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("ammunition"),
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("accessory"),
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("equipment"),
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({
+	inventoryDefinitionBaseSchema.extend({
 		kind: z.literal("paranormal"),
 		...definitionFields,
 	}),
-	inventoryBaseSchema.extend({ kind: z.literal("other"), ...definitionFields }),
+	inventoryDefinitionBaseSchema.extend({ kind: z.literal("other"), ...definitionFields }),
 ]);
 
 export const characterInventoryEntrySchema = z.strictObject({

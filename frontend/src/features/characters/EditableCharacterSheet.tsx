@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { type ReactNode, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDebouncer } from "@tanstack/react-pacer";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import type {
 	CharacterInput,
 	CharacterSheet,
@@ -8,9 +10,11 @@ import { AutoSaveIndicator } from "@/features/characters/AutoSaveIndicator";
 import { CharacterDeleteAction } from "@/features/characters/CharacterDeleteAction";
 import { CharacterIdentity } from "@/features/characters/CharacterIdentity";
 import { CharacterPanels } from "@/features/characters/CharacterPanels";
-import { type CharacterSkill, createMockSkills } from "@/features/characters/character-skills";
+import type { CharacterSkill } from "@/shared/contracts/character-skill";
+import { characterApi } from "@/shared/api/domains";
+import { keys, queries } from "@/shared/api/queries";
 import { OrdemHeaderStats } from "@/features/characters/ordem/OrdemHeaderStats";
-import { useAutoSaveIndicator } from "@/features/characters/useAutoSaveIndicator";
+import type { AutoSaveStatus } from "@/features/characters/useAutoSaveIndicator";
 
 type Props = {
 	character: CharacterSheet;
@@ -40,15 +44,65 @@ export function EditableCharacterSheet({
 	const [draft, setDraft] = useState<CharacterInput>(() =>
 		createDraft(character),
 	);
-	const [skills, setSkills] = useState<CharacterSkill[]>(createMockSkills);
-	const { status, markChanged } = useAutoSaveIndicator();
+	const queryClient = useQueryClient();
+	const skillsQuery = useQuery(queries.skills(character.id));
+	const [skills, setSkills] = useState<CharacterSkill[]>([]);
+	const [status, setStatus] = useState<AutoSaveStatus>("saved");
+	const draftRef = useRef(draft);
+	const skillsRef = useRef(skills);
+	const versionRef = useRef(0);
+	const queueRef = useRef<Promise<void>>(Promise.resolve());
+	const initializedSkills = useRef(false);
+	useEffect(() => {
+		if (!initializedSkills.current && skillsQuery.data) {
+			setSkills(skillsQuery.data);
+			skillsRef.current = skillsQuery.data;
+			initializedSkills.current = true;
+		}
+	}, [skillsQuery.data]);
+	const saveDraft = useDebouncer(() => {
+		const snapshot = draftRef.current;
+		const version = versionRef.current;
+		queueRef.current = queueRef.current.then(async () => {
+			try {
+				const saved = await characterApi.update(character.id, snapshot);
+				queryClient.setQueryData(keys.character(character.id), saved);
+				void queryClient.invalidateQueries({ queryKey: keys.characters });
+				void queryClient.invalidateQueries({ queryKey: keys.skills(character.id) });
+				void queryClient.invalidateQueries({ queryKey: keys.attacks(character.id) });
+				if (version === versionRef.current) setStatus("saved");
+			} catch {
+				if (version === versionRef.current) setStatus("error");
+			}
+		});
+	}, { wait: 700 });
+	const saveSkills = useDebouncer(() => {
+		const snapshot = skillsRef.current;
+		const version = versionRef.current;
+		queueRef.current = queueRef.current.then(async () => {
+			try {
+				const saved = await characterApi.updateSkills(character.id, snapshot.map((skill) => ({ id: skill.id, attributeId: skill.attributeId, trainingLevelId: skill.trainingLevelId, otherBonus: skill.otherBonus })));
+				queryClient.setQueryData(keys.skills(character.id), saved);
+				void queryClient.invalidateQueries({ queryKey: keys.attacks(character.id) });
+				if (version === versionRef.current) setStatus("saved");
+			} catch {
+				if (version === versionRef.current) setStatus("error");
+			}
+		});
+	}, { wait: 700 });
 	const updateDraft = (next: CharacterInput) => {
 		setDraft(next);
-		markChanged();
+		draftRef.current = next;
+		versionRef.current += 1;
+		setStatus("pending");
+		saveDraft.maybeExecute();
 	};
 	const updateSkills = (next: CharacterSkill[]) => {
 		setSkills(next);
-		markChanged();
+		skillsRef.current = next;
+		versionRef.current += 1;
+		setStatus("pending");
+		saveSkills.maybeExecute();
 	};
 	return (
 		<div className="font-sans">
@@ -103,7 +157,9 @@ export function EditableCharacterSheet({
 							onChange={(systemData) => updateDraft({ ...draft, systemData })}
 						/>
 					)}
-					<CharacterPanels
+						{skillsQuery.isPending && <p role="status">Carregando perícias…</p>}
+						{skillsQuery.isError && <p role="alert">Não foi possível carregar as perícias.</p>}
+						<CharacterPanels
 						character={draft}
 						characterId={character.id}
 						skills={skills}

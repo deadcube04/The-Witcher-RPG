@@ -46,7 +46,7 @@ function toInput(definition: OrdemRitualDefinition): OrdemRitualInput {
 		areaText: definition.areaText,
 		durationText: definition.durationText,
 		resistanceText: definition.resistanceText,
-		tiers: definition.tiers,
+		tiers: definition.tiers ?? emptyRitualInput.tiers,
 	};
 }
 

@@ -1,16 +1,17 @@
 import { motion, useReducedMotion } from "motion/react";
-import { PiCloudArrowUpThin, PiCloudCheckThin } from "react-icons/pi";
+import { PiCloudArrowUpThin, PiCloudCheckThin, PiWarningCircleThin } from "react-icons/pi";
 import type { AutoSaveStatus } from "./useAutoSaveIndicator";
 
 const labels: Record<AutoSaveStatus, string> = {
-	saved: "Alterações locais atualizadas",
-	pending: "Atualizando alterações locais",
+	saved: "Alterações salvas no banco",
+	pending: "Salvando alterações",
+	error: "Não foi possível salvar as alterações",
 };
 
 export function AutoSaveIndicator({ status }: { status: AutoSaveStatus }) {
 	const reduced = useReducedMotion();
 	const label = labels[status];
-	const Icon = status === "saved" ? PiCloudCheckThin : PiCloudArrowUpThin;
+	const Icon = status === "saved" ? PiCloudCheckThin : status === "error" ? PiWarningCircleThin : PiCloudArrowUpThin;
 	return (
 		<div
 			role="status"
@@ -30,7 +31,7 @@ export function AutoSaveIndicator({ status }: { status: AutoSaveStatus }) {
 			>
 				<Icon aria-hidden="true" className="size-5" />
 			</motion.span>
-			<span>{status === "saved" ? "Salvo" : "Atualizando"}</span>
+			<span>{status === "saved" ? "Salvo" : status === "error" ? "Erro ao salvar" : "Salvando"}</span>
 		</div>
 	);
 }

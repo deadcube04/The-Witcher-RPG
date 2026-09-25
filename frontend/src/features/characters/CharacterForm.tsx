@@ -45,6 +45,9 @@ export function CharacterForm({
 					campaign.systemId === input.systemId,
 			),
 		{ message: "Escolha uma campanha do mesmo sistema.", path: ["campaignId"] },
+	).refine(
+		(input) => input.systemData.kind !== "ordem-paranormal" || input.systemData.classId !== null,
+		{ message: "Escolha uma classe.", path: ["systemData", "classId"] },
 	);
 	const form = useForm({
 		defaultValues: initial,

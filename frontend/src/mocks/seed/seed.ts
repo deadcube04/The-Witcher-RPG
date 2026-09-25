@@ -42,7 +42,7 @@ export const systems: RpgSystem[] = [
 	},
 	{
 		id: dndId,
-		slug: "dnd",
+		slug: "dungeons-and-dragons",
 		name: "Dungeons & Dragons",
 		description: "Aventuras, magia e mundos por descobrir.",
 		status: "preview",

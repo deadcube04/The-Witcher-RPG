@@ -33,17 +33,17 @@ export function OrdemResources({
 							disabled={disabled}
 						/>
 						<RpgNumber
-							label={`${field.label} máxima`}
-							min={0}
-							value={value[field.key].maximum}
-							onChange={(maximum) =>
+							label={`${field.label} ajuste do máximo`}
+							value={value[field.key].maxAdjustment}
+							onChange={(maxAdjustment) =>
 								onChange({
 									...value,
-									[field.key]: { ...value[field.key], maximum },
+									[field.key]: { ...value[field.key], maxAdjustment },
 								})
 							}
 							disabled={disabled}
 						/>
+						<p className="text-xs opacity-70">Máximo calculado: {value[field.key].maximum}</p>
 						<RpgNumber
 							label={`${field.label} temporária`}
 							min={0}

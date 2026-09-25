@@ -110,7 +110,7 @@ export function RitualCard({
 			title={definition.name}
 			subtitle={`${definition.circle}º círculo · ${details.label} · ${definition.source.kind === "official" ? "Oficial" : "Homebrew"}`}
 			className={details.classes}
-			summary={
+			summary={definition.tiers ? (
 				<div className="grid grid-cols-3 gap-2">
 					<TierSummary
 						label="Normal"
@@ -131,7 +131,7 @@ export function RitualCard({
 						ritualName={definition.name}
 					/>
 				</div>
-			}
+			) : <RpgStatChip label="Efeitos" value="Não cadastrados" />}
 		>
 			<p className="text-sm leading-6 opacity-80">
 				{definition.description || "Sem descrição."}
@@ -163,8 +163,9 @@ export function RitualCard({
 				</div>
 			</dl>
 			<div className="grid gap-3 lg:grid-cols-3">
-				{(["normal", "discente", "verdadeiro"] as const).map((key) => {
-					const tier = definition.tiers[key];
+				{definition.tiers ? (["normal", "discente", "verdadeiro"] as const).map((key) => {
+					const tier = definition.tiers?.[key];
+					if (!tier) return null;
 					return (
 						<section
 							key={key}
@@ -194,7 +195,7 @@ export function RitualCard({
 							</div>
 						</section>
 					);
-				})}
+				}) : <p className="text-sm opacity-70">Os efeitos deste ritual ainda não estão cadastrados.</p>}
 			</div>
 			<RpgInput
 				label="Notas da ficha"

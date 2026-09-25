@@ -42,11 +42,12 @@ export const ordemRitualInputSchema = z.strictObject({
 });
 
 export const ordemRitualDefinitionSchema = ordemRitualInputSchema.extend({
+	tiers: ordemRitualInputSchema.shape.tiers.nullable(),
 	id: idSchema,
 	systemId: idSchema,
 	source: contentSourceSchema,
-	createdAt: z.iso.datetime(),
-	updatedAt: z.iso.datetime(),
+	createdAt: z.iso.datetime().nullable(),
+	updatedAt: z.iso.datetime().nullable(),
 });
 
 export const characterRitualEntrySchema = z.strictObject({

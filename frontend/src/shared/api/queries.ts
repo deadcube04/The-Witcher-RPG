@@ -21,7 +21,9 @@ export const keys = {
 	campaigns: ["campaigns"] as const,
 	campaign: (id: string) => ["campaigns", id] as const,
 	characters: ["characters"] as const,
+	characterOptions: ["ordem", "character-options"] as const,
 	character: (id: string) => ["characters", id] as const,
+	skills: (id: string) => ["characters", id, "skills"] as const,
 	inventory: (id: string) => ["characters", id, "inventory"] as const,
 	rituals: (id: string) => ["characters", id, "rituals"] as const,
 	attacks: (id: string) => ["characters", id, "attacks"] as const,
@@ -58,11 +60,19 @@ export const queries = {
 		queryKey: keys.characters,
 		queryFn: ({ signal }) => characterApi.list(signal),
 	}),
+	characterOptions: queryOptions({
+		queryKey: keys.characterOptions,
+		queryFn: ({ signal }) => characterApi.options(signal),
+	}),
 	character: (id: string) =>
 		queryOptions({
 			queryKey: keys.character(id),
 			queryFn: ({ signal }) => characterApi.get(id, signal),
 		}),
+	skills: (id: string) => queryOptions({
+		queryKey: keys.skills(id),
+		queryFn: ({ signal }) => characterApi.skills(id, signal),
+	}),
 	inventory: (id: string) =>
 		queryOptions({
 			queryKey: keys.inventory(id),

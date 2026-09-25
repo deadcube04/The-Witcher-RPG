@@ -44,11 +44,11 @@ const definitions: CharacterSheetDefinition[] = [
 		View: OrdemView,
 	},
 	{
-		slug: "dnd",
+		slug: "dungeons-and-dragons",
 		sections: ["Identidade"],
 		fields: [],
-		schema: z.strictObject({ kind: z.literal("dnd") }),
-		createData: () => ({ kind: "dnd" }),
+		schema: z.strictObject({ kind: z.literal("dungeons-and-dragons") }),
+		createData: () => ({ kind: "dungeons-and-dragons" }),
 	},
 	{
 		slug: "witcher",

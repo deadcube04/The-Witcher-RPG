@@ -74,7 +74,7 @@ export function InventoryCard({
 					<RpgStatChip label="Quantidade" value={String(item.entry.quantity)} />
 					<RpgStatChip
 						label="Espaços"
-						value={String(definition.spaces * item.entry.quantity)}
+						value={definition.spaces === null ? "Não cadastrado" : String(definition.spaces * item.entry.quantity)}
 					/>
 					<div className="hidden sm:block">
 						<RpgStatChip
@@ -92,20 +92,20 @@ export function InventoryCard({
 				<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 					<RpgStatChip
 						label="Dano"
-						value={definition.damageExpression}
+						value={definition.damageExpression ?? "Não cadastrado"}
 						onActivate={
-							parseDiceExpression(definition.damageExpression)
+							definition.damageExpression && parseDiceExpression(definition.damageExpression)
 								? () =>
 										onRoll(
 											`Dano · ${definition.name}`,
-											definition.damageExpression,
+											definition.damageExpression ?? "",
 										)
 								: undefined
 						}
 					/>
 					<RpgStatChip
 						label="Crítico"
-						value={`${definition.criticalThreshold}/x${definition.criticalMultiplier}`}
+						value={definition.criticalThreshold && definition.criticalMultiplier ? `${definition.criticalThreshold}/x${definition.criticalMultiplier}` : "Não cadastrado"}
 					/>
 					<RpgStatChip label="Alcance" value={definition.rangeText || "—"} />
 					<RpgStatChip label="Tipo" value={definition.damageType || "—"} />

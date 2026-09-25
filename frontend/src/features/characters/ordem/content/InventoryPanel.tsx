@@ -41,17 +41,17 @@ function toInput(definition: OrdemInventoryDefinition): OrdemInventoryInput {
 		name: definition.name,
 		description: definition.description,
 		category: definition.category,
-		spaces: definition.spaces,
+		spaces: definition.spaces ?? 0,
 	};
 	if (definition.kind === "weapon") {
 		return {
 			...base,
 			kind: "weapon",
-			damageExpression: definition.damageExpression,
-			criticalThreshold: definition.criticalThreshold,
-			criticalMultiplier: definition.criticalMultiplier,
-			rangeText: definition.rangeText,
-			damageType: definition.damageType,
+			damageExpression: definition.damageExpression ?? "",
+			criticalThreshold: definition.criticalThreshold ?? 20,
+			criticalMultiplier: definition.criticalMultiplier ?? 2,
+			rangeText: definition.rangeText ?? "",
+			damageType: definition.damageType ?? "",
 		};
 	}
 	return { ...base, kind: definition.kind };

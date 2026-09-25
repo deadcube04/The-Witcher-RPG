@@ -12,6 +12,7 @@ export function AttackCard({
 	pending,
 	onToggle,
 	onRoll,
+	onTestRoll,
 	onNotesChange,
 	onEditDefinition,
 	onRemove,
@@ -21,6 +22,7 @@ export function AttackCard({
 	pending: boolean;
 	onToggle: () => void;
 	onRoll: (label: string, expression: string) => void;
+	onTestRoll: () => void;
 	onNotesChange: (notes: string) => void;
 	onEditDefinition: () => void;
 	onRemove: () => void;
@@ -39,13 +41,13 @@ export function AttackCard({
 				<div className="grid grid-cols-3 gap-2">
 					<RpgStatChip
 						label="Ataque"
-						value={definition.testExpression}
+						value={attack.test ? `${attack.test.diceCount}d20 · ${attack.test.keep === "highest" ? "maior" : "menor"} ${attack.test.bonus >= 0 ? "+" : ""}${attack.test.bonus}` : definition.testExpression ?? "Não cadastrado"}
 						onActivate={
-							parseDiceExpression(definition.testExpression)
+							attack.test ? onTestRoll : definition.testExpression && parseDiceExpression(definition.testExpression)
 								? () =>
 										onRoll(
 											`Ataque · ${definition.name}`,
-											definition.testExpression,
+											definition.testExpression ?? "",
 										)
 								: undefined
 						}
@@ -65,7 +67,7 @@ export function AttackCard({
 					/>
 					<RpgStatChip
 						label="Crítico"
-						value={`${definition.criticalThreshold}/x${definition.criticalMultiplier}`}
+						value={definition.criticalThreshold && definition.criticalMultiplier ? `${definition.criticalThreshold}/x${definition.criticalMultiplier}` : "Não cadastrado"}
 					/>
 				</div>
 			}

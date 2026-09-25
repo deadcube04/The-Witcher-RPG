@@ -1,11 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { RpgInlineSelect } from "../../../components/primitives/RpgControls";
 import type { OrdemData } from "../../../shared/contracts/character-sheet";
-import catalog from "../../../shared/contracts/ordem-catalog.json";
+import { queries } from "../../../shared/api/queries";
 
-const nexOptions = [
-	...Array.from({ length: 20 }, (_, index) => index * 5),
-	99,
-].map((nex) => ({ value: String(nex), label: `${nex}%` }));
 const creditOptions = [
 	{ value: "", label: "Não definido" },
 	{ value: "BAIXO", label: "Baixo" },
@@ -26,16 +23,18 @@ export function OrdemHeaderStats({
 	value: OrdemData;
 	onChange?: (value: OrdemData) => void;
 }) {
+	const options = useQuery(queries.characterOptions);
+	const nexOptions = (options.data?.nex ?? []).map((entry) => ({ value: String(entry.value), label: `${entry.value}%` }));
 	const stats = [
 		["NEX", `${value.nex}%`],
 		[
 			"Classe",
-			catalog.class_definition.find((entry) => entry.id === value.classId)
+			options.data?.classes.find((entry) => entry.id === value.classId)
 				?.name ?? "Não definida",
 		],
 		[
 			"Origem",
-			catalog.origin_definition.find((entry) => entry.id === value.originId)
+			options.data?.origins.find((entry) => entry.id === value.originId)
 				?.name ?? "Não definida",
 		],
 		["Crédito", value.creditLimit ?? "Não definido"],

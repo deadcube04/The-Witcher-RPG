@@ -5,6 +5,7 @@ import { contentSourceSchema } from "@/shared/contracts/content-source";
 export const ordemAttackInputSchema = z.strictObject({
 	name: nameSchema,
 	description: textSchema,
+	skillId: idSchema.nullable().optional(),
 	skillName: z.string().trim().min(1).max(120),
 	testExpression: z.string().trim().min(1).max(60),
 	damageExpression: z.string().trim().min(1).max(60),
@@ -17,11 +18,15 @@ export const ordemAttackInputSchema = z.strictObject({
 });
 
 export const ordemAttackDefinitionSchema = ordemAttackInputSchema.extend({
+	skillId: idSchema.nullable().optional(),
+	testExpression: z.string().nullable(),
+	criticalThreshold: z.number().int().nullable(),
+	criticalMultiplier: z.number().int().nullable(),
 	id: idSchema,
 	systemId: idSchema,
 	source: contentSourceSchema,
-	createdAt: z.iso.datetime(),
-	updatedAt: z.iso.datetime(),
+	createdAt: z.iso.datetime().nullable(),
+	updatedAt: z.iso.datetime().nullable(),
 });
 
 export const characterAttackEntrySchema = z.strictObject({
@@ -40,6 +45,7 @@ export const characterAttackSchema = z.strictObject({
 	sourceInventory: z
 		.strictObject({ entryId: idSchema, name: nameSchema })
 		.nullable(),
+	test: z.strictObject({ diceCount: z.number().int().min(1), keep: z.enum(["highest", "lowest"]), bonus: z.number().int() }).nullable().optional(),
 });
 
 export const attackAddSchema = z.strictObject({

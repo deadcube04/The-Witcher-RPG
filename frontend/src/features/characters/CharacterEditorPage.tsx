@@ -76,6 +76,7 @@ export function CharacterEditorPage() {
 		campaign?.systemId ??
 		(filters.systemId || preferences.data.activeSystemId);
 	const system = systems.data.find((entry) => entry.id === systemId);
+	if (!characterId && system?.status === "preview") return <div className="space-y-4 p-6"><h1 className="text-2xl">Sistema em prévia</h1><p>A criação de fichas está disponível em Ordem Paranormal 1.1.</p><Link to="/characters" className="underline">Voltar para fichas</Link></div>;
 	const definition = system && characterSheetRegistry.get(system.slug);
 	if (!definition)
 		return <RpgErrorState error={new ApiError("RPG_SYSTEM_NOT_FOUND")} />;
@@ -108,7 +109,7 @@ export function CharacterEditorPage() {
 			<ArchivePanel className="p-5 md:p-8" label="Dados do personagem"><CharacterForm
 				initial={initial}
 				campaigns={campaigns.data}
-				systems={systems.data}
+				systems={systems.data.filter((entry) => entry.status === "available")}
 				pending={mutation.isPending}
 				error={mutation.error}
 				systemLocked={!!characterId || !!campaign}

@@ -4,7 +4,7 @@ import type { CharacterInput } from "@/shared/contracts/character-sheet";
 import { DiceRoller } from "@/features/dice/DiceRoller";
 import { CharacterNarrative } from "@/features/characters/CharacterNarrative";
 import { CharacterSkills } from "@/features/characters/CharacterSkills";
-import type { CharacterSkill } from "@/features/characters/character-skills";
+import type { CharacterSkill } from "@/shared/contracts/character-skill";
 import { AttacksPanel } from "@/features/characters/ordem/content/AttacksPanel";
 import { InventoryPanel } from "@/features/characters/ordem/content/InventoryPanel";
 import { RitualsPanel } from "@/features/characters/ordem/content/RitualsPanel";
@@ -27,7 +27,7 @@ export function CharacterPanels({
 		<div className="space-y-8">
 			<div className="relative min-h-[560px]">
 				<div className="pr-[calc(clamp(72px,7vw,112px)+1rem)]">
-					<CharacterSkills skills={skills} onChange={onSkillsChange} />
+					<CharacterSkills skills={skills} attributes={character.systemData.kind === "ordem-paranormal" ? character.systemData.attributes : undefined} onChange={onSkillsChange} />
 				</div>
 				<RpgSheetDrawers
 					items={[

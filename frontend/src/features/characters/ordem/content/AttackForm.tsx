@@ -1,11 +1,14 @@
 import { useForm } from "@tanstack/react-form";
+import { useQuery } from "@tanstack/react-query";
 import { MutationFeedback } from "@/components/feedback/RemoteState";
 import { RpgForm } from "@/components/forms/RpgForm";
 import {
 	RpgButton,
 	RpgInput,
 	RpgNumber,
+	RpgSelect,
 } from "@/components/primitives/RpgControls";
+import { queries } from "@/shared/api/queries";
 import {
 	type OrdemAttackInput,
 	ordemAttackInputSchema,
@@ -25,6 +28,7 @@ export function AttackForm({
 	onSave: (input: OrdemAttackInput) => Promise<void>;
 	submitLabel?: string;
 }) {
+	const options = useQuery(queries.characterOptions);
 	const form = useForm({
 		defaultValues: initial,
 		validators: { onSubmit: ordemAttackInputSchema },
@@ -44,13 +48,14 @@ export function AttackForm({
 						/>
 					)}
 				</form.Field>
-				<form.Field name="skillName">
+				<form.Field name="skillId">
 					{(field) => (
-						<RpgInput
+						<RpgSelect
 							label="Perícia"
-							value={field.state.value}
-							onChange={field.handleChange}
-							disabled={pending}
+							value={field.state.value ?? ""}
+							onChange={(skillId) => { const skill = options.data?.skills.find((entry) => entry.id === skillId); field.handleChange(skillId || null); form.setFieldValue("skillName", skill?.name ?? ""); }}
+							options={[{ value: "", label: "Selecione uma perícia" }, ...(options.data?.skills ?? []).map((entry) => ({ value: entry.id, label: entry.name }))]}
+							disabled={pending || options.isPending || !!options.error}
 						/>
 					)}
 				</form.Field>
