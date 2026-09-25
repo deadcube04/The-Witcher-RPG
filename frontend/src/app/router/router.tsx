@@ -3,23 +3,56 @@ import {
 	createRoute,
 	createRouter,
 	Link,
+	lazyRouteComponent,
 	notFound,
 	type RouteComponent,
 	type RouterHistory,
 } from "@tanstack/react-router";
-import { CampaignDetailPage } from "../../features/campaigns/CampaignDetailPage";
-import { CampaignEditorPage } from "../../features/campaigns/CampaignEditorPage";
-import { CampaignsPage } from "../../features/campaigns/CampaignsPage";
-import { CharacterDetailPage } from "../../features/characters/CharacterDetailPage";
-import { CharacterEditorPage } from "../../features/characters/CharacterEditorPage";
-import { CharactersPage } from "../../features/characters/CharactersPage";
-import { HomePage } from "../../features/home/HomePage";
-import { AppearancePage } from "../../features/settings/AppearancePage";
-import { ProfilePage } from "../../features/settings/ProfilePage";
-import { SettingsPage } from "../../features/settings/SettingsPage";
-import { SystemsPage } from "../../features/systems/SystemsPage";
-import { idSchema } from "../../shared/contracts/common";
-import { AppShell } from "../layout/AppShell";
+import { AppShell } from "@/app/layout/AppShell";
+import { RpgSkeleton } from "@/components/feedback/RemoteState";
+import { HomePage } from "@/features/home/HomePage";
+import { idSchema } from "@/shared/contracts/common";
+
+const CampaignsPage = lazyRouteComponent(
+	() => import("@/features/campaigns/CampaignsPage"),
+	"CampaignsPage",
+);
+const CampaignEditorPage = lazyRouteComponent(
+	() => import("@/features/campaigns/CampaignEditorPage"),
+	"CampaignEditorPage",
+);
+const CampaignDetailPage = lazyRouteComponent(
+	() => import("@/features/campaigns/CampaignDetailPage"),
+	"CampaignDetailPage",
+);
+const CharactersPage = lazyRouteComponent(
+	() => import("@/features/characters/CharactersPage"),
+	"CharactersPage",
+);
+const CharacterEditorPage = lazyRouteComponent(
+	() => import("@/features/characters/CharacterEditorPage"),
+	"CharacterEditorPage",
+);
+const CharacterDetailPage = lazyRouteComponent(
+	() => import("@/features/characters/CharacterDetailPage"),
+	"CharacterDetailPage",
+);
+const SystemsPage = lazyRouteComponent(
+	() => import("@/features/systems/SystemsPage"),
+	"SystemsPage",
+);
+const SettingsPage = lazyRouteComponent(
+	() => import("@/features/settings/SettingsPage"),
+	"SettingsPage",
+);
+const ProfilePage = lazyRouteComponent(
+	() => import("@/features/settings/ProfilePage"),
+	"ProfilePage",
+);
+const AppearancePage = lazyRouteComponent(
+	() => import("@/features/settings/AppearancePage"),
+	"AppearancePage",
+);
 
 const rootRoute = createRootRoute({
 	component: AppShell,
@@ -96,5 +129,12 @@ const routes = paths.map((path) =>
 );
 const routeTree = rootRoute.addChildren(routes);
 export function createAppRouter(history?: RouterHistory) {
-	return createRouter({ routeTree, history, defaultPreload: "intent" });
+	return createRouter({
+		routeTree,
+		history,
+		defaultPreload: "intent",
+		defaultPendingComponent: RpgSkeleton,
+		defaultPendingMs: 250,
+		defaultPendingMinMs: 300,
+	});
 }

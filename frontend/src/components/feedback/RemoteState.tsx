@@ -4,8 +4,17 @@ import { RpgButton } from "../primitives/RpgControls";
 
 export function RpgSkeleton() {
 	return (
-		<div role="status" aria-label="Carregando" className="space-y-6 py-8">
-			<Skeleton active={false} paragraph={{ rows: 5 }} />
+		<div
+			role="status"
+			aria-label="Carregando página"
+			aria-busy="true"
+			className="min-h-64 space-y-6 py-8"
+		>
+			<Skeleton
+				active={false}
+				title
+				paragraph={{ rows: 4, width: ["85%", "100%", "72%", "56%"] }}
+			/>
 		</div>
 	);
 }
