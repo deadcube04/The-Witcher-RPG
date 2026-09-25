@@ -31,7 +31,7 @@ const elementDetails: Record<
 		label: "Morte",
 		icon: PiSpiralThin,
 		classes:
-			"border-stone-400/60 bg-[repeating-radial-gradient(circle_at_left,#57534e_0px,#292524_18px,#0c0a09_36px)] [--accent:#e7e0c3]",
+			"border-zinc-400/60 bg-[linear-gradient(135deg,#34363a_0%,#1a1c20_48%,#070809_100%)] [--accent:#d1d5db]",
 	},
 	knowledge: {
 		label: "Conhecimento",
