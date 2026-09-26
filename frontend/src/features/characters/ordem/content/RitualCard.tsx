@@ -110,28 +110,32 @@ export function RitualCard({
 			title={definition.name}
 			subtitle={`${definition.circle}º círculo · ${details.label} · ${definition.source.kind === "official" ? "Oficial" : "Homebrew"}`}
 			className={details.classes}
-			summary={definition.tiers ? (
-				<div className="grid grid-cols-3 gap-2">
-					<TierSummary
-						label="Normal"
-						tier={definition.tiers.normal}
-						onRoll={onRoll}
-						ritualName={definition.name}
-					/>
-					<TierSummary
-						label="Discente"
-						tier={definition.tiers.discente}
-						onRoll={onRoll}
-						ritualName={definition.name}
-					/>
-					<TierSummary
-						label="Verdadeiro"
-						tier={definition.tiers.verdadeiro}
-						onRoll={onRoll}
-						ritualName={definition.name}
-					/>
-				</div>
-			) : <RpgStatChip label="Efeitos" value="Não cadastrados" />}
+			summary={
+				definition.tiers ? (
+					<div className="grid grid-cols-3 gap-2">
+						<TierSummary
+							label="Normal"
+							tier={definition.tiers.normal}
+							onRoll={onRoll}
+							ritualName={definition.name}
+						/>
+						<TierSummary
+							label="Discente"
+							tier={definition.tiers.discente}
+							onRoll={onRoll}
+							ritualName={definition.name}
+						/>
+						<TierSummary
+							label="Verdadeiro"
+							tier={definition.tiers.verdadeiro}
+							onRoll={onRoll}
+							ritualName={definition.name}
+						/>
+					</div>
+				) : (
+					<RpgStatChip label="Efeitos" value="Não cadastrados" />
+				)
+			}
 		>
 			<p className="text-sm leading-6 opacity-80">
 				{definition.description || "Sem descrição."}
@@ -163,39 +167,45 @@ export function RitualCard({
 				</div>
 			</dl>
 			<div className="grid gap-3 lg:grid-cols-3">
-				{definition.tiers ? (["normal", "discente", "verdadeiro"] as const).map((key) => {
-					const tier = definition.tiers?.[key];
-					if (!tier) return null;
-					return (
-						<section
-							key={key}
-							className="space-y-3 rounded-lg border border-white/15 bg-black/20 p-3"
-						>
-							<h4 className="font-semibold capitalize">
-								{key} · {tier.peCost} PE
-							</h4>
-							<p className="text-xs leading-5 opacity-75">{tier.effect}</p>
-							<div className="flex flex-wrap gap-2">
-								{tier.rolls.map((roll) => (
-									<button
-										key={`${roll.label}-${roll.expression}`}
-										type="button"
-										disabled={!parseDiceExpression(roll.expression)}
-										onClick={() =>
-											onRoll(
-												`${definition.name} · ${roll.label}`,
-												roll.expression,
-											)
-										}
-										className="rounded-sm border border-white/20 px-3 py-2 font-mono text-xs hover:border-(--accent) focus-visible:outline-2 focus-visible:outline-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
-									>
-										{roll.label}: {roll.expression}
-									</button>
-								))}
-							</div>
-						</section>
-					);
-				}) : <p className="text-sm opacity-70">Os efeitos deste ritual ainda não estão cadastrados.</p>}
+				{definition.tiers ? (
+					(["normal", "discente", "verdadeiro"] as const).map((key) => {
+						const tier = definition.tiers?.[key];
+						if (!tier) return null;
+						return (
+							<section
+								key={key}
+								className="space-y-3 rounded-lg border border-(--edge)/60 bg-(--surface-raised) p-3"
+							>
+								<h4 className="font-semibold capitalize">
+									{key} · {tier.peCost} PE
+								</h4>
+								<p className="text-xs leading-5 opacity-75">{tier.effect}</p>
+								<div className="flex flex-wrap gap-2">
+									{tier.rolls.map((roll) => (
+										<button
+											key={`${roll.label}-${roll.expression}`}
+											type="button"
+											disabled={!parseDiceExpression(roll.expression)}
+											onClick={() =>
+												onRoll(
+													`${definition.name} · ${roll.label}`,
+													roll.expression,
+												)
+											}
+											className="rounded-sm border border-white/20 px-3 py-2 font-mono text-xs hover:border-(--accent) focus-visible:outline-2 focus-visible:outline-(--accent) disabled:cursor-not-allowed disabled:opacity-50"
+										>
+											{roll.label}: {roll.expression}
+										</button>
+									))}
+								</div>
+							</section>
+						);
+					})
+				) : (
+					<p className="text-sm opacity-70">
+						Os efeitos deste ritual ainda não estão cadastrados.
+					</p>
+				)}
 			</div>
 			<RpgInput
 				label="Notas da ficha"

@@ -10,7 +10,11 @@ import { useRpgRollFeedback } from "@/components/feedback/RpgRollFeedback";
 import { RpgModal } from "@/components/overlay/RpgModal";
 import { RpgConfirmDialog } from "@/components/overlay/RpgConfirmDialog";
 import { RpgButton } from "@/components/primitives/RpgControls";
-import { parseDiceExpression, rollDice, rollOrdemTest } from "@/features/dice/roll";
+import {
+	parseDiceExpression,
+	rollDice,
+	rollOrdemTest,
+} from "@/features/dice/roll";
 import { attackApi } from "@/shared/api/domains";
 import { keys, queries, useDomainMutation } from "@/shared/api/queries";
 import type {
@@ -168,7 +172,10 @@ export function AttacksPanel({ characterId }: { characterId: string }) {
 				onAdd={() => setCatalogOpen(true)}
 			/>
 			{mutationError ? (
-				<p role="alert" className="mb-4 border-l-2 border-red-400 pl-3 text-sm">
+				<p
+					role="alert"
+					className="mb-4 border-l-2 border-(--danger) pl-3 text-sm"
+				>
 					{mutationError.message}
 				</p>
 			) : null}
@@ -205,7 +212,13 @@ export function AttacksPanel({ characterId }: { characterId: string }) {
 										)
 									}
 									onRoll={roll}
-									onTestRoll={() => { if (attack.test) feedback.show(`Ataque · ${attack.definition.name}`, rollOrdemTest(attack.test)); }}
+									onTestRoll={() => {
+										if (attack.test)
+											feedback.show(
+												`Ataque · ${attack.definition.name}`,
+												rollOrdemTest(attack.test),
+											);
+									}}
 									onNotesChange={(notes) =>
 										updateEntry.mutate({ entryId: attack.entry.id, notes })
 									}

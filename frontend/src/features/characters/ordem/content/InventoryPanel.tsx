@@ -180,7 +180,10 @@ export function InventoryPanel({ characterId }: { characterId: string }) {
 				onAdd={() => setCatalogOpen(true)}
 			/>
 			{mutationError ? (
-				<p role="alert" className="mb-4 border-l-2 border-red-400 pl-3 text-sm">
+				<p
+					role="alert"
+					className="mb-4 border-l-2 border-(--danger) pl-3 text-sm"
+				>
 					{mutationError.message}
 				</p>
 			) : null}

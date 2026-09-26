@@ -44,7 +44,7 @@ export function RpgButton({
 			className={
 				"min-h-11! rounded-full! px-6! font-semibold! shadow-none! transition-transform! duration-500! ease-[cubic-bezier(0.32,0.72,0,1)]! active:scale-[0.98]! focus-visible:outline-2! focus-visible:outline-offset-4! " +
 				(!secondary && !danger && !disabled
-					? "bg-(--accent)! text-(--canvas)!"
+					? "bg-(--accent)! text-(--on-accent)!"
 					: "")
 			}
 		>
@@ -68,7 +68,7 @@ export function RpgField({ label, error, hint, children }: FieldProps) {
 			{children(id)}
 			{hint && <p className="text-xs opacity-75">{hint}</p>}
 			{error && (
-				<p id={`${id}-error`} role="alert" className="text-sm text-red-400">
+				<p id={`${id}-error`} role="alert" className="text-sm text-(--danger)">
 					{error}
 				</p>
 			)}
@@ -277,13 +277,9 @@ export function RpgInlineSelect({
 					{!closing && (
 						<motion.div
 							key="inline-select-menu"
-							initial={
-								reduced ? false : { opacity: 0, y: -6, scaleY: 0.96 }
-							}
+							initial={reduced ? false : { opacity: 0, y: -6, scaleY: 0.96 }}
 							animate={{ opacity: 1, y: 0, scaleY: 1 }}
-							exit={
-								reduced ? undefined : { opacity: 0, y: -6, scaleY: 0.96 }
-							}
+							exit={reduced ? undefined : { opacity: 0, y: -6, scaleY: 0.96 }}
 							transition={transition}
 							className="origin-top overflow-hidden"
 						>

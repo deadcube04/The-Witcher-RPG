@@ -9,6 +9,7 @@ import (
 
 	"RPG-manager/backend/internal/apperr"
 	"RPG-manager/backend/internal/domain"
+
 	"gorm.io/gorm"
 )
 
@@ -74,10 +75,16 @@ func (r *Repository) Preferences(ctx context.Context) (domain.Preferences, error
 		ActiveRpgSystemID *string
 		ActiveThemeID     *string
 		SidebarMode       *string
+		ColorMode         string
 	}
-	err := r.DB.WithContext(ctx).Table("public.user_preferences").Select("active_rpg_system_id, active_theme_id, sidebar_mode").Where("user_id = ?", r.UserID).Take(&row).Error
+	err := r.DB.WithContext(ctx).Table("public.user_preferences").Select("active_rpg_system_id, active_theme_id, sidebar_mode, color_mode").Where("user_id = ?", r.UserID).Take(&row).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.Preferences{}, fmt.Errorf("read preferences: %w", err)
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		theme := "nexus"
+		row.ActiveThemeID = &theme
+		row.ColorMode = "system"
 	}
 	if row.ActiveRpgSystemID == nil {
 		var id string
@@ -90,13 +97,13 @@ func (r *Repository) Preferences(ctx context.Context) (domain.Preferences, error
 	if row.SidebarMode != nil {
 		mode = *row.SidebarMode
 	}
-	return domain.Preferences{ActiveSystemID: *row.ActiveRpgSystemID, ActiveThemeID: row.ActiveThemeID, SidebarMode: mode}, nil
+	return domain.Preferences{ActiveSystemID: *row.ActiveRpgSystemID, ActiveThemeID: row.ActiveThemeID, SidebarMode: mode, ColorMode: row.ColorMode}, nil
 }
 
 func (r *Repository) UpdatePreferences(ctx context.Context, p domain.Preferences) (domain.Preferences, error) {
-	err := r.DB.WithContext(ctx).Exec(`INSERT INTO public.user_preferences(user_id, active_rpg_system_id, active_theme_id, sidebar_mode)
-		VALUES (?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET active_rpg_system_id=EXCLUDED.active_rpg_system_id,
-		active_theme_id=EXCLUDED.active_theme_id, sidebar_mode=EXCLUDED.sidebar_mode, updated_at=now()`, r.UserID, p.ActiveSystemID, p.ActiveThemeID, p.SidebarMode).Error
+	err := r.DB.WithContext(ctx).Exec(`INSERT INTO public.user_preferences(user_id, active_rpg_system_id, active_theme_id, sidebar_mode, color_mode)
+		VALUES (?, ?, ?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET active_rpg_system_id=EXCLUDED.active_rpg_system_id,
+		active_theme_id=EXCLUDED.active_theme_id, sidebar_mode=EXCLUDED.sidebar_mode, color_mode=EXCLUDED.color_mode, updated_at=now()`, r.UserID, p.ActiveSystemID, p.ActiveThemeID, p.SidebarMode, p.ColorMode).Error
 	if err != nil {
 		return domain.Preferences{}, fmt.Errorf("update preferences: %w", err)
 	}

@@ -45,7 +45,7 @@ func (s *Service) Preferences(ctx context.Context) (domain.Preferences, error) {
 	return s.repo.Preferences(ctx)
 }
 
-func (s *Service) UpdatePreferences(ctx context.Context, p domain.Preferences) (domain.Preferences, error) {
+func (s *Service) UpdatePreferences(ctx context.Context, p domain.Preferences, allowThemeFallback bool) (domain.Preferences, error) {
 	systems, err := s.systems.List(ctx)
 	if err != nil {
 		return domain.Preferences{}, err
@@ -65,7 +65,21 @@ func (s *Service) UpdatePreferences(ctx context.Context, p domain.Preferences) (
 				}
 			}
 			if !found {
-				return domain.Preferences{}, apperr.ErrInvalid
+				if !allowThemeFallback {
+					return domain.Preferences{}, apperr.ErrInvalid
+				}
+				nexusAvailable := false
+				for _, theme := range system.AvailableThemes {
+					if theme == "nexus" {
+						nexusAvailable = true
+						break
+					}
+				}
+				if !nexusAvailable {
+					return domain.Preferences{}, apperr.ErrInvalid
+				}
+				theme := "nexus"
+				p.ActiveThemeID = &theme
 			}
 		}
 		break
@@ -74,6 +88,9 @@ func (s *Service) UpdatePreferences(ctx context.Context, p domain.Preferences) (
 		return domain.Preferences{}, apperr.ErrNotFound
 	}
 	if p.SidebarMode != "collapsed" && p.SidebarMode != "expanded" && p.SidebarMode != "always-collapsed" {
+		return domain.Preferences{}, apperr.ErrInvalid
+	}
+	if p.ColorMode != "system" && p.ColorMode != "light" && p.ColorMode != "dark" {
 		return domain.Preferences{}, apperr.ErrInvalid
 	}
 	return s.repo.UpdatePreferences(ctx, p)

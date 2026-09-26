@@ -4,7 +4,10 @@ import { PiArrowUpRightThin } from "react-icons/pi";
 
 export function ArchiveEyebrow({ children }: { children: ReactNode }) {
 	return (
-		<p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.24em] text-(--accent)">
+		<p
+			data-eyebrow
+			className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.24em] text-(--accent)"
+		>
 			{children}
 		</p>
 	);
@@ -44,7 +47,9 @@ export function PageMasthead({
 					</p>
 				)}
 			</motion.div>
-			{actions && <div className="flex flex-wrap gap-3 lg:justify-end">{actions}</div>}
+			{actions && (
+				<div className="flex flex-wrap gap-3 lg:justify-end">{actions}</div>
+			)}
 		</header>
 	);
 }
@@ -74,23 +79,37 @@ export function MediaFrame({
 	children,
 	className = "",
 	priority = false,
+	tone = "photo",
 }: {
 	src: string;
 	alt: string;
 	children?: ReactNode;
 	className?: string;
 	priority?: boolean;
+	tone?: "photo" | "brand";
 }) {
 	return (
-		<div className={`relative isolate overflow-hidden rounded-3xl bg-(--surface-raised) ring-1 ring-white/8 ${className}`}>
+		<div
+			className={`relative isolate overflow-hidden rounded-3xl bg-(--surface-raised) ring-1 ring-(--edge)/50 ${tone === "photo" ? "[&_[data-eyebrow]]:text-(--media-accent)" : ""} ${className}`}
+		>
 			<img
 				src={src}
 				alt={alt}
 				loading={priority ? "eager" : "lazy"}
 				fetchPriority={priority ? "high" : "auto"}
-				className="absolute inset-0 size-full object-cover"
+				className={
+					"absolute inset-0 size-full object-cover " +
+					(tone === "brand" ? "opacity-20 mix-blend-luminosity" : "")
+				}
 			/>
-			<div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,var(--scrim)_0%,color-mix(in_srgb,var(--scrim)_86%,transparent)_42%,color-mix(in_srgb,var(--scrim)_28%,transparent)_100%)]" />
+			<div
+				aria-hidden="true"
+				className={
+					tone === "brand"
+						? "absolute inset-0 bg-linear-to-r from-(--surface) via-(--surface)/80 to-transparent"
+						: "absolute inset-0 bg-[linear-gradient(90deg,var(--scrim)_0%,color-mix(in_srgb,var(--scrim)_86%,transparent)_42%,color-mix(in_srgb,var(--scrim)_28%,transparent)_100%)]"
+				}
+			/>
 			<div className="relative z-10">{children}</div>
 		</div>
 	);

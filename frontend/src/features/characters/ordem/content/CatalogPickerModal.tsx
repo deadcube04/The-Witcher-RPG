@@ -83,7 +83,10 @@ export function CatalogPickerModal<TChoice extends CatalogChoice>({
 						</RpgButton>
 					</div>
 					{actionError ? (
-						<p role="alert" className="border-l-2 border-red-400 pl-3 text-sm">
+						<p
+							role="alert"
+							className="border-l-2 border-(--danger) pl-3 text-sm"
+						>
 							{actionError.message}
 						</p>
 					) : null}

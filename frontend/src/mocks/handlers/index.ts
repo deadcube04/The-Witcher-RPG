@@ -38,8 +38,14 @@ export function createHandlers(repo: MockRepository) {
 					state.systems.find(
 						(item) => item.id === preferences.activeSystemId,
 					) ?? fail("RPG_SYSTEM_NOT_FOUND");
-				if (input.activeSystemId && input.activeThemeId === undefined)
-					preferences.activeThemeId = system.availableThemes[0] ?? null;
+				if (
+					input.activeSystemId &&
+					input.activeSystemId !== state.preferences.activeSystemId &&
+					input.activeThemeId === undefined &&
+					preferences.activeThemeId !== null &&
+					!system.availableThemes.includes(preferences.activeThemeId)
+				)
+					preferences.activeThemeId = "nexus";
 				if (
 					preferences.activeThemeId !== null &&
 					!system.availableThemes.includes(preferences.activeThemeId)

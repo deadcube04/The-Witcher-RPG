@@ -14,6 +14,7 @@ type Preferences struct {
 	ActiveSystemID string  `json:"activeSystemId"`
 	ActiveThemeID  *string `json:"activeThemeId"`
 	SidebarMode    string  `json:"sidebarMode"`
+	ColorMode      string  `json:"colorMode"`
 }
 
 type System struct {

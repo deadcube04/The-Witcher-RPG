@@ -33,6 +33,7 @@ export const systems: RpgSystem[] = [
 		description: "Investigue o impossível. Atravesse a membrana.",
 		status: "available",
 		availableThemes: [
+			"nexus",
 			"ordem-sangue",
 			"ordem-morte",
 			"ordem-conhecimento",
@@ -46,7 +47,7 @@ export const systems: RpgSystem[] = [
 		name: "Dungeons & Dragons",
 		description: "Aventuras, magia e mundos por descobrir.",
 		status: "preview",
-		availableThemes: [],
+		availableThemes: ["nexus"],
 	},
 	{
 		id: witcherId,
@@ -54,7 +55,7 @@ export const systems: RpgSystem[] = [
 		name: "The Witcher RPG",
 		description: "Monstros, escolhas e caminhos entre reinos.",
 		status: "preview",
-		availableThemes: [],
+		availableThemes: ["nexus"],
 	},
 ];
 export function createSeed() {
@@ -74,7 +75,8 @@ export function createSeed() {
 		},
 		preferences: {
 			activeSystemId: ordemId,
-			activeThemeId: null,
+			activeThemeId: "nexus" as const,
+			colorMode: "system" as const,
 			sidebarMode: "collapsed" as const,
 		},
 		systems,

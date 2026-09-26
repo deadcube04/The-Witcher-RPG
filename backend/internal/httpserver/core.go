@@ -115,6 +115,7 @@ func (a *API) patchPreferences(c *gin.Context) {
 		a.failure(c, err, "USER_NOT_FOUND")
 		return
 	}
+	previousSystemID := p.ActiveSystemID
 	for key, raw := range in {
 		if bytes.Equal(raw, []byte("null")) && key == "activeThemeId" {
 			p.ActiveThemeID = nil
@@ -134,6 +135,8 @@ func (a *API) patchPreferences(c *gin.Context) {
 			p.ActiveSystemID = value
 		case "activeThemeId":
 			p.ActiveThemeID = &value
+		case "colorMode":
+			p.ColorMode = value
 		case "sidebarMode":
 			p.SidebarMode = value
 		default:
@@ -141,7 +144,8 @@ func (a *API) patchPreferences(c *gin.Context) {
 			return
 		}
 	}
-	p, err = s.UpdatePreferences(c.Request.Context(), p)
+	_, themeSpecified := in["activeThemeId"]
+	p, err = s.UpdatePreferences(c.Request.Context(), p, p.ActiveSystemID != previousSystemID && !themeSpecified)
 	if err != nil {
 		a.failure(c, err, "RPG_SYSTEM_NOT_FOUND")
 		return

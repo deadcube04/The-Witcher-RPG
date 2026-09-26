@@ -1,19 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import {
 	MutationFeedback,
-	RpgEmptyState,
 	RpgErrorState,
 	RpgSkeleton,
-} from "../../components/feedback/RemoteState";
-import { PageHeader } from "../../components/navigation/PageHeader";
-import { RpgButton, RpgSelect } from "../../components/primitives/RpgControls";
-import { RpgVisualProvider } from "../../components/primitives/RpgVisualProvider";
-import { preferencesApi } from "../../shared/api/domains";
-import { keys, queries, useDomainMutation } from "../../shared/api/queries";
-import { defaultTheme, themes } from "../themes/definitions";
-import { useThemeMutation } from "../themes/useThemeMutation";
-import { ArchiveEyebrow, ArchivePanel } from "@/components/layout/ArchiveSurface";
-import { archiveArt } from "@/shared/lib/system-art";
+} from "@/components/feedback/RemoteState";
+import { PageHeader } from "@/components/navigation/PageHeader";
+import { RpgSelect } from "@/components/primitives/RpgControls";
+import { preferencesApi } from "@/shared/api/domains";
+import { keys, queries, useDomainMutation } from "@/shared/api/queries";
+import { AppearanceThemes } from "@/features/settings/AppearanceThemes";
+import { useThemeMutation } from "@/features/themes/useThemeMutation";
+import { ArchivePanel } from "@/components/layout/ArchiveSurface";
 
 export function AppearancePage() {
 	const preferences = useQuery(queries.preferences);
@@ -40,16 +37,13 @@ export function AppearancePage() {
 	const available =
 		systems.data.find((system) => system.id === preferences.data.activeSystemId)
 			?.availableThemes ?? [];
-	const themeChoices = [
-		defaultTheme,
-		...themes.filter((theme) => available.includes(theme.id)),
-	];
+	const pending = mutation.isPending || sidebarMutation.isPending;
 	return (
 		<>
 			<PageHeader
 				eyebrow="Configurações / Aparência"
 				title="A atmosfera da sua história"
-				description="Escolha um elemento. Cada tema transforma a linguagem do seu arquivo."
+				description="Escolha a aparência do NEXUS e mantenha suas histórias por perto."
 			/>
 			<ArchivePanel className="mb-8 max-w-2xl space-y-4 p-5 md:p-7">
 				<div>
@@ -70,7 +64,7 @@ export function AppearancePage() {
 						)
 							sidebarMutation.mutate({ sidebarMode: value });
 					}}
-					disabled={sidebarMutation.isPending}
+					disabled={pending}
 					options={[
 						{
 							value: "collapsed",
@@ -85,49 +79,12 @@ export function AppearancePage() {
 					success={sidebarMutation.isSuccess}
 				/>
 			</ArchivePanel>
-			<div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-				{themeChoices.map((theme) => {
-					const activeThemeId = theme.id === "neutral" ? null : theme.id;
-					const active = preferences.data.activeThemeId === activeThemeId;
-					return (
-						<section
-							key={theme.id}
-							className={`${theme.classes} flex flex-col overflow-hidden rounded-3xl border border-(--edge)/70 bg-(--canvas) p-2 text-(--ink) shadow-[0_22px_70px_var(--shadow)] ${active ? "md:col-span-2 xl:col-span-2" : ""}`}
-						>
-							<div
-								className="relative mb-2 min-h-48 overflow-hidden rounded-[1.15rem]"
-							>
-								<img src={archiveArt.ordem} alt="" loading="lazy" className="absolute inset-0 size-full object-cover opacity-55 mix-blend-luminosity" />
-								<div className={`absolute inset-0 ${theme.decoration}`} />
-								<div className="relative flex min-h-48 flex-col justify-between p-5"><span className="font-mono text-[10px] tracking-widest">{theme.mark}</span><span className="font-serif text-3xl">O outro lado.</span></div>
-							</div>
-							<div className="flex grow flex-col p-4"><ArchiveEyebrow>{active ? "Tema ativo" : "Atmosfera disponível"}</ArchiveEyebrow><h3 className="mt-2 font-serif text-3xl">{theme.name}</h3>
-							<p className="my-4 grow text-sm leading-6 text-(--muted)">
-								{theme.description}
-							</p>
-							<RpgVisualProvider theme={theme}>
-								<RpgButton
-									disabled={mutation.isPending || active}
-									onClick={() => mutation.mutate(activeThemeId)}
-								>
-									{active ? `${theme.name} ativo` : `Aplicar ${theme.name}`}
-								</RpgButton>
-							</RpgVisualProvider>
-							</div>
-						</section>
-					);
-				})}
-			</div>
-			{available.length === 0 && (
-				<div className="mt-6">
-					<RpgEmptyState title="Sem temas específicos para este sistema">
-						<p>
-							Selecione Ordem Paranormal em Sistemas para explorar os cinco
-							elementos.
-						</p>
-					</RpgEmptyState>
-				</div>
-			)}
+			<AppearanceThemes
+				preferences={preferences.data}
+				available={available}
+				pending={pending}
+				onSelect={(patch) => mutation.mutate(patch)}
+			/>
 			<div className="mt-6">
 				<MutationFeedback error={mutation.error} success={mutation.isSuccess} />
 			</div>

@@ -1,9 +1,18 @@
 import { z } from "zod";
 import { campaignSchema } from "@/shared/contracts/campaign";
 import { characterSchema } from "@/shared/contracts/character-sheet";
-import { characterAttackEntrySchema, ordemAttackDefinitionSchema } from "@/shared/contracts/ordem-attack";
-import { characterInventoryEntrySchema, ordemInventoryDefinitionSchema } from "@/shared/contracts/ordem-inventory";
-import { characterRitualEntrySchema, ordemRitualDefinitionSchema } from "@/shared/contracts/ordem-ritual";
+import {
+	characterAttackEntrySchema,
+	ordemAttackDefinitionSchema,
+} from "@/shared/contracts/ordem-attack";
+import {
+	characterInventoryEntrySchema,
+	ordemInventoryDefinitionSchema,
+} from "@/shared/contracts/ordem-inventory";
+import {
+	characterRitualEntrySchema,
+	ordemRitualDefinitionSchema,
+} from "@/shared/contracts/ordem-ritual";
 import { preferencesSchema } from "@/shared/contracts/preferences";
 import { systemSchema } from "@/shared/contracts/rpg-system";
 import { userSchema } from "@/shared/contracts/user";
@@ -36,30 +45,67 @@ export type MockDatabase = z.infer<typeof databaseSchema>;
 type Persistence = Pick<Storage, "getItem" | "setItem">;
 export const persistenceKey = "rpg-manager:mock:v1";
 function record(value: unknown): Record<string, unknown> | null {
-	return value !== null && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
+	return value !== null && typeof value === "object" && !Array.isArray(value)
+		? (value as Record<string, unknown>)
+		: null;
 }
 function normalizeLegacy(value: unknown): unknown {
 	const data = record(value);
 	if (!data) return value;
-	const systems = Array.isArray(data.systems) ? data.systems.map((entry: unknown) => {
-		const system = record(entry);
-		return system?.slug === "dnd" ? { ...system, slug: "dungeons-and-dragons" } : entry;
-	}) : data.systems;
-	const characters = Array.isArray(data.characters) ? data.characters.map((entry: unknown) => {
-		const character = record(entry);
-		const systemData = record(character?.systemData);
-		if (!character || !systemData) return entry;
-		if (systemData.kind === "dnd") return { ...character, systemData: { kind: "dungeons-and-dragons" } };
-		if (systemData.kind !== "ordem-paranormal") return entry;
-		const resources = record(systemData.resources);
-		const normalizeResource = (resource: unknown) => {
-			const r = record(resource);
-			if (!r) return resource;
-			return { ...r, baseMaximum: r.baseMaximum ?? r.maximum ?? 0, maxAdjustment: r.maxAdjustment ?? 0 };
-		};
-		return { ...character, systemData: { ...systemData, peLimit: systemData.peLimit ?? 0, resources: resources ? { health: normalizeResource(resources.health), effort: normalizeResource(resources.effort), sanity: normalizeResource(resources.sanity) } : systemData.resources } };
-	}) : data.characters;
-	return { ...data, systems, characters };
+	const systems = Array.isArray(data.systems)
+		? data.systems.map((entry: unknown) => {
+				const system = record(entry);
+				if (!system || !Array.isArray(system.availableThemes)) return entry;
+				return {
+					...system,
+					slug: system.slug === "dnd" ? "dungeons-and-dragons" : system.slug,
+					availableThemes: [...new Set(["nexus", ...system.availableThemes])],
+				};
+			})
+		: data.systems;
+	const characters = Array.isArray(data.characters)
+		? data.characters.map((entry: unknown) => {
+				const character = record(entry);
+				const systemData = record(character?.systemData);
+				if (!character || !systemData) return entry;
+				if (systemData.kind === "dnd")
+					return { ...character, systemData: { kind: "dungeons-and-dragons" } };
+				if (systemData.kind !== "ordem-paranormal") return entry;
+				const resources = record(systemData.resources);
+				const normalizeResource = (resource: unknown) => {
+					const r = record(resource);
+					if (!r) return resource;
+					return {
+						...r,
+						baseMaximum: r.baseMaximum ?? r.maximum ?? 0,
+						maxAdjustment: r.maxAdjustment ?? 0,
+					};
+				};
+				return {
+					...character,
+					systemData: {
+						...systemData,
+						peLimit: systemData.peLimit ?? 0,
+						resources: resources
+							? {
+									health: normalizeResource(resources.health),
+									effort: normalizeResource(resources.effort),
+									sanity: normalizeResource(resources.sanity),
+								}
+							: systemData.resources,
+					},
+				};
+			})
+		: data.characters;
+	const preferences = record(data.preferences);
+	return {
+		...data,
+		systems,
+		characters,
+		preferences: preferences
+			? { ...preferences, colorMode: preferences.colorMode ?? "system" }
+			: data.preferences,
+	};
 }
 export class MockRepository {
 	private readonly storage: Persistence;
@@ -76,7 +122,8 @@ export class MockRepository {
 		const data: unknown = normalizeLegacy(JSON.parse(saved));
 		const current = databaseSchema.safeParse(data);
 		if (current.success) {
-			if (JSON.stringify(data) !== saved) this.storage.setItem(persistenceKey, JSON.stringify(current.data));
+			if (JSON.stringify(data) !== saved)
+				this.storage.setItem(persistenceKey, JSON.stringify(current.data));
 			return current.data;
 		}
 		const previous = databaseV1Schema.safeParse(data);

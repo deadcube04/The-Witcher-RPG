@@ -1,15 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import {
-	RpgErrorState,
-	RpgSkeleton,
-} from "../../components/feedback/RemoteState";
-import { PageHeader } from "../../components/navigation/PageHeader";
-import { queries } from "../../shared/api/queries";
-import { useListFilters } from "../../shared/hooks/useListFilters";
-import { matchesName } from "../../shared/lib/search";
-import { CharacterFilters } from "./CharacterFilters";
-import { CharacterList } from "./CharacterList";
+import { RpgErrorState, RpgSkeleton } from "@/components/feedback/RemoteState";
+import { PageHeader } from "@/components/navigation/PageHeader";
+import { queries } from "@/shared/api/queries";
+import { useListFilters } from "@/shared/hooks/useListFilters";
+import { matchesName } from "@/shared/lib/search";
+import { CharacterFilters } from "@/features/characters/CharacterFilters";
+import { CharacterList } from "@/features/characters/CharacterList";
 
 export function CharactersPage() {
 	const characters = useQuery(queries.characters);
@@ -50,7 +47,7 @@ export function CharactersPage() {
 				actions={
 					<Link
 						to="/characters/new"
-						className="inline-flex min-h-12 items-center rounded-full bg-(--accent) px-6 text-sm font-bold text-(--canvas) active:scale-[0.98]"
+						className="inline-flex min-h-12 items-center rounded-full bg-(--accent) px-6 text-sm font-bold text-(--on-accent) active:scale-[0.98]"
 					>
 						Nova ficha
 					</Link>

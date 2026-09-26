@@ -1,24 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { Outlet, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { AnimatedPage } from "../../components/motion/AnimatedPage";
-import { RpgVisualProvider } from "../../components/primitives/RpgVisualProvider";
-import { resolveTheme } from "../../features/themes/definitions";
-import { queries } from "../../shared/api/queries";
-import { AppSidebar } from "./AppSidebar";
+import { AnimatedPage } from "@/components/motion/AnimatedPage";
+import { RpgVisualProvider } from "@/components/primitives/RpgVisualProvider";
+import { resolveTheme } from "@/features/themes/definitions";
+import { queries } from "@/shared/api/queries";
+import { AppSidebar } from "@/app/layout/AppSidebar";
+
+import { useColorMode } from "@/features/themes/useColorMode";
 
 const pageContext = [
-	[/^\/$/, ["Arquivo", "Início"]],
-	[/^\/campaigns\/new/, ["Campanhas", "Novo registro"]],
-	[/^\/campaigns\/[^/]+\/edit/, ["Campanhas", "Editar registro"]],
-	[/^\/campaigns\/[^/]+/, ["Campanhas", "Dossier"]],
-	[/^\/campaigns/, ["Arquivo", "Campanhas"]],
-	[/^\/characters\/new/, ["Fichas", "Novo registro"]],
-	[/^\/characters\/[^/]+\/edit/, ["Fichas", "Editar registro"]],
-	[/^\/characters\/[^/]+/, ["Fichas", "Documento ativo"]],
-	[/^\/characters/, ["Arquivo", "Fichas"]],
-	[/^\/systems/, ["Arquivo", "Universos"]],
-	[/^\/settings/, ["Arquivo", "Preferências"]],
+	[/^\/$/, ["NEXUS", "Início"]],
+	[/^\/campaigns\/new/, ["Campanhas", "Nova campanha"]],
+	[/^\/campaigns\/[^/]+\/edit/, ["Campanhas", "Editar campanha"]],
+	[/^\/campaigns\/[^/]+/, ["Campanhas", "Detalhes"]],
+	[/^\/campaigns/, ["NEXUS", "Campanhas"]],
+	[/^\/characters\/new/, ["Fichas", "Novo personagem"]],
+	[/^\/characters\/[^/]+\/edit/, ["Fichas", "Editar personagem"]],
+	[/^\/characters\/[^/]+/, ["Fichas", "Personagem"]],
+	[/^\/characters/, ["NEXUS", "Fichas"]],
+	[/^\/systems/, ["NEXUS", "Universos"]],
+	[/^\/settings/, ["NEXUS", "Preferências"]],
 	[/^\/admin\/errors/, ["Administração", "Erros da aplicação"]],
 	[/^\/admin/, ["Administração", "Painel"]],
 ] as const;
@@ -38,25 +40,49 @@ export function AppShell() {
 	const collapsed =
 		sidebarMode === "always-collapsed" ||
 		(sidebarMode === "collapsed" && !sidebarHovered && !sidebarFocused);
-	const theme = resolveTheme(preferences.data?.activeThemeId ?? null);
+	const colorMode = useColorMode(preferences.data?.colorMode ?? "system");
+	const theme = resolveTheme(
+		preferences.data?.activeThemeId ?? null,
+		colorMode,
+	);
 	const activeSystem = systems.data?.find(
 		(system) => system.id === preferences.data?.activeSystemId,
 	);
-	const [section, page] =
-		pageContext.find(([pattern]) => pattern.test(pathname))?.[1] ??
-		["Arquivo", "Registro"];
+	const [section, page] = pageContext.find(([pattern]) =>
+		pattern.test(pathname),
+	)?.[1] ?? ["NEXUS", "Página"];
+	if (!preferences.data)
+		return (
+			<div className="grid min-h-dvh place-items-center bg-[#0f1117] p-6 text-[#c9cdd6]">
+				{preferences.isError ? (
+					<div role="alert">
+						<p>Não foi possível carregar sua aparência.</p>
+						<button
+							type="button"
+							className="mt-4 underline focus-visible:outline-2"
+							onClick={() => void preferences.refetch()}
+						>
+							Tentar novamente
+						</button>
+					</div>
+				) : (
+					<p role="status">Carregando NEXUS…</p>
+				)}
+			</div>
+		);
 	return (
 		<div
 			data-theme={theme.id}
+			data-color-mode={theme.mode ?? "dark"}
 			className={
 				theme.classes +
-				" min-h-[100dvh] max-h-[100dvh] overflow-y-auto bg-(--canvas) font-sans text-(--ink) selection:bg-(--accent) selection:text-(--canvas)"
+				" min-h-[100dvh] max-h-[100dvh] overflow-y-auto bg-(--canvas) font-sans text-(--ink) selection:bg-(--accent) selection:text-(--on-accent)"
 			}
 		>
 			<RpgVisualProvider theme={theme}>
 				<a
 					href="#main-content"
-					className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-(--accent) focus:p-3 focus:text-(--canvas)"
+					className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-(--accent) focus:p-3 focus:text-(--on-accent)"
 				>
 					Pular para conteúdo
 				</a>
@@ -84,7 +110,9 @@ export function AppShell() {
 						<div className="mx-auto flex max-w-[1480px] items-center justify-between gap-4">
 							<div className="flex min-w-0 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em]">
 								<span className="text-(--muted)">{section}</span>
-								<span aria-hidden="true" className="text-(--edge)">/</span>
+								<span aria-hidden="true" className="text-(--edge)">
+									/
+								</span>
 								<span className="truncate text-(--accent)">{page}</span>
 							</div>
 							<span className="truncate text-xs text-(--muted)">

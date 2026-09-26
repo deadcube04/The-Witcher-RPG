@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { RpgEmptyState } from "../feedback/RemoteState";
+import { RpgEmptyState } from "@/components/feedback/RemoteState";
 
 export function ResourceLinks({
 	items,
@@ -10,7 +10,7 @@ export function ResourceLinks({
 }) {
 	if (!items.length)
 		return (
-			<RpgEmptyState title="Seu arquivo começa aqui">
+			<RpgEmptyState title="Suas histórias começam aqui">
 				<Link to={`/${kind}/new`} className="text-(--accent) underline">
 					Criar {kind === "campaigns" ? "campanha" : "ficha"}
 				</Link>
