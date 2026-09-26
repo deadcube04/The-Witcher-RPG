@@ -5,8 +5,9 @@ O dump de referência é `dumps/rpg-manager-backup-shema.sql`. Antes das altera�
 As migrações são SQL versionado em `backend/migrations`:
 
 1. `202609250001_backend_foundation.sql`: campanhas, vínculo opcional da ficha, ajustes de recurso, atributo de perícia, metadados de entradas, proprietário de homebrew, níveis de ritual e definições de ataque; inclui The Witcher em preview e ajuste de username.
-2. `202609250002_official_attacks.sql`: deriva 36 definições de ataque das armas oficiais existentes.
+2. `202609250002_official_attacks.sql`: deriva definições de ataque das armas oficiais existentes no banco (36 na inspeção inicial).
 3. `202609250003_local_import.sql`: mapa de importação idempotente por usuário, tipo e ID local.
+4. `202609250004_public_user_tables.sql`: move `core.users`, `core.user_preferences` e `core.local_import_map` para o schema `public`. As chaves estrangeiras existentes acompanham as tabelas no PostgreSQL. O backend atual consulta `public.users`, `public.user_preferences` e `public.local_import_map`, portanto precisa das quatro migrações aplicadas.
 
 Não rode migrações na inicialização da API. Após carregar `DATABASE_URL` no PowerShell:
 

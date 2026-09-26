@@ -1,5 +1,7 @@
 # Especificação aprovada: backend e integração local
 
+Este documento registra as decisões e o estado observado durante o planejamento. Os trechos no futuro e as contagens do banco são históricos. Para operar ou integrar o backend presente no diretório de trabalho, consulte [arquitetura](architecture.md), [contratos HTTP](api-contract.md), [migrações](migrations.md) e [execução local](local-setup.md).
+
 ## Objetivo e limite
 
 Implementar um backend Go que atenda integralmente as telas e contratos HTTP atuais do frontend React/Vite, conectá-lo ao PostgreSQL local `rpg-manager` e preservar os dados existentes. A entrega inclui a integração do frontend, persistência da edição inline da ficha e importação opcional de dados do mock. Recursos do dump sem uso nas telas atuais não ganham API nesta entrega.
@@ -8,10 +10,10 @@ A aplicação continua local e de usuário único. A API escuta somente em `127.
 
 Ordem Paranormal 1.1 é o único sistema que permite criar campanhas e fichas. D&D e The Witcher aparecem e podem ser selecionados para exploração, mas são preview. A seleção do sistema não modifica campanhas ou fichas existentes. O slug canônico de D&D no banco é `dungeons-and-dragons`; o frontend atual usa `dnd` e terá de ser ajustado.
 
-## Estado confirmado do repositório e banco
+## Estado observado durante o planejamento do repositório e banco
 
-- O backend contém apenas `backend/main.go`, com Gin, `GET /api/health` e escuta em `:8080`.
-- `backend/go.mod` declara Go 1.26.1 e já contém Gin 1.12, `gin-contrib/cors` 1.7.7, GORM 1.31.2 e o driver PostgreSQL 1.6.2. O Go instalado é 1.26.1.
+- Naquele momento, o backend continha apenas `backend/main.go`, com Gin, `GET /api/health` e escuta em `:8080`. A implementação atual usa `backend/cmd/api/main.go` e os pacotes em `backend/internal`.
+- Naquele momento, `backend/go.mod` declarava Go 1.26.1. A versão declarada atualmente é Go 1.26.6; as dependências diretas incluem Gin 1.12, `gin-contrib/cors` 1.7.7, GORM 1.31.2 e o driver PostgreSQL 1.6.2.
 - O frontend concentra o cliente HTTP em `frontend/src/shared/api/domains.ts`, valida respostas com Zod e monta URLs same-origin em `frontend/src/shared/api/client.ts`.
 - `frontend/src/app/bootstrap/bootstrap.ts` liga o MSW automaticamente em desenvolvimento. A troca para API real precisa ser explícita por ambiente.
 - A edição inline em `EditableCharacterSheet.tsx` mantém ficha e perícias apenas em estado React, apesar do indicador de salvamento. O formulário `/characters/:id/edit` já usa `PATCH`.
@@ -19,7 +21,7 @@ Ordem Paranormal 1.1 é o único sistema que permite criar campanhas e fichas. D
 - Na inspeção de 25/09/2026, o banco tinha 1 usuário `ACTIVE/USER`, 2 sistemas, 5 temas, 67 personagens `THREAT`, 0 fichas de jogador, 0 preferências, 104 itens, 85 rituais, 36 armas, 28 perícias, 3 regras de classe e 20 linhas de NEX. Essas contagens são uma fotografia, não uma constante de implementação.
 - Não há campanha no schema; `core.rpg_character` não possui `campaign_id`. Também faltam proveniência e proprietário para homebrew, definições de ataque reutilizáveis, detalhes completos de rituais e alguns metadados das entradas da ficha.
 - As 85 habilidades ligadas a `ordem.ritual` estavam sem descrição preenchida. O serviço não deve inventar efeitos, versões discente/verdadeiro ou datas históricas.
-- O banco contém Ordem e D&D; The Witcher ainda precisa de um registro preview. `core.user_preferences` está vazio.
+- Na inspeção inicial, o banco continha Ordem e D&D; The Witcher ainda precisava de um registro preview, e `core.user_preferences` estava vazio. A migração `202609250001_backend_foundation.sql` inclui The Witcher; a migração `202609250004_public_user_tables.sql` move `users`, `user_preferences` e `local_import_map` para `public`. A existência dos dados no banco atual depende da aplicação das migrações.
 - A validação de username do frontend aceita letras maiúsculas, ponto e sublinhado, enquanto a restrição atual do banco aceita apenas slug minúsculo com hífen.
 
 ## Decisões de domínio

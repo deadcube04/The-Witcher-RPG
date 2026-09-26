@@ -10,7 +10,7 @@ go run github.com/pressly/goose/v3/cmd/goose@v3.28.0 -dir migrations postgres $e
 go run ./cmd/api
 ```
 
-O Goose recebe `DATABASE_URL` do ambiente do processo; carregar `.env` no shell antes desse comando ou usar uma ferramenta local que exporte as variáveis. A API carrega `backend/.env` ao iniciar. Em outro terminal:
+O Goose recebe `DATABASE_URL` do ambiente do processo; carregue `.env` no shell antes desse comando ou use uma ferramenta local que exporte as variáveis. A API carrega `backend/.env` ao iniciar. O comando `up` deve aplicar também `202609250004_public_user_tables.sql`: sem essa migração, as consultas atuais a `public.users`, `public.user_preferences` e `public.local_import_map` falham. Em outro terminal:
 
 ```powershell
 cd C:\rpg-project\frontend

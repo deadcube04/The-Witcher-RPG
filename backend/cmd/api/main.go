@@ -12,12 +12,18 @@ import (
 	"syscall"
 	"time"
 
-	"RPG-manager/backend/internal/httpapi"
-	"RPG-manager/backend/internal/repository"
-
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"RPG-manager/backend/internal/account"
+	"RPG-manager/backend/internal/campaigns"
+	"RPG-manager/backend/internal/characters"
+	"RPG-manager/backend/internal/content"
+	"RPG-manager/backend/internal/dbscope"
+	"RPG-manager/backend/internal/httpserver"
+	"RPG-manager/backend/internal/localimport"
+	"RPG-manager/backend/internal/systems"
 )
 
 func main() {
@@ -53,12 +59,29 @@ func run(logger *slog.Logger) error {
 	configurePool(sqlDB)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	store := repository.New(db, userID)
-	if err := store.ValidateLocalUser(ctx); err != nil {
+	store := dbscope.New(db, userID)
+	accountRepository := account.NewRepository(db, userID)
+	if err := accountRepository.ValidateLocalUser(ctx); err != nil {
 		return err
 	}
+	systemService := systems.NewService(systems.NewRepository(db))
+	accountService := account.NewService(accountRepository, systemService)
+	campaignService := campaigns.NewService(campaigns.NewRepository(db, userID), systemService)
+	characterService := characters.NewCharacter(store)
+	skillService := characters.NewSkills(store)
+	inventoryEntries := characters.NewInventoryEntries(store)
+	ritualEntries := characters.NewRitualEntries(store)
+	attackEntries := characters.NewAttackEntries(store)
+	catalogService := content.NewCatalog(store)
+	homebrewService := content.NewHomebrew(store)
+	importService := localimport.NewImporter(store)
 	origins := strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ",")
-	handler, err := httpapi.New(store, logger, origins)
+	handler, err := httpserver.New(httpserver.Dependencies{
+		Store: store, Logger: logger, Account: accountService, Systems: systemService, Campaigns: campaignService,
+		Characters: characterService, Skills: skillService, InventoryEntries: inventoryEntries,
+		RitualEntries: ritualEntries, AttackEntries: attackEntries, Catalog: catalogService,
+		Homebrew: homebrewService, Importer: importService,
+	}, origins)
 	if err != nil {
 		return err
 	}
