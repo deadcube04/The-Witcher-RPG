@@ -13,6 +13,8 @@ const messages: Record<ErrorCode, string> = {
 	CONTENT_ALREADY_ADDED: "Este conteúdo já foi adicionado à ficha.",
 	CONFLICT: "Esta alteração conflita com os dados existentes.",
 	INTERNAL_ERROR: "Não foi possível concluir a operação.",
+	FORBIDDEN: "Você não tem permissão para acessar esta área.",
+	ERROR_LOG_NOT_FOUND: "Este registro de erro não está mais disponível.",
 };
 export class ApiError extends Error {
 	readonly code: ErrorCode;

@@ -70,6 +70,7 @@ export function createSeed() {
 			name: "Investigador",
 			username: "investigador",
 			avatarUrl: "",
+			role: "USER" as const,
 		},
 		preferences: {
 			activeSystemId: ordemId,

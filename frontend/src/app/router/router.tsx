@@ -53,6 +53,14 @@ const AppearancePage = lazyRouteComponent(
 	() => import("@/features/settings/AppearancePage"),
 	"AppearancePage",
 );
+const AdminHomePage = lazyRouteComponent(
+	() => import("@/features/admin/AdminHomePage"),
+	"AdminHomePage",
+);
+const ErrorAdminPage = lazyRouteComponent(
+	() => import("@/features/admin/ErrorAdminPage"),
+	"ErrorAdminPage",
+);
 
 const rootRoute = createRootRoute({
 	component: AppShell,
@@ -82,6 +90,8 @@ const paths = [
 	"/settings",
 	"/settings/profile",
 	"/settings/appearance",
+	"/admin",
+	"/admin/errors",
 	"/campaigns",
 	"/campaigns/new",
 	"/campaigns/$campaignId",
@@ -97,6 +107,8 @@ const pages: Record<(typeof paths)[number], RouteComponent> = {
 	"/settings": SettingsPage,
 	"/settings/profile": ProfilePage,
 	"/settings/appearance": AppearancePage,
+	"/admin": AdminHomePage,
+	"/admin/errors": ErrorAdminPage,
 	"/campaigns": CampaignsPage,
 	"/campaigns/new": CampaignEditorPage,
 	"/campaigns/$campaignId": CampaignDetailPage,

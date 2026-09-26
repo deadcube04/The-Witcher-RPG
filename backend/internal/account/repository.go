@@ -36,15 +36,25 @@ func (r *Repository) Profile(ctx context.Context) (domain.Profile, error) {
 	var row struct {
 		ID, Name, Username string
 		AvatarURL          sql.NullString
+		Role               string
 	}
-	err := r.DB.WithContext(ctx).Table("public.users").Select("id, display_name AS name, username, avatar_url").Where("id = ? AND deleted_at IS NULL", r.UserID).Take(&row).Error
+	err := r.DB.WithContext(ctx).Table("public.users").Select("id, display_name AS name, username, avatar_url, role").Where("id = ? AND deleted_at IS NULL", r.UserID).Take(&row).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.Profile{}, apperr.ErrNotFound
 	}
 	if err != nil {
 		return domain.Profile{}, fmt.Errorf("read profile: %w", err)
 	}
-	return domain.Profile{ID: row.ID, Name: row.Name, Username: row.Username, AvatarURL: row.AvatarURL.String}, nil
+	return domain.Profile{ID: row.ID, Name: row.Name, Username: row.Username, AvatarURL: row.AvatarURL.String, Role: row.Role}, nil
+}
+
+func (r *Repository) IsAdmin(ctx context.Context) (bool, error) {
+	var count int64
+	err := r.DB.WithContext(ctx).Table("public.users").Where("id = ? AND role = 'ADMIN' AND status = 'ACTIVE' AND deleted_at IS NULL", r.UserID).Count(&count).Error
+	if err != nil {
+		return false, fmt.Errorf("check local admin role: %w", err)
+	}
+	return count == 1, nil
 }
 
 func (r *Repository) UpdateProfile(ctx context.Context, name, username, avatar string) (domain.Profile, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -23,13 +24,14 @@ import (
 	"RPG-manager/backend/internal/dbscope"
 	"RPG-manager/backend/internal/httpserver"
 	"RPG-manager/backend/internal/localimport"
+	"RPG-manager/backend/internal/observability"
 	"RPG-manager/backend/internal/systems"
 )
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	if err := run(logger); err != nil {
-		logger.Error("api stopped", "error", err)
+		logger.Error("api stopped", "error_type", fmt.Sprintf("%T", err))
 		os.Exit(1)
 	}
 }
@@ -47,7 +49,7 @@ func run(logger *slog.Logger) error {
 	if url == "" || userID == "" || !strings.HasPrefix(addr, "127.0.0.1:") {
 		return errors.New("DATABASE_URL, LOCAL_USER_ID and loopback HTTP_ADDR are required")
 	}
-	db, err := gorm.Open(postgres.Open(url), &gorm.Config{TranslateError: true})
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{TranslateError: true, Logger: observability.NewGORMLogger(logger)})
 	if err != nil {
 		return errors.New("database connection failed")
 	}
@@ -75,9 +77,32 @@ func run(logger *slog.Logger) error {
 	catalogService := content.NewCatalog(store)
 	homebrewService := content.NewHomebrew(store)
 	importService := localimport.NewImporter(store)
+	errorRepository := observability.NewGORMRepository(db)
+	errorService := observability.NewService(errorRepository)
+	if _, err := errorService.CleanupExpired(ctx, 500); err != nil {
+		logger.Error("expired error cleanup failed", "error_type", "database")
+	}
+	maintenanceCtx, stopMaintenance := context.WithCancel(ctx)
+	var maintenanceDone = make(chan struct{})
+	go func() {
+		defer close(maintenanceDone)
+		cleanupTicker := time.NewTicker(time.Hour)
+		defer cleanupTicker.Stop()
+		for {
+			select {
+			case <-maintenanceCtx.Done():
+				return
+			case <-cleanupTicker.C:
+				if _, err := errorService.CleanupExpired(maintenanceCtx, 500); err != nil && maintenanceCtx.Err() == nil {
+					logger.Error("expired error cleanup failed", "error_type", "database")
+				}
+			}
+		}
+	}()
+	defer func() { stopMaintenance(); <-maintenanceDone }()
 	origins := strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ",")
 	handler, err := httpserver.New(httpserver.Dependencies{
-		Store: store, Logger: logger, Account: accountService, Systems: systemService, Campaigns: campaignService,
+		Store: store, Logger: logger, Account: accountService, Errors: errorService, UserID: userID, Systems: systemService, Campaigns: campaignService,
 		Characters: characterService, Skills: skillService, InventoryEntries: inventoryEntries,
 		RitualEntries: ritualEntries, AttackEntries: attackEntries, Catalog: catalogService,
 		Homebrew: homebrewService, Importer: importService,

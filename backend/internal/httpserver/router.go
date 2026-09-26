@@ -4,8 +4,10 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -15,6 +17,7 @@ import (
 	"RPG-manager/backend/internal/content"
 	"RPG-manager/backend/internal/dbscope"
 	"RPG-manager/backend/internal/localimport"
+	"RPG-manager/backend/internal/observability"
 	"RPG-manager/backend/internal/systems"
 
 	"github.com/gin-contrib/cors"
@@ -35,6 +38,8 @@ type API struct {
 	catalog          *content.Catalog
 	homebrew         *content.Homebrew
 	importer         *localimport.Importer
+	errors           *observability.Service
+	userID           string
 }
 
 type Dependencies struct {
@@ -51,10 +56,15 @@ type Dependencies struct {
 	Catalog          *content.Catalog
 	Homebrew         *content.Homebrew
 	Importer         *localimport.Importer
+	Errors           *observability.Service
+	UserID           string
 }
 
 func New(deps Dependencies, origins []string) (http.Handler, error) {
 	store, logger := deps.Store, deps.Logger
+	if logger == nil || deps.Errors == nil {
+		return nil, errors.New("logger and error observability service are required")
+	}
 	allow := make(map[string]bool)
 	for _, raw := range origins {
 		origin := strings.TrimSpace(raw)
@@ -75,13 +85,14 @@ func New(deps Dependencies, origins []string) (http.Handler, error) {
 	if err := r.SetTrustedProxies(nil); err != nil {
 		return nil, err
 	}
-	r.Use(gin.Recovery(), requestLog(logger), localRequest(allow), bodyLimit(1<<20))
-	r.Use(cors.New(cors.Config{AllowOrigins: keys(allow), AllowMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}, AllowHeaders: []string{"Accept", "Content-Type"}, MaxAge: 12 * time.Hour}))
-	a := &API{store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer}
+	r.Use(bodyLimit(1<<20), requestLog(logger, deps.Errors, deps.UserID), gin.CustomRecovery(recoverRequest(logger)), localRequest(allow))
+	r.Use(cors.New(cors.Config{AllowOrigins: keys(allow), AllowMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}, AllowHeaders: []string{"Accept", "Content-Type", "X-Request-ID"}, ExposeHeaders: []string{"X-Request-ID"}, MaxAge: 12 * time.Hour}))
+	a := &API{store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer, errors: deps.Errors, userID: deps.UserID}
 	r.GET("/api/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
 	r.GET("/api/ready", a.ready)
 	v1 := r.Group("/api/v1")
 	a.register(v1)
+	a.registerErrorAdmin(v1.Group("/admin/errors", a.adminRequired))
 	return r, nil
 }
 
@@ -93,7 +104,7 @@ func keys(m map[string]bool) []string {
 	return out
 }
 
-func requestLog(logger *slog.Logger) gin.HandlerFunc {
+func requestLog(logger *slog.Logger, service *observability.Service, userID string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		b := make([]byte, 12)
 		if _, err := rand.Read(b); err != nil {
@@ -101,10 +112,62 @@ func requestLog(logger *slog.Logger) gin.HandlerFunc {
 			return
 		}
 		id := hex.EncodeToString(b)
+		c.Set("request_id", id)
 		c.Header("X-Request-ID", id)
 		start := time.Now()
+		requestHeaders := safeRequestHeaders(c.Request.Header)
+		bodyCapture := &requestBodyCapture{ReadCloser: c.Request.Body}
+		c.Request.Body = bodyCapture
+		writer := &captureWriter{ResponseWriter: c.Writer}
+		c.Writer = writer
 		c.Next()
-		logger.Info("http request", "request_id", id, "method", c.Request.Method, "path", c.FullPath(), "status", c.Writer.Status(), "duration_ms", time.Since(start).Milliseconds())
+		status := c.Writer.Status()
+		route := c.FullPath()
+		if route == "" {
+			route = "[unmatched]"
+		}
+		level := slog.LevelInfo
+		if status >= 400 && status < 500 {
+			level = slog.LevelWarn
+		} else if status >= 500 {
+			level = slog.LevelError
+		}
+		attrs := []any{"request_id", id, "method", c.Request.Method, "route", route, "status", status, "duration_ms", time.Since(start).Milliseconds()}
+		logger.Log(c.Request.Context(), level, "http request", attrs...)
+		if status < 400 {
+			return
+		}
+		requestBody, requestBodyErr := captureJSONBytes(bodyCapture.body.Bytes(), bodyCapture.truncated)
+		responseBody, responseBodyErr := captureJSONBytes(writer.body.Bytes(), writer.truncated)
+		code := responseErrorCode(responseBody, status)
+		failureKind, message, panicStack := failureDetails(c, status)
+		if requestBodyErr != nil {
+			requestBody = omittedBody(requestBodyErr.Error())
+		}
+		if responseBodyErr != nil {
+			responseBody = omittedBody(responseBodyErr.Error())
+		}
+		input := observability.OccurrenceInput{
+			RequestID: id, UserID: userID, Method: c.Request.Method, Route: route,
+			Status: status, ErrorCode: code, FailureKind: failureKind, ErrorMessage: message,
+			PanicStack: panicStack, RequestHeaders: requestHeaders,
+			ResponseHeaders: safeResponseHeaders(c.Writer.Header()), RequestBody: requestBody, ResponseBody: responseBody,
+		}
+		if err := service.Record(c.Request.Context(), input); err != nil {
+			logger.Error("http error persistence failed", "request_id", id, "status", status, "error_type", fmt.Sprintf("%T", err))
+		}
+	}
+}
+
+func recoverRequest(logger *slog.Logger) gin.RecoveryFunc {
+	return func(c *gin.Context, recovered any) {
+		stack := debug.Stack()
+		c.Set("panic_stack", string(stack))
+		c.Set("failure_kind", "panic")
+		c.Set("failure_message", fmt.Sprintf("panic (%T)", recovered))
+		requestID, _ := c.Get("request_id")
+		logger.Error("http panic recovered", "request_id", requestID, "route", c.FullPath(), "panic_type", fmt.Sprintf("%T", recovered), "stack", string(stack))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": gin.H{"code": "INTERNAL_ERROR", "message": errorMessage("INTERNAL_ERROR")}})
 	}
 }
 
@@ -156,6 +219,10 @@ func errorMessage(code string) string {
 		return "Este conteúdo já foi adicionado à ficha."
 	case "CONFLICT":
 		return "Esta alteração conflita com os dados existentes."
+	case "FORBIDDEN":
+		return "Você não tem permissão para acessar esta área."
+	case "ERROR_LOG_NOT_FOUND":
+		return "Este registro de erro não está mais disponível."
 	default:
 		return "Não foi possível concluir a operação."
 	}

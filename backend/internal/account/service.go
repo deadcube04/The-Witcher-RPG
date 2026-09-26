@@ -10,6 +10,7 @@ import (
 
 type ProfilePreferencesRepository interface {
 	Profile(context.Context) (domain.Profile, error)
+	IsAdmin(context.Context) (bool, error)
 	UpdateProfile(context.Context, string, string, string) (domain.Profile, error)
 	Preferences(context.Context) (domain.Preferences, error)
 	UpdatePreferences(context.Context, domain.Preferences) (domain.Preferences, error)
@@ -29,6 +30,8 @@ func NewService(repo ProfilePreferencesRepository, systems Systems) *Service {
 }
 
 func (s *Service) Profile(ctx context.Context) (domain.Profile, error) { return s.repo.Profile(ctx) }
+
+func (s *Service) IsAdmin(ctx context.Context) (bool, error) { return s.repo.IsAdmin(ctx) }
 
 func (s *Service) UpdateProfile(ctx context.Context, name, username, avatar string) (domain.Profile, error) {
 	name, username, avatar = strings.TrimSpace(name), strings.TrimSpace(username), strings.TrimSpace(avatar)

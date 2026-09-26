@@ -2,6 +2,7 @@ package httpcommon
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"regexp"
@@ -34,7 +35,7 @@ func Failure(c *gin.Context, logger *slog.Logger, err error, missing string) {
 	case errors.Is(err, apperr.ErrAlreadyAdded):
 		WriteError(c, http.StatusConflict, "CONTENT_ALREADY_ADDED")
 	default:
-		logger.Error("request failed", "error", err)
+		logger.Error("request failed", "error_type", fmt.Sprintf("%T", err))
 		WriteError(c, http.StatusInternalServerError, "INTERNAL_ERROR")
 	}
 }

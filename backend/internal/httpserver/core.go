@@ -66,6 +66,7 @@ func (a *API) register(r *gin.RouterGroup) {
 }
 
 func (a *API) failure(c *gin.Context, err error, missing string) {
+	c.Set("failure_error", err)
 	httpcommon.Failure(c, a.logger, err, missing)
 }
 

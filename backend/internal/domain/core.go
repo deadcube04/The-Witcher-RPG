@@ -7,6 +7,7 @@ type Profile struct {
 	Name      string `json:"name"`
 	Username  string `json:"username"`
 	AvatarURL string `json:"avatarUrl"`
+	Role      string `json:"role"`
 }
 
 type Preferences struct {

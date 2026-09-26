@@ -12,6 +12,8 @@ export const errorCodeSchema = z.enum([
 	"CONTENT_ALREADY_ADDED",
 	"CONFLICT",
 	"INTERNAL_ERROR",
+	"FORBIDDEN",
+	"ERROR_LOG_NOT_FOUND",
 ]);
 export const apiErrorSchema = z.object({
 	error: z.object({ code: errorCodeSchema, message: z.string() }),

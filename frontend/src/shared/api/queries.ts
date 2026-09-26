@@ -7,12 +7,14 @@ import {
 	campaignApi,
 	attackApi,
 	characterApi,
+	errorAdminApi,
 	inventoryApi,
 	preferencesApi,
 	ritualApi,
 	systemsApi,
 	userApi,
 } from "@/shared/api/domains";
+import type { ErrorFilter } from "@/shared/contracts/application-error";
 
 export const keys = {
 	user: ["user", "current"] as const,
@@ -27,6 +29,10 @@ export const keys = {
 	inventory: (id: string) => ["characters", id, "inventory"] as const,
 	rituals: (id: string) => ["characters", id, "rituals"] as const,
 	attacks: (id: string) => ["characters", id, "attacks"] as const,
+	adminErrorGroups: (filter: ErrorFilter) => ["admin", "errors", "groups", filter] as const,
+	adminErrorOccurrences: (filter: ErrorFilter) => ["admin", "errors", "occurrences", filter] as const,
+	adminErrorOccurrence: (id: string) => ["admin", "errors", "occurrence", id] as const,
+	adminErrorRetention: ["admin", "errors", "retention"] as const,
 	inventoryCatalog: (query: string, kind?: string) =>
 		["ordem", "catalog", "inventory", query, kind ?? "all"] as const,
 	ritualCatalog: (query: string, element?: string) =>
@@ -88,6 +94,22 @@ export const queries = {
 			queryKey: keys.attacks(id),
 			queryFn: ({ signal }) => attackApi.list(id, signal),
 		}),
+	adminErrorGroups: (filter: ErrorFilter) => queryOptions({
+		queryKey: keys.adminErrorGroups(filter),
+		queryFn: ({ signal }) => errorAdminApi.groups(filter, signal),
+	}),
+	adminErrorOccurrences: (filter: ErrorFilter) => queryOptions({
+		queryKey: keys.adminErrorOccurrences(filter),
+		queryFn: ({ signal }) => errorAdminApi.occurrences(filter, signal),
+	}),
+	adminErrorOccurrence: (id: string) => queryOptions({
+		queryKey: keys.adminErrorOccurrence(id),
+		queryFn: ({ signal }) => errorAdminApi.occurrence(id, signal),
+	}),
+	adminErrorRetention: queryOptions({
+		queryKey: keys.adminErrorRetention,
+		queryFn: ({ signal }) => errorAdminApi.retention(signal),
+	}),
 	inventoryCatalog: (query: string, kind?: Parameters<typeof inventoryApi.catalog>[1]) =>
 		queryOptions({
 			queryKey: keys.inventoryCatalog(query, kind),

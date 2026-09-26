@@ -33,6 +33,7 @@ import {
 import { request } from "@/shared/api/client";
 import { characterOptionsSchema } from "@/shared/contracts/character-options";
 import { characterSkillSchema, type CharacterSkillUpdate } from "@/shared/contracts/character-skill";
+import { errorGroupSchema, errorOccurrenceSchema, errorPageSchema, retentionRulesSchema, type ErrorFilter, type RetentionRule } from "@/shared/contracts/application-error";
 
 function withSearch(
 	path: string,
@@ -53,6 +54,16 @@ export const userApi = {
 			method: "PATCH",
 			body: JSON.stringify(input),
 		}),
+};
+export const errorAdminApi = {
+	groups: (filter: ErrorFilter, signal?: AbortSignal) => request(withSearch("/admin/errors/groups", Object.fromEntries(Object.entries(filter).map(([key, value]) => [key, value === undefined ? undefined : String(value)]))), errorPageSchema(errorGroupSchema), { signal }),
+	occurrences: (filter: ErrorFilter, signal?: AbortSignal) => request(withSearch("/admin/errors/occurrences", Object.fromEntries(Object.entries(filter).map(([key, value]) => [key, value === undefined ? undefined : String(value)]))), errorPageSchema(errorOccurrenceSchema), { signal }),
+	occurrence: (id: string, signal?: AbortSignal) => request(`/admin/errors/occurrences/${encodeURIComponent(id)}`, errorOccurrenceSchema, { signal }),
+	setGroupState: (id: string, state: "open" | "resolved") => request(`/admin/errors/groups/${encodeURIComponent(id)}`, z.undefined(), { method: "PATCH", body: JSON.stringify({ state }) }),
+	updateOccurrences: (ids: string[], expiresAt: string | null) => request("/admin/errors/occurrences", z.undefined(), { method: "PATCH", body: JSON.stringify({ ids, expiresAt }) }),
+	deleteOccurrences: (ids: string[]) => request("/admin/errors/occurrences", z.undefined(), { method: "DELETE", body: JSON.stringify({ ids }) }),
+	retention: (signal?: AbortSignal) => request("/admin/errors/retention", retentionRulesSchema, { signal }),
+	updateRetention: (rules: RetentionRule[]) => request("/admin/errors/retention", z.undefined(), { method: "PUT", body: JSON.stringify({ rules }) }),
 };
 export const preferencesApi = {
 	get: (signal?: AbortSignal) =>

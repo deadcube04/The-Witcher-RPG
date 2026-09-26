@@ -17,6 +17,9 @@ export const profileInputSchema = z.strictObject({
 		z.url().refine((url) => url.startsWith("https://"), "Use uma URL HTTPS."),
 	]),
 });
-export const userSchema = profileInputSchema.extend({ id: idSchema });
+export const userSchema = profileInputSchema.extend({
+	id: idSchema,
+	role: z.enum(["USER", "ADMIN"]).default("USER"),
+});
 export type User = z.infer<typeof userSchema>;
 export type ProfileInput = z.infer<typeof profileInputSchema>;

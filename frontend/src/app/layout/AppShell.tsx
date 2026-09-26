@@ -19,6 +19,8 @@ const pageContext = [
 	[/^\/characters/, ["Arquivo", "Fichas"]],
 	[/^\/systems/, ["Arquivo", "Universos"]],
 	[/^\/settings/, ["Arquivo", "Preferências"]],
+	[/^\/admin\/errors/, ["Administração", "Erros da aplicação"]],
+	[/^\/admin/, ["Administração", "Painel"]],
 ] as const;
 
 export function AppShell() {
