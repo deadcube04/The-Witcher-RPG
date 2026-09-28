@@ -5,7 +5,6 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useBestiaryTheme } from "@/app/layout/BestiaryThemeContext";
 import { RpgButton } from "@/components/primitives/RpgControls";
 import { BestiaryCard } from "@/features/bestiary/BestiaryCard";
-import { BestiaryChapterIndex } from "@/features/bestiary/BestiaryChapterIndex";
 import { BestiaryFilters } from "@/features/bestiary/BestiaryFilters";
 import { BestiaryGalleryHeader } from "@/features/bestiary/BestiaryGalleryHeader";
 import { BestiaryReveal } from "@/features/bestiary/BestiaryReveal";
@@ -113,11 +112,6 @@ function BestiaryGalleryContent() {
 	return (
 		<div className="mx-auto max-w-[1480px]">
 			<BestiaryGalleryHeader element={activeKey} />
-			<BestiaryChapterIndex
-				elements={options.data.elements}
-				selectedId={filters.elementId ?? ""}
-				onSelect={(elementId) => navigateFilters({ elementId })}
-			/>
 			<section id="archive-records" aria-labelledby="archive-records-heading">
 				<div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-(--edge)/70 pb-4">
 					<div>

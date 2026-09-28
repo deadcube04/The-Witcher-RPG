@@ -55,7 +55,6 @@ export function BestiaryFilters({ filters, options, onChange }: Props) {
 					label="Nome no registro"
 					value={filters.q ?? ""}
 					onChange={(q) => onChange({ q })}
-					hint="Um nome ou fragmento dele basta para iniciar a busca."
 				/>
 				{hasFilters && (
 					<button
@@ -77,6 +76,9 @@ export function BestiaryFilters({ filters, options, onChange }: Props) {
 					</button>
 				)}
 			</div>
+			<p className="mt-2 text-xs opacity-75">
+				Um nome ou fragmento dele basta para iniciar a busca.
+			</p>
 			<RpgDisclosure
 				title={
 					<span className="font-serif text-xl text-(--ink)">
