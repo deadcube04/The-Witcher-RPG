@@ -1,13 +1,16 @@
+import { useState } from "react";
+import { PhotoField } from "@/features/media/PhotoField";
 import { useForm } from "@tanstack/react-form";
-import { MutationFeedback } from "../../components/feedback/RemoteState";
-import { RpgForm } from "../../components/forms/RpgForm";
-import { RpgButton, RpgInput } from "../../components/primitives/RpgControls";
-import { userApi } from "../../shared/api/domains";
-import { keys, useDomainMutation } from "../../shared/api/queries";
-import { profileInputSchema, type User } from "../../shared/contracts/user";
-import { fieldError } from "../../shared/lib/form-error";
+import { MutationFeedback } from "@/components/feedback/RemoteState";
+import { RpgForm } from "@/components/forms/RpgForm";
+import { RpgButton, RpgInput } from "@/components/primitives/RpgControls";
+import { userApi } from "@/shared/api/domains";
+import { keys, useDomainMutation } from "@/shared/api/queries";
+import { profileInputSchema, type User } from "@/shared/contracts/user";
+import { fieldError } from "@/shared/lib/form-error";
 
 export function ProfileForm({ user }: { user: User }) {
+	const [photoBusy, setPhotoBusy] = useState(false);
 	const mutation = useDomainMutation(userApi.update, [keys.user]);
 	const form = useForm({
 		defaultValues: {
@@ -50,19 +53,11 @@ export function ProfileForm({ user }: { user: User }) {
 			</div>
 			<form.Field name="avatarUrl">
 				{(field) => (
-					<RpgInput
-						label="URL do avatar"
-						hint="Opcional. Informe uma URL HTTPS."
-						value={field.state.value}
-						onChange={field.handleChange}
-						onBlur={field.handleBlur}
-						disabled={mutation.isPending}
-						error={fieldError(field.state.meta.errors)}
-					/>
+					<PhotoField purpose="profile" value={field.state.value} onChange={field.handleChange} disabled={mutation.isPending} onBusyChange={setPhotoBusy} />
 				)}
 			</form.Field>
 			<MutationFeedback error={mutation.error} success={mutation.isSuccess} />
-			<RpgButton submit loading={mutation.isPending}>
+			<RpgButton submit disabled={photoBusy} loading={mutation.isPending}>
 				Salvar perfil
 			</RpgButton>
 		</RpgForm>

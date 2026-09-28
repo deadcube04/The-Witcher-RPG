@@ -5,6 +5,7 @@ import {
 	PiBooksThin,
 	PiGearThin,
 	PiHouseLineThin,
+	PiPawPrintThin,
 	PiScrollThin,
 	PiSwordThin,
 	PiUserCircleThin,
@@ -16,6 +17,7 @@ const navigation = [
 	{ to: "/", label: "Início", Icon: PiHouseLineThin },
 	{ to: "/campaigns", label: "Campanhas", Icon: PiSwordThin },
 	{ to: "/characters", label: "Fichas", Icon: PiScrollThin },
+	{ to: "/bestiary", label: "Bestiário", Icon: PiPawPrintThin },
 	{ to: "/systems", label: "Sistemas", Icon: PiBooksThin },
 	{ to: "/settings", label: "Configurações", Icon: PiGearThin },
 ] as const;
@@ -142,7 +144,7 @@ export function AppSidebar({
 
 			<nav
 				aria-label="Navegação principal"
-				className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-2xl border border-(--edge)/60 bg-(--surface)/96 p-1.5 shadow-[0_20px_60px_var(--shadow)] md:hidden"
+				className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-6 rounded-2xl border border-(--edge)/60 bg-(--surface)/96 p-1.5 shadow-[0_20px_60px_var(--shadow)] md:hidden"
 			>
 				{navigation.map(({ to, label, Icon }) => (
 					<Link

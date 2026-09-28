@@ -18,12 +18,14 @@ import (
 	"gorm.io/gorm"
 
 	"RPG-manager/backend/internal/account"
+	"RPG-manager/backend/internal/bestiary"
 	"RPG-manager/backend/internal/campaigns"
 	"RPG-manager/backend/internal/characters"
 	"RPG-manager/backend/internal/content"
 	"RPG-manager/backend/internal/dbscope"
 	"RPG-manager/backend/internal/httpserver"
 	"RPG-manager/backend/internal/localimport"
+	"RPG-manager/backend/internal/media"
 	"RPG-manager/backend/internal/observability"
 	"RPG-manager/backend/internal/systems"
 )
@@ -66,14 +68,19 @@ func run(logger *slog.Logger) error {
 	if err := accountRepository.ValidateLocalUser(ctx); err != nil {
 		return err
 	}
+	imageStorage, err := media.New(ctx)
+	if err != nil {
+		return err
+	}
 	systemService := systems.NewService(systems.NewRepository(db))
-	accountService := account.NewService(accountRepository, systemService)
+	accountService := account.NewService(accountRepository, systemService, imageStorage, userID)
 	campaignService := campaigns.NewService(campaigns.NewRepository(db, userID), systemService)
-	characterService := characters.NewCharacter(store)
+	characterService := characters.NewCharacter(store, imageStorage)
 	skillService := characters.NewSkills(store)
 	inventoryEntries := characters.NewInventoryEntries(store)
 	ritualEntries := characters.NewRitualEntries(store)
 	attackEntries := characters.NewAttackEntries(store)
+	bestiaryService := bestiary.NewService(bestiary.NewRepository(db))
 	catalogService := content.NewCatalog(store)
 	homebrewService := content.NewHomebrew(store)
 	importService := localimport.NewImporter(store)
@@ -102,10 +109,10 @@ func run(logger *slog.Logger) error {
 	defer func() { stopMaintenance(); <-maintenanceDone }()
 	origins := strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ",")
 	handler, err := httpserver.New(httpserver.Dependencies{
-		Store: store, Logger: logger, Account: accountService, Errors: errorService, UserID: userID, Systems: systemService, Campaigns: campaignService,
+		Media: imageStorage, Store: store, Logger: logger, Account: accountService, Errors: errorService, UserID: userID, Systems: systemService, Campaigns: campaignService,
 		Characters: characterService, Skills: skillService, InventoryEntries: inventoryEntries,
 		RitualEntries: ritualEntries, AttackEntries: attackEntries, Catalog: catalogService,
-		Homebrew: homebrewService, Importer: importService,
+		Bestiary: bestiaryService, Homebrew: homebrewService, Importer: importService,
 	}, origins)
 	if err != nil {
 		return err

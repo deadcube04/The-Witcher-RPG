@@ -18,6 +18,7 @@ var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]
 func validID(id string) bool { return uuidPattern.MatchString(id) }
 
 func (a *API) register(r *gin.RouterGroup) {
+	r.POST("/media/images", a.uploadImage)
 	r.GET("/me", a.getProfile)
 	r.PATCH("/me", a.patchProfile)
 	r.GET("/me/preferences", a.getPreferences)
@@ -39,6 +40,9 @@ func (a *API) register(r *gin.RouterGroup) {
 	r.GET("/ordem/catalog/inventory", a.inventoryCatalog)
 	r.GET("/ordem/catalog/rituals", a.ritualCatalog)
 	r.GET("/ordem/catalog/attacks", a.attackCatalog)
+	r.GET("/ordem/bestiary/options", a.bestiaryOptions)
+	r.GET("/ordem/bestiary", a.listBestiary)
+	r.GET("/ordem/bestiary/:id", a.getBestiaryEntry)
 	r.POST("/ordem/homebrew/inventory", a.createHomebrewInventory)
 	r.PATCH("/ordem/homebrew/inventory/:id", a.updateHomebrewInventory)
 	r.DELETE("/ordem/homebrew/inventory/:id", a.deleteHomebrewInventory)

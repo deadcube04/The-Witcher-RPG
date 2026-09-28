@@ -12,11 +12,13 @@ import (
 	"time"
 
 	"RPG-manager/backend/internal/account"
+	"RPG-manager/backend/internal/bestiary"
 	"RPG-manager/backend/internal/campaigns"
 	"RPG-manager/backend/internal/characters"
 	"RPG-manager/backend/internal/content"
 	"RPG-manager/backend/internal/dbscope"
 	"RPG-manager/backend/internal/localimport"
+	"RPG-manager/backend/internal/media"
 	"RPG-manager/backend/internal/observability"
 	"RPG-manager/backend/internal/systems"
 
@@ -25,6 +27,7 @@ import (
 )
 
 type API struct {
+	media            *media.Storage
 	store            *dbscope.Scope
 	logger           *slog.Logger
 	account          *account.Service
@@ -35,6 +38,7 @@ type API struct {
 	inventoryEntries *characters.InventoryEntries
 	ritualEntries    *characters.RitualEntries
 	attackEntries    *characters.AttackEntries
+	bestiary         *bestiary.Service
 	catalog          *content.Catalog
 	homebrew         *content.Homebrew
 	importer         *localimport.Importer
@@ -43,6 +47,7 @@ type API struct {
 }
 
 type Dependencies struct {
+	Media            *media.Storage
 	Store            *dbscope.Scope
 	Logger           *slog.Logger
 	Account          *account.Service
@@ -53,6 +58,7 @@ type Dependencies struct {
 	InventoryEntries *characters.InventoryEntries
 	RitualEntries    *characters.RitualEntries
 	AttackEntries    *characters.AttackEntries
+	Bestiary         *bestiary.Service
 	Catalog          *content.Catalog
 	Homebrew         *content.Homebrew
 	Importer         *localimport.Importer
@@ -87,7 +93,7 @@ func New(deps Dependencies, origins []string) (http.Handler, error) {
 	}
 	r.Use(bodyLimit(1<<20), requestLog(logger, deps.Errors, deps.UserID), gin.CustomRecovery(recoverRequest(logger)), localRequest(allow))
 	r.Use(cors.New(cors.Config{AllowOrigins: keys(allow), AllowMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}, AllowHeaders: []string{"Accept", "Content-Type", "X-Request-ID"}, ExposeHeaders: []string{"X-Request-ID"}, MaxAge: 12 * time.Hour}))
-	a := &API{store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer, errors: deps.Errors, userID: deps.UserID}
+	a := &API{media: deps.Media, store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, bestiary: deps.Bestiary, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer, errors: deps.Errors, userID: deps.UserID}
 	r.GET("/api/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
 	r.GET("/api/ready", a.ready)
 	v1 := r.Group("/api/v1")
@@ -117,7 +123,9 @@ func requestLog(logger *slog.Logger, service *observability.Service, userID stri
 		start := time.Now()
 		requestHeaders := safeRequestHeaders(c.Request.Header)
 		bodyCapture := &requestBodyCapture{ReadCloser: c.Request.Body}
-		c.Request.Body = bodyCapture
+		if !strings.HasPrefix(c.GetHeader("Content-Type"), "multipart/") {
+			c.Request.Body = bodyCapture
+		}
 		writer := &captureWriter{ResponseWriter: c.Writer}
 		c.Writer = writer
 		c.Next()
@@ -190,7 +198,14 @@ func localRequest(allowed map[string]bool) gin.HandlerFunc {
 }
 
 func bodyLimit(n int64) gin.HandlerFunc {
-	return func(c *gin.Context) { c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, n); c.Next() }
+	return func(c *gin.Context) {
+		limit := n
+		if c.Request.Method == http.MethodPost && c.Request.URL.Path == "/api/v1/media/images" {
+			limit = media.MaxBytes + (64 << 10)
+		}
+		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, limit)
+		c.Next()
+	}
 }
 
 func writeError(c *gin.Context, status int, code string) {

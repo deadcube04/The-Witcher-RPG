@@ -34,6 +34,7 @@ import { request } from "@/shared/api/client";
 import { characterOptionsSchema } from "@/shared/contracts/character-options";
 import { characterSkillSchema, type CharacterSkillUpdate } from "@/shared/contracts/character-skill";
 import { errorGroupSchema, errorOccurrenceSchema, errorPageSchema, retentionRulesSchema, type ErrorFilter, type RetentionRule } from "@/shared/contracts/application-error";
+import { bestiaryDetailSchema, bestiaryOptionsSchema, bestiaryPageSchema, type BestiaryFilters } from "@/shared/contracts/bestiary";
 
 function withSearch(
 	path: string,
@@ -294,5 +295,40 @@ export const attackApi = {
 			`/ordem/homebrew/attacks/${encodeURIComponent(id)}`,
 			z.undefined(),
 			{ method: "DELETE" },
+		),
+};
+
+export const bestiaryApi = {
+	options: (signal?: AbortSignal) =>
+		request("/ordem/bestiary/options", bestiaryOptionsSchema, { signal }),
+	list: (filters: BestiaryFilters, page: number, signal?: AbortSignal) =>
+		request(
+			withSearch("/ordem/bestiary", {
+				query: filters.q,
+				elementId: filters.elementId,
+				beingTypeId: filters.beingTypeId,
+				sizeId: filters.sizeId,
+				vdMin: filters.vdMin,
+				vdMax: filters.vdMax,
+				sort: filters.sort ?? "name",
+				page: String(page),
+				pageSize: "24",
+			}),
+			bestiaryPageSchema,
+			{ signal },
+		),
+	get: (id: string, filters: BestiaryFilters, signal?: AbortSignal) =>
+		request(
+			withSearch(`/ordem/bestiary/${encodeURIComponent(id)}`, {
+				query: filters.q,
+				elementId: filters.elementId,
+				beingTypeId: filters.beingTypeId,
+				sizeId: filters.sizeId,
+				vdMin: filters.vdMin,
+				vdMax: filters.vdMax,
+				sort: filters.sort ?? "name",
+			}),
+			bestiaryDetailSchema,
+			{ signal },
 		),
 };

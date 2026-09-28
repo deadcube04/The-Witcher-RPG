@@ -1,5 +1,6 @@
+import { imageUrlSchema } from "@/shared/contracts/media";
 import { z } from "zod";
-import { entityMetadata, idSchema, nameSchema, textSchema } from "./common";
+import { entityMetadata, idSchema, nameSchema, textSchema } from "@/shared/contracts/common";
 
 const attribute = z.number().int().min(0).max(5);
 const resource = z.strictObject({
@@ -36,6 +37,7 @@ const systemDataSchema = z.discriminatedUnion("kind", [
 ]);
 export const characterInputSchema = z.strictObject({
 	name: nameSchema,
+	imageUrl: imageUrlSchema,
 	systemId: idSchema,
 	campaignId: idSchema.nullable(),
 	description: textSchema,
@@ -45,7 +47,7 @@ export const characterInputSchema = z.strictObject({
 	objective: textSchema,
 	systemData: systemDataSchema,
 });
-export const characterSchema = characterInputSchema.extend(entityMetadata);
+export const characterSchema = characterInputSchema.extend({ ...entityMetadata, imageUrl: imageUrlSchema.default("") });
 export type OrdemData = z.infer<typeof ordemDataSchema>;
 export type CharacterSheet = z.infer<typeof characterSchema>;
 export type CharacterInput = z.infer<typeof characterInputSchema>;

@@ -7,7 +7,7 @@ import {
 	ArchiveEyebrow,
 	ArchivePanel,
 } from "@/components/layout/ArchiveSurface";
-import { PiUserCircleThin } from "react-icons/pi";
+import { RpgImage } from "@/components/media/RpgImage";
 import { Link } from "@tanstack/react-router";
 
 export function ProfilePage() {
@@ -31,18 +31,7 @@ export function ProfilePage() {
 				<aside className="rounded-3xl border border-(--edge)/60 bg-(--surface-raised) p-7 lg:sticky lg:top-24">
 					<ArchiveEyebrow>Seu perfil no NEXUS</ArchiveEyebrow>
 					<div className="my-8 grid place-items-center">
-						{user.data.avatarUrl ? (
-							<img
-								src={user.data.avatarUrl}
-								alt=""
-								className="size-36 rounded-full object-cover ring-1 ring-(--accent)"
-							/>
-						) : (
-							<PiUserCircleThin
-								aria-hidden="true"
-								className="size-36 text-(--accent)"
-							/>
-						)}
+						<RpgImage src={user.data.avatarUrl} alt="Foto de perfil" className="size-36 rounded-full" />
 					</div>
 					<p className="font-serif text-3xl">{user.data.name}</p>
 					<p className="mt-2 font-mono text-xs text-(--muted)">

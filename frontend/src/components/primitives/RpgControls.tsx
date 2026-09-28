@@ -191,6 +191,36 @@ export function RpgNumber({
 		</RpgField>
 	);
 }
+export function RpgTextNumber({
+	label,
+	value,
+	onChange,
+	min,
+	max,
+}: {
+	label: string;
+	value: string;
+	onChange: (value: string) => void;
+	min: number;
+	max: number;
+}) {
+	return (
+		<RpgField label={label}>
+			{(id) => (
+				<Input
+					id={id}
+					type="number"
+					inputMode="numeric"
+					min={min}
+					max={max}
+					value={value}
+					onChange={(event) => onChange(event.target.value)}
+					className="min-h-11! rounded-xl!"
+				/>
+			)}
+		</RpgField>
+	);
+}
 export function RpgInlineNumber({
 	label,
 	value,

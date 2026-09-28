@@ -1,16 +1,18 @@
+import { useState } from "react";
+import { PhotoField } from "@/features/media/PhotoField";
 import { useForm } from "@tanstack/react-form";
-import { MutationFeedback } from "../../components/feedback/RemoteState";
-import { RpgForm } from "../../components/forms/RpgForm";
-import { RpgButton, RpgInput } from "../../components/primitives/RpgControls";
-import type { Campaign } from "../../shared/contracts/campaign";
+import { MutationFeedback } from "@/components/feedback/RemoteState";
+import { RpgForm } from "@/components/forms/RpgForm";
+import { RpgButton, RpgInput } from "@/components/primitives/RpgControls";
+import type { Campaign } from "@/shared/contracts/campaign";
 import {
 	type CharacterInput,
 	characterInputSchema,
-} from "../../shared/contracts/character-sheet";
-import type { RpgSystem } from "../../shared/contracts/rpg-system";
-import { fieldError } from "../../shared/lib/form-error";
-import { CharacterAssociation } from "./CharacterAssociation";
-import { characterSheetRegistry } from "./registry";
+} from "@/shared/contracts/character-sheet";
+import type { RpgSystem } from "@/shared/contracts/rpg-system";
+import { fieldError } from "@/shared/lib/form-error";
+import { CharacterAssociation } from "@/features/characters/CharacterAssociation";
+import { characterSheetRegistry } from "@/features/characters/registry";
 
 const narrativeFields = [
 	{ name: "description", label: "Descrição" },
@@ -36,6 +38,7 @@ export function CharacterForm({
 	onSave: (input: CharacterInput) => Promise<void>;
 	systemLocked?: boolean;
 }) {
+	const [photoBusy, setPhotoBusy] = useState(false);
 	const schema = characterInputSchema.refine(
 		(input) =>
 			input.campaignId === null ||
@@ -60,6 +63,7 @@ export function CharacterForm({
 				<h3 className="border-b border-(--edge) pb-3 text-xl">
 					01 / Identidade
 				</h3>
+				<form.Field name="imageUrl">{(field) => <PhotoField purpose="character" value={field.state.value} onChange={field.handleChange} disabled={pending} onBusyChange={setPhotoBusy} />}</form.Field>
 				<form.Field name="name">
 					{(field) => (
 						<RpgInput
@@ -152,7 +156,7 @@ export function CharacterForm({
 				</div>
 			</section>
 			<MutationFeedback error={error} success={false} />
-			<RpgButton submit loading={pending}>
+			<RpgButton submit disabled={photoBusy} loading={pending}>
 				Salvar ficha
 			</RpgButton>
 		</RpgForm>

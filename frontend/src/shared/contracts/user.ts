@@ -1,5 +1,6 @@
+import { imageUrlSchema } from "@/shared/contracts/media";
 import { z } from "zod";
-import { idSchema, nameSchema } from "./common";
+import { idSchema, nameSchema } from "@/shared/contracts/common";
 
 export const profileInputSchema = z.strictObject({
 	name: nameSchema,
@@ -12,10 +13,7 @@ export const profileInputSchema = z.strictObject({
 			/^[a-zA-Z0-9_.-]+$/,
 			"Use letras, números, ponto, traço ou sublinhado.",
 		),
-	avatarUrl: z.union([
-		z.literal(""),
-		z.url().refine((url) => url.startsWith("https://"), "Use uma URL HTTPS."),
-	]),
+	avatarUrl: imageUrlSchema,
 });
 export const userSchema = profileInputSchema.extend({
 	id: idSchema,

@@ -1,0 +1,11 @@
+FROM golang:1.26.6-bookworm AS build
+WORKDIR /app
+RUN --mount=type=secret,id=build_ca,required=false if [ -f /run/secrets/build_ca ]; then cat /run/secrets/build_ca >> /etc/ssl/certs/ca-certificates.crt; fi
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+COPY . .
+RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 go build -trimpath -o /media-init ./cmd/media-init
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=build /media-init /usr/local/bin/media-init
+ENTRYPOINT ["media-init"]

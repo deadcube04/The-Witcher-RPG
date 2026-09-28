@@ -5,16 +5,27 @@ import (
 	"strings"
 
 	"RPG-manager/backend/internal/apperr"
-	"RPG-manager/backend/internal/domain"
 	"RPG-manager/backend/internal/dbscope"
+	"RPG-manager/backend/internal/domain"
 )
 
 var ErrSystemMismatch = apperr.ErrSystemMismatch
 
-type Character struct{ repo *Repository }
+type ImageValidator interface {
+	ValidateAssociation(context.Context, string, string, string) error
+}
 
-func NewCharacter(store *dbscope.Scope) *Character {
-	return &Character{repo: NewRepository(store.DB, store.UserID)}
+type Character struct {
+	repo   *Repository
+	images ImageValidator
+}
+
+func NewCharacter(store *dbscope.Scope, images ...ImageValidator) *Character {
+	var validator ImageValidator
+	if len(images) > 0 {
+		validator = images[0]
+	}
+	return &Character{repo: NewRepository(store.DB, store.UserID), images: validator}
 }
 
 func (s *Character) List(ctx context.Context) ([]domain.Character, error) {
@@ -72,6 +83,14 @@ func (s *Character) Delete(ctx context.Context, id string) error {
 
 func (s *Character) prepare(ctx context.Context, in *domain.CharacterInput, old *domain.Character) error {
 	in.Name = strings.TrimSpace(in.Name)
+	if in.ImageURL != "" && (old == nil || old.ImageURL != in.ImageURL) {
+		if s.images == nil {
+			return ErrInvalid
+		}
+		if err := s.images.ValidateAssociation(ctx, in.ImageURL, s.repo.UserID, "character"); err != nil {
+			return err
+		}
+	}
 	if in.Name == "" || len(in.Name) > 160 {
 		return ErrInvalid
 	}

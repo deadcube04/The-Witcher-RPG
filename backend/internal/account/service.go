@@ -20,13 +20,19 @@ type Systems interface {
 	List(context.Context) ([]domain.System, error)
 }
 
+type ImageValidator interface {
+	ValidateAssociation(context.Context, string, string, string) error
+}
+
 type Service struct {
+	images  ImageValidator
+	userID  string
 	repo    ProfilePreferencesRepository
 	systems Systems
 }
 
-func NewService(repo ProfilePreferencesRepository, systems Systems) *Service {
-	return &Service{repo: repo, systems: systems}
+func NewService(repo ProfilePreferencesRepository, systems Systems, images ImageValidator, userID string) *Service {
+	return &Service{repo: repo, systems: systems, images: images, userID: userID}
 }
 
 func (s *Service) Profile(ctx context.Context) (domain.Profile, error) { return s.repo.Profile(ctx) }
@@ -37,6 +43,15 @@ func (s *Service) UpdateProfile(ctx context.Context, name, username, avatar stri
 	name, username, avatar = strings.TrimSpace(name), strings.TrimSpace(username), strings.TrimSpace(avatar)
 	if len(name) == 0 || len(name) > 160 || len(username) < 2 || len(username) > 40 {
 		return domain.Profile{}, apperr.ErrInvalid
+	}
+	previous, err := s.repo.Profile(ctx)
+	if err != nil {
+		return domain.Profile{}, err
+	}
+	if avatar != "" && avatar != previous.AvatarURL {
+		if err := s.images.ValidateAssociation(ctx, avatar, s.userID, "profile"); err != nil {
+			return domain.Profile{}, err
+		}
 	}
 	return s.repo.UpdateProfile(ctx, name, username, avatar)
 }

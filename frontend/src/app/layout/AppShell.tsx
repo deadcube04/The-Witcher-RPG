@@ -6,6 +6,8 @@ import { RpgVisualProvider } from "@/components/primitives/RpgVisualProvider";
 import { resolveTheme } from "@/features/themes/definitions";
 import { queries } from "@/shared/api/queries";
 import { AppSidebar } from "@/app/layout/AppSidebar";
+import { BestiaryThemeContext } from "@/app/layout/BestiaryThemeContext";
+import { elementVisuals, type BestiaryElementKey } from "@/features/bestiary/element-visuals";
 
 import { useColorMode } from "@/features/themes/useColorMode";
 
@@ -19,6 +21,8 @@ const pageContext = [
 	[/^\/characters\/[^/]+\/edit/, ["Fichas", "Editar personagem"]],
 	[/^\/characters\/[^/]+/, ["Fichas", "Personagem"]],
 	[/^\/characters/, ["NEXUS", "Fichas"]],
+	[/^\/bestiary\/[^/]+/, ["Bestiário", "Ficha da ameaça"]],
+	[/^\/bestiary/, ["NEXUS", "Bestiário"]],
 	[/^\/systems/, ["NEXUS", "Universos"]],
 	[/^\/settings/, ["NEXUS", "Preferências"]],
 	[/^\/admin\/errors/, ["Administração", "Erros da aplicação"]],
@@ -28,6 +32,7 @@ const pageContext = [
 export function AppShell() {
 	const [sidebarHovered, setSidebarHovered] = useState(false);
 	const [sidebarFocused, setSidebarFocused] = useState(false);
+	const [bestiaryElement, setBestiaryElement] = useState<BestiaryElementKey | null>(null);
 	const preferences = useQuery(queries.preferences);
 	const systems = useQuery(queries.systems);
 	const user = useQuery(queries.user);
@@ -41,10 +46,13 @@ export function AppShell() {
 		sidebarMode === "always-collapsed" ||
 		(sidebarMode === "collapsed" && !sidebarHovered && !sidebarFocused);
 	const colorMode = useColorMode(preferences.data?.colorMode ?? "system");
-	const theme = resolveTheme(
+	const preferredTheme = resolveTheme(
 		preferences.data?.activeThemeId ?? null,
 		colorMode,
 	);
+	const theme = pathname.startsWith("/bestiary") && bestiaryElement
+		? resolveTheme(elementVisuals[bestiaryElement].themeId, colorMode)
+		: preferredTheme;
 	const activeSystem = systems.data?.find(
 		(system) => system.id === preferences.data?.activeSystemId,
 	);
@@ -79,6 +87,7 @@ export function AppShell() {
 				" min-h-[100dvh] max-h-[100dvh] overflow-y-auto bg-(--canvas) font-sans text-(--ink) selection:bg-(--accent) selection:text-(--on-accent)"
 			}
 		>
+			<BestiaryThemeContext.Provider value={setBestiaryElement}>
 			<RpgVisualProvider theme={theme}>
 				<a
 					href="#main-content"
@@ -157,6 +166,7 @@ export function AppShell() {
 					</main>
 				</div>
 			</RpgVisualProvider>
+			</BestiaryThemeContext.Provider>
 		</div>
 	);
 }

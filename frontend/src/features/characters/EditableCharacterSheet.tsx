@@ -25,6 +25,7 @@ type Props = {
 function createDraft(character: CharacterSheet): CharacterInput {
 	return {
 		name: character.name,
+		imageUrl: character.imageUrl,
 		systemId: character.systemId,
 		campaignId: character.campaignId,
 		description: character.description,

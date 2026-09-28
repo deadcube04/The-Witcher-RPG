@@ -68,10 +68,12 @@ func (a *API) patchCharacter(c *gin.Context) {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}
-	in := domain.CharacterInput{Name: current.Name, SystemID: current.SystemID, CampaignID: current.CampaignID, Description: current.Description, Appearance: current.Appearance, Personality: current.Personality, Background: current.Background, Objective: current.Objective, SystemData: current.SystemData}
+	in := domain.CharacterInput{Name: current.Name, SystemID: current.SystemID, CampaignID: current.CampaignID, ImageURL: current.ImageURL, Description: current.Description, Appearance: current.Appearance, Personality: current.Personality, Background: current.Background, Objective: current.Objective, SystemData: current.SystemData}
 	for key, raw := range fields {
 		var target any
 		switch key {
+		case "imageUrl":
+			target = &in.ImageURL
 		case "name":
 			target = &in.Name
 		case "systemId":

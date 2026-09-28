@@ -3,18 +3,18 @@ import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
 	RpgErrorState,
 	RpgSkeleton,
-} from "../../components/feedback/RemoteState";
-import { PageHeader } from "../../components/navigation/PageHeader";
-import { ApiError } from "../../shared/api/client";
-import { characterApi } from "../../shared/api/domains";
-import { keys, queries, useDomainMutation } from "../../shared/api/queries";
-import type { CharacterInput } from "../../shared/contracts/character-sheet";
-import { createCharacterInput } from "../../shared/contracts/defaults";
-import { useListFilters } from "../../shared/hooks/useListFilters";
-import { CharacterForm } from "./CharacterForm";
-import { characterSheetRegistry } from "./registry";
+} from "@/components/feedback/RemoteState";
+import { PageHeader } from "@/components/navigation/PageHeader";
+import { ApiError } from "@/shared/api/client";
+import { characterApi } from "@/shared/api/domains";
+import { keys, queries, useDomainMutation } from "@/shared/api/queries";
+import type { CharacterInput } from "@/shared/contracts/character-sheet";
+import { createCharacterInput } from "@/shared/contracts/defaults";
+import { useListFilters } from "@/shared/hooks/useListFilters";
+import { CharacterForm } from "@/features/characters/CharacterForm";
+import { characterSheetRegistry } from "@/features/characters/registry";
 import { ArchiveEyebrow, ArchivePanel } from "@/components/layout/ArchiveSurface";
-import { PiUserCircleThin } from "react-icons/pi";
+import { RpgImage } from "@/components/media/RpgImage";
 
 export function CharacterEditorPage() {
 	const { characterId = "" } = useParams({ strict: false });
@@ -120,7 +120,7 @@ export function CharacterEditorPage() {
 					if (saved) await navigate({ to: `/characters/${saved.id}` });
 				}}
 			/></ArchivePanel>
-			<aside className="rounded-3xl border border-(--edge)/60 bg-(--surface) p-6 xl:sticky xl:top-24"><ArchiveEyebrow>Resumo da ficha</ArchiveEyebrow><div className="my-8 grid place-items-center"><div className="grid size-36 place-items-center rounded-full border border-(--accent)/40 bg-(--canvas)"><PiUserCircleThin aria-hidden="true" className="size-20 text-(--accent)" /></div></div><p className="font-serif text-3xl leading-none">{initial.name || "Personagem sem nome"}</p><p className="mt-3 text-sm text-(--muted)">{system.name}</p><p className="mt-6 border-t border-(--edge)/60 pt-5 text-xs leading-6 text-(--muted)">Identidade, regras e narrativa permanecem em uma única página contínua.</p></aside>
+			<aside className="rounded-3xl border border-(--edge)/60 bg-(--surface) p-6 xl:sticky xl:top-24"><ArchiveEyebrow>Resumo da ficha</ArchiveEyebrow><div className="my-8 grid place-items-center"><RpgImage src={initial.imageUrl} alt="Retrato do personagem" className="size-36 rounded-full" /></div><p className="font-serif text-3xl leading-none">{initial.name || "Personagem sem nome"}</p><p className="mt-3 text-sm text-(--muted)">{system.name}</p><p className="mt-6 border-t border-(--edge)/60 pt-5 text-xs leading-6 text-(--muted)">Identidade, regras e narrativa permanecem em uma única página contínua.</p></aside>
 			</div>
 		</>
 	);
@@ -128,6 +128,7 @@ export function CharacterEditorPage() {
 function characterInput(value: CharacterInput): CharacterInput {
 	return {
 		name: value.name,
+		imageUrl: value.imageUrl,
 		systemId: value.systemId,
 		campaignId: value.campaignId,
 		description: value.description,

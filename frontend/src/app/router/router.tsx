@@ -12,6 +12,7 @@ import { AppShell } from "@/app/layout/AppShell";
 import { RpgSkeleton } from "@/components/feedback/RemoteState";
 import { HomePage } from "@/features/home/HomePage";
 import { idSchema } from "@/shared/contracts/common";
+import { bestiaryIdSchema } from "@/shared/contracts/bestiary";
 
 const CampaignsPage = lazyRouteComponent(
 	() => import("@/features/campaigns/CampaignsPage"),
@@ -28,6 +29,14 @@ const CampaignDetailPage = lazyRouteComponent(
 const CharactersPage = lazyRouteComponent(
 	() => import("@/features/characters/CharactersPage"),
 	"CharactersPage",
+);
+const BestiaryGalleryPage = lazyRouteComponent(
+	() => import("@/features/bestiary/BestiaryGalleryPage"),
+	"BestiaryGalleryPage",
+);
+const BestiaryDetailPage = lazyRouteComponent(
+	() => import("@/features/bestiary/BestiaryDetailPage"),
+	"BestiaryDetailPage",
 );
 const CharacterEditorPage = lazyRouteComponent(
 	() => import("@/features/characters/CharacterEditorPage"),
@@ -122,6 +131,8 @@ const paths = [
 	"/characters/new",
 	"/characters/$characterId",
 	"/characters/$characterId/edit",
+	"/bestiary",
+	"/bestiary/$threatId",
 ] as const;
 const pages: Record<(typeof paths)[number], RouteComponent> = {
 	"/": HomePage,
@@ -139,6 +150,8 @@ const pages: Record<(typeof paths)[number], RouteComponent> = {
 	"/characters/new": CharacterEditorPage,
 	"/characters/$characterId": CharacterDetailPage,
 	"/characters/$characterId/edit": CharacterEditorPage,
+	"/bestiary": BestiaryGalleryPage,
+	"/bestiary/$threatId": BestiaryDetailPage,
 };
 
 const routes = paths.map((path) =>
@@ -152,6 +165,8 @@ const routes = paths.map((path) =>
 					!idSchema.safeParse(params.campaignId).success) ||
 				("characterId" in params &&
 					!idSchema.safeParse(params.characterId).success)
+				|| ("threatId" in params &&
+					!bestiaryIdSchema.safeParse(params.threatId).success)
 			)
 				throw notFound();
 		},
@@ -160,6 +175,12 @@ const routes = paths.map((path) =>
 			systemId: typeof search.systemId === "string" ? search.systemId : "",
 			campaignId:
 				typeof search.campaignId === "string" ? search.campaignId : "",
+			elementId: typeof search.elementId === "string" ? search.elementId : "",
+			beingTypeId: typeof search.beingTypeId === "string" ? search.beingTypeId : "",
+			sizeId: typeof search.sizeId === "string" ? search.sizeId : "",
+			vdMin: typeof search.vdMin === "string" ? search.vdMin : "",
+			vdMax: typeof search.vdMax === "string" ? search.vdMax : "",
+			sort: search.sort === "vd-asc" || search.sort === "vd-desc" || search.sort === "relevance" ? search.sort : "name",
 		}),
 	}),
 );

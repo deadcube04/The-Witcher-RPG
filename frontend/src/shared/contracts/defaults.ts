@@ -1,4 +1,4 @@
-import type { CharacterInput, OrdemData } from "./character-sheet";
+import type { CharacterInput, OrdemData } from "@/shared/contracts/character-sheet";
 export function createOrdemData(): OrdemData {
 	return {
 		kind: "ordem-paranormal",
@@ -28,6 +28,7 @@ export function createCharacterInput(
 ): CharacterInput {
 	return {
 		name: "",
+		imageUrl: "",
 		systemId,
 		campaignId,
 		description: "",

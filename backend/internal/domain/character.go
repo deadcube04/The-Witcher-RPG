@@ -38,6 +38,7 @@ type Character struct {
 	SystemID    string    `json:"systemId"`
 	CampaignID  *string   `json:"campaignId"`
 	Description string    `json:"description"`
+	ImageURL    string    `json:"imageUrl"`
 	Appearance  string    `json:"appearance"`
 	Personality string    `json:"personality"`
 	Background  string    `json:"background"`
@@ -51,6 +52,7 @@ type CharacterInput struct {
 	SystemID    string    `json:"systemId" binding:"required,uuid"`
 	CampaignID  *string   `json:"campaignId"`
 	Description string    `json:"description"`
+	ImageURL    string    `json:"imageUrl"`
 	Appearance  string    `json:"appearance"`
 	Personality string    `json:"personality"`
 	Background  string    `json:"background"`

@@ -6,6 +6,7 @@ import {
 import {
 	campaignApi,
 	attackApi,
+	bestiaryApi,
 	characterApi,
 	errorAdminApi,
 	inventoryApi,
@@ -33,6 +34,9 @@ export const keys = {
 	adminErrorOccurrences: (filter: ErrorFilter) => ["admin", "errors", "occurrences", filter] as const,
 	adminErrorOccurrence: (id: string) => ["admin", "errors", "occurrence", id] as const,
 	adminErrorRetention: ["admin", "errors", "retention"] as const,
+	bestiaryOptions: ["ordem", "bestiary", "options"] as const,
+	bestiaryList: (filters: object) => ["ordem", "bestiary", "list", filters] as const,
+	bestiaryEntry: (id: string, filters: object) => ["ordem", "bestiary", "entry", id, filters] as const,
 	inventoryCatalog: (query: string, kind?: string) =>
 		["ordem", "catalog", "inventory", query, kind ?? "all"] as const,
 	ritualCatalog: (query: string, element?: string) =>
@@ -44,6 +48,10 @@ export const queries = {
 	user: queryOptions({
 		queryKey: keys.user,
 		queryFn: ({ signal }) => userApi.get(signal),
+	}),
+	bestiaryOptions: queryOptions({
+		queryKey: keys.bestiaryOptions,
+		queryFn: ({ signal }) => bestiaryApi.options(signal),
 	}),
 	preferences: queryOptions({
 		queryKey: keys.preferences,

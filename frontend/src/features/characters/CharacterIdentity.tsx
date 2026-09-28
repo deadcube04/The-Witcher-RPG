@@ -1,7 +1,7 @@
-import { PiUserCircleThin } from "react-icons/pi";
-import { RpgInput } from "../../components/primitives/RpgControls";
-import type { CharacterInput } from "../../shared/contracts/character-sheet";
-import { characterSheetRegistry } from "./registry";
+import { PhotoField } from "@/features/media/PhotoField";
+import { RpgInput } from "@/components/primitives/RpgControls";
+import type { CharacterInput } from "@/shared/contracts/character-sheet";
+import { characterSheetRegistry } from "@/features/characters/registry";
 
 export function CharacterIdentity({
 	character,
@@ -28,13 +28,7 @@ export function CharacterIdentity({
 					onChange={(name) => onChange({ ...character, name })}
 				/>
 			</header>
-			<div className="mx-auto flex aspect-square w-full max-w-56 items-center justify-center rounded-full border border-(--accent)/50 bg-(--surface) shadow-[0_0_70px_color-mix(in_srgb,var(--accent)_12%,transparent)]">
-				<PiUserCircleThin
-					aria-hidden="true"
-					className="size-32 text-(--accent)"
-				/>
-				<span className="sr-only">Retrato não cadastrado</span>
-			</div>
+			<PhotoField purpose="character" value={character.imageUrl} onChange={(imageUrl) => onChange({ ...character, imageUrl })} />
 			{View && (
 				<View
 					value={character.systemData}

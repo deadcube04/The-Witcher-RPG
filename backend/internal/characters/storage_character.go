@@ -18,6 +18,7 @@ type characterRow struct {
 	RpgSystemID string
 	CampaignID  *string
 	Description *string
+	ImageURL    *string
 	Appearance  *string
 	Personality *string
 	Background  *string
@@ -34,14 +35,14 @@ func (s *Repository) CharacterIDs(ctx context.Context) ([]string, error) {
 
 func (s *Repository) Character(ctx context.Context, id string) (domain.Character, error) {
 	var row characterRow
-	err := s.DB.WithContext(ctx).Table("core.rpg_character AS c").Select("c.id, c.name, c.rpg_system_id, c.campaign_id, c.description, c.appearance, c.personality, c.background, c.objective, c.created_at, c.updated_at").Joins("JOIN core.character_sheet AS sh ON sh.character_id = c.id").Where("c.id = ? AND sh.owner_user_id = ? AND c.character_type = 'PLAYER'", id, s.UserID).Take(&row).Error
+	err := s.DB.WithContext(ctx).Table("core.rpg_character AS c").Select("c.id, c.name, c.rpg_system_id, c.campaign_id, c.image_url, c.description, c.appearance, c.personality, c.background, c.objective, c.created_at, c.updated_at").Joins("JOIN core.character_sheet AS sh ON sh.character_id = c.id").Where("c.id = ? AND sh.owner_user_id = ? AND c.character_type = 'PLAYER'", id, s.UserID).Take(&row).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.Character{}, apperr.ErrNotFound
 	}
 	if err != nil {
 		return domain.Character{}, fmt.Errorf("read character: %w", err)
 	}
-	c := domain.Character{ID: row.ID, OwnerID: s.UserID, Name: row.Name, SystemID: row.RpgSystemID, CampaignID: row.CampaignID, Description: deref(row.Description), Appearance: deref(row.Appearance), Personality: deref(row.Personality), Background: deref(row.Background), Objective: deref(row.Objective), CreatedAt: utcTime(row.CreatedAt), UpdatedAt: utcTime(row.UpdatedAt)}
+	c := domain.Character{ID: row.ID, OwnerID: s.UserID, Name: row.Name, SystemID: row.RpgSystemID, CampaignID: row.CampaignID, ImageURL: deref(row.ImageURL), Description: deref(row.Description), Appearance: deref(row.Appearance), Personality: deref(row.Personality), Background: deref(row.Background), Objective: deref(row.Objective), CreatedAt: utcTime(row.CreatedAt), UpdatedAt: utcTime(row.UpdatedAt)}
 	c.SystemData.Kind = "ordem-paranormal"
 	var detail struct{ CreditLimit *string }
 	if err := s.DB.WithContext(ctx).Table("ordem.character_detail").Select("credit_limit").Where("character_id = ?", id).Take(&detail).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -189,8 +190,8 @@ func (s *Repository) CharacterOptions(ctx context.Context, systemID string) (dom
 func (s *Repository) CreateCharacter(ctx context.Context, in domain.CharacterInput) (domain.Character, error) {
 	var id string
 	err := s.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Raw(`INSERT INTO core.rpg_character(rpg_system_id, name, character_type, campaign_id, description, appearance, personality, background, objective)
-			VALUES (?, ?, 'PLAYER', ?, ?, ?, ?, ?, ?) RETURNING id`, in.SystemID, in.Name, in.CampaignID, in.Description, in.Appearance, in.Personality, in.Background, in.Objective).Scan(&id).Error; err != nil {
+		if err := tx.Raw(`INSERT INTO core.rpg_character(rpg_system_id, name, character_type, campaign_id, description, appearance, personality, background, objective, image_url)
+			VALUES (?, ?, 'PLAYER', ?, ?, ?, ?, ?, ?, ?) RETURNING id`, in.SystemID, in.Name, in.CampaignID, in.Description, in.Appearance, in.Personality, in.Background, in.Objective, in.ImageURL).Scan(&id).Error; err != nil {
 			return err
 		}
 		if err := tx.Exec("INSERT INTO core.character_sheet(character_id, owner_user_id) VALUES (?, ?)", id, s.UserID).Error; err != nil {
@@ -206,7 +207,7 @@ func (s *Repository) CreateCharacter(ctx context.Context, in domain.CharacterInp
 
 func (s *Repository) UpdateCharacter(ctx context.Context, id string, in domain.CharacterInput) (domain.Character, error) {
 	err := s.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		result := tx.Table("core.rpg_character AS c").Where("c.id = ? AND c.rpg_system_id = ? AND EXISTS (SELECT 1 FROM core.character_sheet sh WHERE sh.character_id=c.id AND sh.owner_user_id=?)", id, in.SystemID, s.UserID).Updates(map[string]any{"name": in.Name, "campaign_id": in.CampaignID, "description": in.Description, "appearance": in.Appearance, "personality": in.Personality, "background": in.Background, "objective": in.Objective, "updated_at": time.Now()})
+		result := tx.Table("core.rpg_character AS c").Where("c.id = ? AND c.rpg_system_id = ? AND EXISTS (SELECT 1 FROM core.character_sheet sh WHERE sh.character_id=c.id AND sh.owner_user_id=?)", id, in.SystemID, s.UserID).Updates(map[string]any{"image_url": in.ImageURL, "name": in.Name, "campaign_id": in.CampaignID, "description": in.Description, "appearance": in.Appearance, "personality": in.Personality, "background": in.Background, "objective": in.Objective, "updated_at": time.Now()})
 		if result.Error != nil {
 			return result.Error
 		}
