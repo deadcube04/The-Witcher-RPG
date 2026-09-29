@@ -1,21 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams, useSearch } from "@tanstack/react-router";
 import { useBestiaryTheme } from "@/app/layout/BestiaryThemeContext";
 import { BestiaryDetailCover } from "@/features/bestiary/BestiaryDetailCover";
+import { BestiaryInformation } from "@/features/bestiary/BestiaryInformation";
 import { BestiaryDetailSections } from "@/features/bestiary/BestiaryDetailSections";
+import { RpgTabs, type RpgTabKey } from "@/components/primitives/RpgTabs";
 import { BestiarySystemGate } from "@/features/bestiary/BestiarySystemGate";
 import {
 	BestiaryError,
 	BestiaryLoading,
 } from "@/features/bestiary/BestiaryRemoteState";
-import {
-	primaryElementKey,
-	elementVisuals,
-} from "@/features/bestiary/element-visuals";
+import { primaryElementKey } from "@/features/bestiary/element-visuals";
 import { filtersFromSearch } from "@/features/bestiary/search-state";
 import { bestiaryApi } from "@/shared/api/domains";
 import { keys } from "@/shared/api/queries";
+import type { BestiaryThreat } from "@/shared/contracts/bestiary";
+
+function BestiaryDetailTabs({ threat }: { threat: BestiaryThreat }) {
+	const [activeTab, setActiveTab] = useState<RpgTabKey>("information");
+	return (
+		<RpgTabs
+			activeKey={activeTab}
+			onChange={setActiveTab}
+			information={<BestiaryInformation threat={threat} />}
+			sheet={<BestiaryDetailSections threat={threat} />}
+		/>
+	);
+}
 
 function BestiaryDetailContent() {
 	const { threatId } = useParams({ from: "/bestiary/$threatId" });
@@ -37,7 +49,6 @@ function BestiaryDetailContent() {
 			<BestiaryError error={detail.error} retry={() => void detail.refetch()} />
 		);
 	const { creature, navigation } = detail.data;
-	const visual = element ? elementVisuals[element] : null;
 	const listSearch = {
 		q: filters.q ?? "",
 		elementId: filters.elementId ?? "",
@@ -52,12 +63,10 @@ function BestiaryDetailContent() {
 		...listSearch,
 	});
 	return (
-		<div
-			className={`mx-auto max-w-[1500px] ${visual?.classes ?? "[--element:#b9b3a6] [--paper:#eeeae2] [--paper-ink:#292721] [--paper-muted:#625d53] [--paper-rule:#b8afa0]"}`}
-		>
+		<div className="mx-auto max-w-[1480px]">
 			<nav
 				aria-label="Retorno ao arquivo"
-				className="mb-6 flex flex-wrap items-center justify-between gap-4"
+				className="mb-8 flex flex-wrap items-center justify-between gap-4"
 			>
 				<Link
 					to="/bestiary"
@@ -65,18 +74,18 @@ function BestiaryDetailContent() {
 						...previous,
 						...listSearch,
 					})}
-					className="inline-flex min-h-11 items-center border border-(--edge) px-5 py-2 text-sm font-semibold text-(--ink) hover:border-(--accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--accent)"
+					className="inline-flex min-h-11 items-center rounded-full bg-(--surface)/70 px-5 py-2 text-sm font-semibold text-(--ink) ring-1 ring-(--edge)/40 hover:ring-(--accent)/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--accent)"
 				>
 					← Voltar ao bestiário
 				</Link>
 				{navigation.position !== null && (
-					<p className="font-mono text-xs text-(--muted)">
-						Registro {navigation.position} de {navigation.total}
+					<p className="text-xs text-(--muted)">
+						Ameaça {navigation.position} de {navigation.total}
 					</p>
 				)}
 			</nav>
 			<BestiaryDetailCover key={threatId} threat={creature} element={element} />
-			<BestiaryDetailSections key={threatId} threat={creature} />
+			<BestiaryDetailTabs key={threatId} threat={creature} />
 			{navigation.position === null && (
 				<p
 					role="status"
@@ -88,7 +97,7 @@ function BestiaryDetailContent() {
 			)}
 			<nav
 				aria-label="Percorrer ameaças"
-				className="mt-8 grid gap-3 border-t border-(--edge)/70 pt-6 sm:grid-cols-2"
+				className="mt-8 grid gap-3 border-t border-(--edge)/40 pt-6 sm:grid-cols-2"
 			>
 				{navigation.previous ? (
 					<Link

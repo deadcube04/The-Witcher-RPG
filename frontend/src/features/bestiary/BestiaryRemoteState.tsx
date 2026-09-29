@@ -12,44 +12,35 @@ export function BestiaryLoading({
 			aria-label="Abrindo registros do bestiário"
 			className="mx-auto max-w-[1480px]"
 		>
-			<p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-(--muted)">
-				Abrindo registros…
-			</p>
+			<p className="mb-4 text-sm text-(--muted)">Carregando ameaças…</p>
 			{variant === "gallery" ? (
 				<>
-					<div className="h-72 border border-(--edge) bg-(--surface)" />
-					<div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-						{[0, 1, 2, 3, 4].map((item) => (
+					<div className="h-40 rounded-2xl bg-(--surface)/65" />
+					<div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+						{[0, 1, 2].map((item) => (
 							<div
 								key={item}
-								className="h-52 border border-(--edge) bg-(--surface-raised)"
+								className="h-80 rounded-[1.7rem] bg-(--surface)/65"
 							/>
 						))}
 					</div>
-					<div className="mt-10 h-24 border border-(--edge) bg-(--surface)" />
 				</>
 			) : variant === "results" ? (
-				<div className="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
+				<div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
 					{[0, 1, 2].map((item) => (
 						<div
 							key={item}
-							className="h-96 border border-(--edge) bg-(--surface)"
+							className="h-80 rounded-[1.7rem] bg-(--surface)/65"
 						/>
 					))}
 				</div>
 			) : (
-				<div className="grid gap-px border border-(--edge) bg-(--edge) lg:grid-cols-2">
-					<div className="min-h-[65dvh] bg-[#eeeae2] p-8">
-						<div className="h-12 w-2/3 bg-[#c9c2b5]" />
-						<div className="mt-7 h-80 bg-[#d8d0c2]" />
-					</div>
-					<div className="min-h-[65dvh] bg-[#eeeae2] p-8">
-						<div className="h-8 w-1/2 bg-[#c9c2b5]" />
-						<div className="mt-8 grid grid-cols-2 gap-3">
-							{[0, 1, 2, 3].map((item) => (
-								<div key={item} className="h-24 bg-[#d8d0c2]" />
-							))}
-						</div>
+				<div className="grid gap-6 lg:grid-cols-2">
+					<div className="h-80 rounded-[1.7rem] bg-(--surface)/65 lg:h-[31rem]" />
+					<div className="py-6">
+						<div className="h-14 w-2/3 rounded-lg bg-(--surface)/65" />
+						<div className="mt-7 h-24 w-full rounded-lg bg-(--surface)/65" />
+						<div className="mt-7 h-20 w-4/5 rounded-lg bg-(--surface)/65" />
 					</div>
 				</div>
 			)}

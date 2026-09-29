@@ -59,7 +59,7 @@ type Page struct {
 }
 
 type MainStats struct {
-	Defense  *int `json:"defense"`
+	Defense   *int `json:"defense"`
 	HitPoints *int `json:"hitPoints"`
 	WoundedAt *int `json:"woundedAt"`
 	Agility   *int `json:"agility"`
@@ -84,18 +84,18 @@ type Presence struct {
 }
 
 type Action struct {
-	ID              string  `json:"id"`
-	Name            string  `json:"name"`
-	Type            *string `json:"type" gorm:"column:action_kind"`
-	Description     *string `json:"description"`
-	TestExpression  *string `json:"testExpression"`
+	ID               string  `json:"id"`
+	Name             string  `json:"name"`
+	Type             *string `json:"type" gorm:"column:action_kind"`
+	Description      *string `json:"description"`
+	TestExpression   *string `json:"testExpression"`
 	DamageExpression *string `json:"damageExpression"`
-	AttackCount     *int    `json:"attackCount"`
-	Range           *string `json:"range" gorm:"column:action_range"`
-	Critical        *string `json:"critical"`
-	DamageType      *string `json:"damageType"`
-	Resistance      *string `json:"resistance"`
-	SourceRef       *string `json:"sourceRef"`
+	AttackCount      *int    `json:"attackCount"`
+	Range            *string `json:"range" gorm:"column:action_range"`
+	Critical         *string `json:"critical"`
+	DamageType       *string `json:"damageType"`
+	Resistance       *string `json:"resistance"`
+	SourceRef        *string `json:"sourceRef"`
 }
 
 type Ability struct {
@@ -122,24 +122,27 @@ type Skill struct {
 
 type Threat struct {
 	ThreatSummary
-	BeingTypeDescription *string       `json:"beingTypeDescription"`
-	SourceRef             *string       `json:"sourceRef"`
-	MainStats             MainStats     `json:"stats"`
-	Tests                 Tests         `json:"tests"`
-	Senses                *string       `json:"senses"`
-	Movement              *string       `json:"movement"`
-	DisturbingPresence    *string       `json:"disturbingPresence"`
-	Presence               Presence      `json:"presence"`
-	FearEnigmaSummary      *string       `json:"fearEnigmaSummary"`
-	Group                  *string       `json:"group"`
-	ResistancesText        *string       `json:"resistancesText"`
-	ImmunitiesText         *string       `json:"immunitiesText"`
-	VulnerabilitiesText    *string       `json:"vulnerabilitiesText"`
-	Descriptors            []string      `json:"descriptors"`
-	Actions                []Action      `json:"actions"`
-	Abilities              []Ability     `json:"abilities"`
-	DefenseTraits          []DefenseTrait `json:"defenseTraits"`
-	Skills                 []Skill       `json:"skills"`
+	Appearance           *string        `json:"appearance"`
+	Behavior             *string        `json:"behavior"`
+	History              *string        `json:"history"`
+	BeingTypeDescription *string        `json:"beingTypeDescription"`
+	SourceRef            *string        `json:"sourceRef"`
+	MainStats            MainStats      `json:"stats"`
+	Tests                Tests          `json:"tests"`
+	Senses               *string        `json:"senses"`
+	Movement             *string        `json:"movement"`
+	DisturbingPresence   *string        `json:"disturbingPresence"`
+	Presence             Presence       `json:"presence"`
+	FearEnigmaSummary    *string        `json:"fearEnigmaSummary"`
+	Group                *string        `json:"group"`
+	ResistancesText      *string        `json:"resistancesText"`
+	ImmunitiesText       *string        `json:"immunitiesText"`
+	VulnerabilitiesText  *string        `json:"vulnerabilitiesText"`
+	Descriptors          []string       `json:"descriptors"`
+	Actions              []Action       `json:"actions"`
+	Abilities            []Ability      `json:"abilities"`
+	DefenseTraits        []DefenseTrait `json:"defenseTraits"`
+	Skills               []Skill        `json:"skills"`
 }
 
 type NavigationItem struct {
@@ -155,7 +158,7 @@ type Navigation struct {
 }
 
 type Detail struct {
-	Creature  Threat     `json:"creature"`
+	Creature   Threat     `json:"creature"`
 	Navigation Navigation `json:"navigation"`
 }
 
@@ -164,4 +167,3 @@ type Repository interface {
 	List(context.Context, Filters) (Page, error)
 	Get(context.Context, string, Filters) (Threat, Navigation, error)
 }
-

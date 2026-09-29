@@ -1,10 +1,4 @@
-import {
-	BookFacts,
-	BookHeading,
-	BookPage,
-	BookSpread,
-	BookSubheading,
-} from "@/features/bestiary/BestiaryBookPrimitives";
+import { RpgTermHelp } from "@/components/primitives/RpgTermHelp";
 import { BestiaryPortrait } from "@/features/bestiary/BestiaryPortrait";
 import {
 	elementVisuals,
@@ -21,116 +15,52 @@ export function BestiaryDetailCover({
 }) {
 	const visual = element ? elementVisuals[element] : null;
 	return (
-		<BookSpread label={`Registro de ${threat.name}`}>
-			<BookPage folio="Arquivo de ameaças / I">
-				<p className="font-mono text-[10px] uppercase tracking-[0.2em] text-(--paper-muted)">
-					{visual?.mark ?? "REGISTRO SEM ELEMENTO"} /{" "}
-					{threat.group ?? "Ameaça registrada"}
+		<header className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-end lg:gap-10">
+			<div className="relative overflow-hidden rounded-[1.75rem] bg-[#151413] p-1.5 ring-1 ring-(--edge)/35">
+				<BestiaryPortrait
+					src={threat.imageUrl}
+					name={threat.name}
+					element={element}
+					priority
+					className="h-72 w-full rounded-[1.4rem] sm:h-96 lg:h-[31rem]"
+				/>
+			</div>
+			<div className="pb-1 lg:pb-6">
+				<p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--accent)">
+					{visual?.name ?? "Ameaça"}
+					{threat.group ? ` / ${threat.group}` : ""}
 				</p>
-				<h1 className="mt-3 font-serif text-5xl leading-[0.95] tracking-tight md:text-6xl xl:text-7xl">
+				<h1 className="mt-4 max-w-[12ch] font-serif text-5xl leading-[0.94] tracking-[-0.045em] text-(--ink) sm:text-6xl xl:text-7xl">
 					{threat.name}
 				</h1>
-				<div className="mt-6 border border-(--paper-rule) bg-[#171614] p-2">
-					<BestiaryPortrait
-						src={threat.imageUrl}
-						name={threat.name}
-						element={element}
-						priority
-						className="h-80 w-full md:h-[27rem]"
-					/>
-				</div>
-				{threat.description && (
-					<div className="mt-6">
-						<h2 className="font-serif text-2xl">Primeiro relato</h2>
-						<p className="mt-2 whitespace-pre-line text-sm leading-7">
-							{threat.description}
+				<div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-5 border-t border-(--edge)/45 pt-6 sm:grid-cols-3">
+					<div>
+						<div className="flex items-center gap-1.5">
+							<span className="text-xs text-(--muted)">VD</span>
+							<RpgTermHelp
+								term="VD"
+								explanation="Valor de Desafio: indica a gravidade prevista de um confronto."
+							/>
+						</div>
+						<p className="mt-1 font-serif text-4xl leading-none">
+							{threat.challengeValue ?? "—"}
 						</p>
-					</div>
-				)}
-				{threat.sourceRef && (
-					<p className="mt-6 font-mono text-[10px] text-(--paper-muted)">
-						Fonte do registro: {threat.sourceRef}
-					</p>
-				)}
-			</BookPage>
-			<BookPage folio="Arquivo de ameaças / II">
-				<BookHeading
-					mark="Ficha de reconhecimento"
-					title="Como reconhecer esta ameaça"
-				/>
-				<div className="grid gap-4 border-y border-(--paper-rule) py-5 sm:grid-cols-[auto_1fr] sm:items-center">
-					<div className="flex size-28 flex-col items-center justify-center border-2 border-(--paper-ink) text-center">
-						<span className="font-mono text-xs tracking-[0.2em]">VD</span>
-						<strong className="font-serif text-5xl font-normal leading-none">
-							{threat.challengeValue ?? "?"}
-						</strong>
 					</div>
 					<div>
-						<p className="font-serif text-xl">Valor de Desafio</p>
-						<p className="mt-1 text-sm leading-6 text-(--paper-muted)">
-							Nota de campo: esta medida orienta a gravidade de um confronto com
-							a ameaça.
+						<p className="text-xs text-(--muted)">Tipo</p>
+						<p className="mt-2 text-sm font-semibold">
+							{threat.beingType ?? "Não identificado"}
+						</p>
+					</div>
+					<div>
+						<p className="text-xs text-(--muted)">Elemento</p>
+						<p className="mt-2 text-sm font-semibold">
+							{threat.elements.map((item) => item.name).join(" / ") ||
+								"Não registrado"}
 						</p>
 					</div>
 				</div>
-				<BookSubheading>Classificação</BookSubheading>
-				<dl className="space-y-3 text-sm">
-					<div className="grid grid-cols-[7rem_1fr] gap-3 border-b border-(--paper-rule) pb-2">
-						<dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-(--paper-muted)">
-							Tipo
-						</dt>
-						<dd>{threat.beingType ?? "Não identificado"}</dd>
-					</div>
-					<div className="grid grid-cols-[7rem_1fr] gap-3 border-b border-(--paper-rule) pb-2">
-						<dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-(--paper-muted)">
-							Porte
-						</dt>
-						<dd>{threat.size ?? "Não informado"}</dd>
-					</div>
-					<div className="grid grid-cols-[7rem_1fr] gap-3 border-b border-(--paper-rule) pb-2">
-						<dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-(--paper-muted)">
-							Elementos
-						</dt>
-						<dd>
-							{threat.elements.map((item) => item.name).join(" / ") ||
-								"Nenhum registrado"}
-						</dd>
-					</div>
-				</dl>
-				<p className="mt-3 text-xs leading-5 text-(--paper-muted)">
-					Nota de campo: o elemento classifica a influência paranormal
-					observada. Quando há mais de um, o primeiro registro marcado como
-					principal conduz esta ficha.
-				</p>
-				{threat.beingTypeDescription && (
-					<p className="mt-5 border-l-2 border-(--paper-rule) pl-3 text-sm leading-6">
-						{threat.beingTypeDescription}
-					</p>
-				)}
-				{threat.descriptors.length > 0 && (
-					<p className="mt-4 font-mono text-[10px] uppercase tracking-[0.1em] text-(--paper-muted)">
-						Indícios: {threat.descriptors.join(" / ")}
-					</p>
-				)}
-				<BookSubheading>Dados essenciais</BookSubheading>
-				<BookFacts
-					entries={[
-						["Defesa", threat.stats.defense],
-						["Pontos de vida", threat.stats.hitPoints],
-						["Ferido", threat.stats.woundedAt],
-					]}
-				/>
-				<BookSubheading>Atributos</BookSubheading>
-				<BookFacts
-					entries={[
-						["Agilidade", threat.stats.agility],
-						["Força", threat.stats.strength],
-						["Intelecto", threat.stats.intellect],
-						["Presença", threat.stats.presence],
-						["Vigor", threat.stats.vigor],
-					]}
-				/>
-			</BookPage>
-		</BookSpread>
+			</div>
+		</header>
 	);
 }

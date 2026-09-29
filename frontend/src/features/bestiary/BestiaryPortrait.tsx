@@ -76,10 +76,8 @@ function PortraitContent({
 			{visual && (
 				<span
 					aria-hidden="true"
-					className="absolute bottom-3 right-3 border border-white/30 bg-black/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-white"
-				>
-					{visual.mark}
-				</span>
+					className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-black/20 to-transparent"
+				/>
 			)}
 		</div>
 	);

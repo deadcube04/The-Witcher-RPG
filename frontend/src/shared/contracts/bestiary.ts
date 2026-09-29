@@ -3,11 +3,14 @@ import { z } from "zod";
 // PostgreSQL accepts any 128-bit UUID layout; imported threat IDs do not all
 // use the RFC variant/version bits enforced by z.uuid(). Match the backend's
 // UUID shape validation for records owned by the bestiary catalog.
-export const bestiaryIdSchema = z.string().regex(
-	/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i,
-);
+export const bestiaryIdSchema = z
+	.string()
+	.regex(/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i);
 
-export const bestiaryOptionSchema = z.strictObject({ id: z.string(), name: z.string() });
+export const bestiaryOptionSchema = z.strictObject({
+	id: z.string(),
+	name: z.string(),
+});
 export const bestiaryElementSchema = z.strictObject({
 	id: bestiaryIdSchema,
 	name: z.string(),
@@ -90,6 +93,9 @@ export const bestiarySkillSchema = z.strictObject({
 	sourceRef: z.string().nullable(),
 });
 export const bestiaryThreatSchema = bestiarySummarySchema.extend({
+	appearance: z.string().nullable(),
+	behavior: z.string().nullable(),
+	history: z.string().nullable(),
 	beingTypeDescription: z.string().nullable(),
 	sourceRef: z.string().nullable(),
 	stats: bestiaryStatsSchema,
@@ -113,7 +119,10 @@ export const bestiaryThreatSchema = bestiarySummarySchema.extend({
 	defenseTraits: z.array(bestiaryDefenseTraitSchema),
 	skills: z.array(bestiarySkillSchema),
 });
-export const bestiaryNavigationItemSchema = z.strictObject({ id: bestiaryIdSchema, name: z.string() });
+export const bestiaryNavigationItemSchema = z.strictObject({
+	id: bestiaryIdSchema,
+	name: z.string(),
+});
 export const bestiaryDetailSchema = z.strictObject({
 	creature: bestiaryThreatSchema,
 	navigation: z.strictObject({
@@ -138,4 +147,3 @@ export type BestiaryFilters = {
 };
 export type BestiaryThreat = z.infer<typeof bestiaryThreatSchema>;
 export type BestiaryDetail = z.infer<typeof bestiaryDetailSchema>;
-

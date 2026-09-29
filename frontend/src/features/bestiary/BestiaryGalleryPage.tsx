@@ -113,25 +113,19 @@ function BestiaryGalleryContent() {
 		<div className="mx-auto max-w-[1480px]">
 			<BestiaryGalleryHeader element={activeKey} />
 			<section id="archive-records" aria-labelledby="archive-records-heading">
-				<div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-(--edge)/70 pb-4">
+				<div className="mb-6 flex flex-wrap items-end justify-between gap-4">
 					<div>
-						<p className="font-mono text-[10px] uppercase tracking-[0.2em] text-(--accent)">
-							Arquivo consultável
-						</p>
 						<h2
 							id="archive-records-heading"
-							className="mt-2 font-serif text-3xl md:text-4xl"
+							className="font-serif text-3xl md:text-4xl"
 						>
-							{activeElement
-								? `Registros de ${activeElement.name}`
-								: "Todos os registros"}
+							{filters.elementId === "none"
+								? "Ameaças sem elemento"
+								: activeElement
+									? `Ameaças de ${activeElement.name}`
+									: "Todas as ameaças"}
 						</h2>
 					</div>
-					<p className="max-w-sm text-sm leading-6 text-(--muted)">
-						{activeElement
-							? "A busca permanece neste capítulo até que você remova o elemento."
-							: "Uma ameaça pode revelar mais de um elemento em sua ficha."}
-					</p>
 				</div>
 				<BestiaryFilters
 					filters={filters}
@@ -144,7 +138,7 @@ function BestiaryGalleryContent() {
 						className="mb-6 border-l-2 border-(--danger) bg-(--surface) px-4 py-3 text-sm text-(--danger)"
 					>
 						A VD mínima precisa ser menor ou igual à VD máxima. Revise a faixa
-						em “Refinar a investigação”.
+						em “Mais filtros”.
 					</p>
 				)}
 				{rangeValid && list.isPending ? (
@@ -154,15 +148,9 @@ function BestiaryGalleryContent() {
 				) : rangeValid && total === 0 ? (
 					<div className="grid min-h-64 place-items-center border border-dashed border-(--edge) bg-(--surface)/60 p-8 text-center">
 						<div>
-							<p className="font-mono text-[10px] uppercase tracking-[0.2em] text-(--accent)">
-								Nenhum vestígio localizado
-							</p>
-							<h3 className="mt-3 font-serif text-3xl">
-								Este registro ainda não apareceu
-							</h3>
+							<h3 className="font-serif text-3xl">Nenhuma ameaça encontrada</h3>
 							<p className="mt-3 max-w-md text-sm leading-6 text-(--muted)">
-								Tente outro nome ou remova critérios da investigação para
-								percorrer o arquivo.
+								Tente outro nome ou remova alguns filtros para ver mais ameaças.
 							</p>
 						</div>
 					</div>
@@ -178,7 +166,7 @@ function BestiaryGalleryContent() {
 									Exibindo {items.length} de {total}
 								</p>
 							</div>
-							<div className="grid items-stretch gap-5 sm:grid-cols-2 2xl:grid-cols-3">
+							<div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">
 								{items.map((threat, index) => (
 									<BestiaryReveal
 										key={threat.id}

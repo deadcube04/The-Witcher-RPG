@@ -48,11 +48,11 @@ export function BestiaryFilters({ filters, options, onChange }: Props) {
 	return (
 		<section
 			aria-label="Pesquisar e filtrar ameaças"
-			className="mb-10 border-y border-(--edge)/70 bg-(--surface)/75 px-4 py-5 md:px-6"
+			className="mb-9 rounded-[1.5rem] bg-(--surface)/55 p-5 ring-1 ring-(--edge)/30 md:p-6"
 		>
 			<div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
 				<RpgInput
-					label="Nome no registro"
+					label="Buscar ameaça pelo nome"
 					value={filters.q ?? ""}
 					onChange={(q) => onChange({ q })}
 				/>
@@ -72,23 +72,23 @@ export function BestiaryFilters({ filters, options, onChange }: Props) {
 						}
 						className="min-h-11 self-end border border-(--edge) px-4 text-sm font-semibold text-(--ink) hover:border-(--accent) focus-visible:outline-2 focus-visible:outline-(--accent)"
 					>
-						Limpar o registro de busca
+						Limpar filtros
 					</button>
 				)}
 			</div>
-			<p className="mt-2 text-xs opacity-75">
-				Um nome ou fragmento dele basta para iniciar a busca.
+			<p className="mt-2 text-xs text-(--muted)">
+				Digite um nome completo ou apenas parte dele.
 			</p>
 			<RpgDisclosure
 				title={
-					<span className="font-serif text-xl text-(--ink)">
-						Refinar a investigação
+					<span className="text-sm font-semibold text-(--ink)">
+						Mais filtros
 					</span>
 				}
 				summary={
 					labels.length > 0
 						? `${labels.length} critério${labels.length === 1 ? "" : "s"} aplicado${labels.length === 1 ? "" : "s"}`
-						: "Elemento, tipo, porte, VD e ordem"
+						: "Elemento, tipo, porte, VD e ordenação"
 				}
 				className="mt-5 border-t border-(--edge)/60 pt-3"
 				buttonClassName="px-0! hover:bg-transparent!"

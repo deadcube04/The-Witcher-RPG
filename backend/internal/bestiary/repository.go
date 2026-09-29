@@ -120,6 +120,9 @@ func (r *GORMRepository) Get(ctx context.Context, id string, filter Filters) (Th
 		Name                 string
 		Description          *string
 		ImageURL             *string
+		Appearance           *string
+		Behavior             *string
+		History              *string
 		BeingTypeID          *string
 		BeingType            *string
 		BeingTypeDescription *string
@@ -153,7 +156,7 @@ func (r *GORMRepository) Get(ctx context.Context, id string, filter Filters) (Th
 		VulnerabilitiesText  *string
 	}
 	err := r.db.WithContext(ctx).Table("core.rpg_character AS c").
-		Select("c.id, c.name, c.description, c.image_url, bt.id AS being_type_id, bt.name AS being_type, bt.description AS being_type_description, t.challenge_value, ts.id AS size_id, ts.name AS size, t.source_ref, t.defense, t.hit_points, t.wounded_at, t.agility, t.strength, t.intellect, t.presence, t.vigor, t.perception_test, t.initiative_test, t.fortitude_test, t.reflexes_test, t.will_test, t.senses, t.movement_text, t.disturbing_presence, t.presence_dt, t.presence_damage, t.presence_immune_nex, t.fear_enigma_summary, t.statblock_data ->> 'group' AS element_group, t.statblock_data ->> 'resistances_text' AS resistances_text, t.statblock_data ->> 'immunities_text' AS immunities_text, t.statblock_data ->> 'vulnerabilities_text' AS vulnerabilities_text").
+		Select("c.id, c.name, c.description, c.image_url, c.appearance, c.personality AS behavior, c.background AS history, bt.id AS being_type_id, bt.name AS being_type, bt.description AS being_type_description, t.challenge_value, ts.id AS size_id, ts.name AS size, t.source_ref, t.defense, t.hit_points, t.wounded_at, t.agility, t.strength, t.intellect, t.presence, t.vigor, t.perception_test, t.initiative_test, t.fortitude_test, t.reflexes_test, t.will_test, t.senses, t.movement_text, t.disturbing_presence, t.presence_dt, t.presence_damage, t.presence_immune_nex, t.fear_enigma_summary, t.statblock_data ->> 'group' AS element_group, t.statblock_data ->> 'resistances_text' AS resistances_text, t.statblock_data ->> 'immunities_text' AS immunities_text, t.statblock_data ->> 'vulnerabilities_text' AS vulnerabilities_text").
 		Joins("JOIN ordem.threat AS t ON t.character_id = c.id").
 		Joins("LEFT JOIN ordem.being_type AS bt ON bt.id = t.being_type_id").
 		Joins("LEFT JOIN ordem.threat_size AS ts ON ts.id = t.size_id").
@@ -165,7 +168,8 @@ func (r *GORMRepository) Get(ctx context.Context, id string, filter Filters) (Th
 		return Threat{}, Navigation{}, fmt.Errorf("get bestiary entry: %w", err)
 	}
 	item := Threat{
-		ThreatSummary:        ThreatSummary{ID: row.ID, Name: row.Name, Description: row.Description, ImageURL: row.ImageURL, BeingTypeID: row.BeingTypeID, BeingType: row.BeingType, Challenge: row.Challenge, SizeID: row.SizeID, Size: row.Size, Elements: []Element{}},
+		ThreatSummary: ThreatSummary{ID: row.ID, Name: row.Name, Description: row.Description, ImageURL: row.ImageURL, BeingTypeID: row.BeingTypeID, BeingType: row.BeingType, Challenge: row.Challenge, SizeID: row.SizeID, Size: row.Size, Elements: []Element{}},
+		Appearance:    row.Appearance, Behavior: row.Behavior, History: row.History,
 		BeingTypeDescription: row.BeingTypeDescription, SourceRef: row.SourceRef,
 		MainStats: MainStats{Defense: row.Defense, HitPoints: row.HitPoints, WoundedAt: row.WoundedAt, Agility: row.Agility, Strength: row.Strength, Intellect: row.Intellect, Presence: row.Presence, Vigor: row.Vigor},
 		Tests:     Tests{Perception: row.PerceptionTest, Initiative: row.InitiativeTest, Fortitude: row.FortitudeTest, Reflexes: row.ReflexesTest, Will: row.WillTest},
