@@ -1,5 +1,5 @@
-import { PiBackpackThin, PiDiceFiveThin, PiMagicWandThin, PiSwordThin } from "react-icons/pi";
-import { RpgSheetDrawers } from "@/components/navigation/RpgSheetDrawers";
+import { RpgSheetTabs } from "@/components/navigation/RpgSheetTabs";
+import { RpgButton } from "@/components/primitives/RpgControls";
 import type { CharacterInput } from "@/shared/contracts/character-sheet";
 import { DiceRoller } from "@/features/dice/DiceRoller";
 import { CharacterNarrative } from "@/features/characters/CharacterNarrative";
@@ -9,59 +9,117 @@ import { AttacksPanel } from "@/features/characters/ordem/content/AttacksPanel";
 import { InventoryPanel } from "@/features/characters/ordem/content/InventoryPanel";
 import { RitualsPanel } from "@/features/characters/ordem/content/RitualsPanel";
 
+type Props = {
+	character: CharacterInput;
+	characterId: string;
+	skills: CharacterSkill[];
+	skillsStatus: "loading" | "error" | "ready";
+	onSkillsRetry: () => void;
+	onCharacterChange: (character: CharacterInput) => void;
+	onSkillsChange: (skills: CharacterSkill[]) => void;
+};
+
 export function CharacterPanels({
 	character,
 	characterId,
 	skills,
+	skillsStatus,
+	onSkillsRetry,
 	onCharacterChange,
 	onSkillsChange,
-}: {
-	character: CharacterInput;
-	characterId: string;
-	skills: CharacterSkill[];
-	onCharacterChange: (character: CharacterInput) => void;
-	onSkillsChange: (skills: CharacterSkill[]) => void;
-}) {
+}: Props) {
 	const ordem = character.systemData.kind === "ordem-paranormal";
 	return (
-		<div className="space-y-8">
-			<div className="relative min-h-[560px]">
-				<div className="pr-[calc(clamp(72px,7vw,112px)+1rem)]">
-					<CharacterSkills skills={skills} attributes={character.systemData.kind === "ordem-paranormal" ? character.systemData.attributes : undefined} onChange={onSkillsChange} />
-				</div>
-				<RpgSheetDrawers
+		<section
+			aria-label="Conteúdo da ficha"
+			className="min-w-0 rounded-[2rem] bg-(--edge)/30 p-1"
+		>
+			<div className="min-w-0 rounded-[calc(2rem-0.25rem)] bg-(--surface)">
+				<RpgSheetTabs
 					items={[
+						{
+							key: "skills",
+							label: "Perícias",
+							children:
+								skillsStatus === "loading" ? (
+									<p role="status" className="py-8 text-sm text-(--muted)">
+										Carregando perícias…
+									</p>
+								) : skillsStatus === "error" ? (
+									<div role="alert" className="space-y-4 py-8 text-sm">
+										<p>Não foi possível carregar as perícias.</p>
+										<RpgButton secondary onClick={onSkillsRetry}>
+											Tentar novamente
+										</RpgButton>
+									</div>
+								) : (
+									<CharacterSkills
+										skills={skills}
+										attributes={
+											character.systemData.kind === "ordem-paranormal"
+												? character.systemData.attributes
+												: undefined
+										}
+										onChange={onSkillsChange}
+									/>
+								),
+						},
+						{
+							key: "actions",
+							label: "Ações",
+							children: (
+								<RpgSheetTabs
+									secondary
+									items={[
+										{
+											key: "attacks",
+											label: "Ataques",
+											children: ordem ? (
+												<AttacksPanel characterId={characterId} />
+											) : (
+												<UnavailablePanel name="Ataques" />
+											),
+										},
+										{
+											key: "rituals",
+											label: "Rituais",
+											children: ordem ? (
+												<RitualsPanel characterId={characterId} />
+											) : (
+												<UnavailablePanel name="Rituais" />
+											),
+										},
+										{ key: "dice", label: "Dados", children: <DiceRoller /> },
+									]}
+								/>
+							),
+						},
 						{
 							key: "inventory",
 							label: "Inventário",
-							icon: <PiBackpackThin aria-hidden="true" />,
-							children: ordem ? <InventoryPanel characterId={characterId} /> : <UnavailablePanel name="Inventário" />,
+							children: ordem ? (
+								<InventoryPanel characterId={characterId} />
+							) : (
+								<UnavailablePanel name="Inventário" />
+							),
 						},
 						{
-							key: "rituals",
-							label: "Rituais",
-							icon: <PiMagicWandThin aria-hidden="true" />,
-							children: ordem ? <RitualsPanel characterId={characterId} /> : <UnavailablePanel name="Rituais" />,
-						},
-						{
-							key: "attacks",
-							label: "Ataques",
-							icon: <PiSwordThin aria-hidden="true" />,
-							children: ordem ? <AttacksPanel characterId={characterId} /> : <UnavailablePanel name="Ataques" />,
-						},
-						{
-							key: "dice",
-							label: "Dados",
-							icon: <PiDiceFiveThin aria-hidden="true" />,
-							children: <DiceRoller />,
+							key: "narrative",
+							label: "História",
+							children: (
+								<CharacterNarrative
+									character={character}
+									onChange={onCharacterChange}
+								/>
+							),
 						},
 					]}
 				/>
 			</div>
-			<CharacterNarrative character={character} onChange={onCharacterChange} />
-		</div>
+		</section>
 	);
 }
+
 function UnavailablePanel({ name }: { name: string }) {
 	return (
 		<div className="rounded-xl border border-dashed border-(--edge) bg-(--canvas) p-6 text-sm leading-7 text-(--ink)">

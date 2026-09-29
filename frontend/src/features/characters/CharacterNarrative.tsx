@@ -1,5 +1,5 @@
-import { RpgInput } from "../../components/primitives/RpgControls";
-import type { CharacterInput } from "../../shared/contracts/character-sheet";
+import { RpgInput } from "@/components/primitives/RpgControls";
+import type { CharacterInput } from "@/shared/contracts/character-sheet";
 
 const fields = [
 	{ key: "description", label: "Descrição" },
@@ -17,11 +17,9 @@ export function CharacterNarrative({
 	onChange: (character: CharacterInput) => void;
 }) {
 	return (
-		<section className="space-y-5">
-			<h3 className="border-b border-(--edge) pb-3 text-xl">
-				História do personagem
-			</h3>
-			<div className="grid gap-5 md:grid-cols-2">
+		<section className="space-y-4">
+			<h2 className="text-xl font-semibold">História do personagem</h2>
+			<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 				{fields.map((field) => (
 					<RpgInput
 						key={field.key}

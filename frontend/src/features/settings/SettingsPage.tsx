@@ -6,7 +6,6 @@ import {
 } from "react-icons/pi";
 import { ArchiveEyebrow } from "@/components/layout/ArchiveSurface";
 import { PageHeader } from "@/components/navigation/PageHeader";
-import { LocalImportPanel } from "@/features/settings/LocalImportPanel";
 
 const preferences = [
 	{
@@ -63,7 +62,6 @@ export function SettingsPage() {
 					))}
 				</ul>
 			</section>
-			<LocalImportPanel />
 		</>
 	);
 }

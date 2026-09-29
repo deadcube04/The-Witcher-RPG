@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { RpgInlineSelect } from "../../../components/primitives/RpgControls";
-import type { OrdemData } from "../../../shared/contracts/character-sheet";
-import { queries } from "../../../shared/api/queries";
+import { RpgInlineSelect } from "@/components/primitives/RpgControls";
+import type { OrdemData } from "@/shared/contracts/character-sheet";
+import { queries } from "@/shared/api/queries";
 
 const creditOptions = [
 	{ value: "", label: "Não definido" },
@@ -24,13 +24,16 @@ export function OrdemHeaderStats({
 	onChange?: (value: OrdemData) => void;
 }) {
 	const options = useQuery(queries.characterOptions);
-	const nexOptions = (options.data?.nex ?? []).map((entry) => ({ value: String(entry.value), label: `${entry.value}%` }));
+	const nexOptions = (options.data?.nex ?? []).map((entry) => ({
+		value: String(entry.value),
+		label: `${entry.value}%`,
+	}));
 	const stats = [
 		["NEX", `${value.nex}%`],
 		[
 			"Classe",
-			options.data?.classes.find((entry) => entry.id === value.classId)
-				?.name ?? "Não definida",
+			options.data?.classes.find((entry) => entry.id === value.classId)?.name ??
+				"Não definida",
 		],
 		[
 			"Origem",
@@ -42,20 +45,17 @@ export function OrdemHeaderStats({
 	] as const;
 
 	return (
-		<section
-			aria-label="Resumo da ficha"
-			className="mb-4 min-w-0 border-b border-(--edge) px-2 py-2"
-		>
-			<dl className="grid grid-cols-2 divide-x divide-y divide-(--edge) sm:grid-cols-5 sm:divide-y-0">
+		<section aria-label="Resumo da ficha" className="min-w-0">
+			<dl className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-5">
 				{stats.map(([label, text]) => (
 					<div
 						key={label}
-						className="min-w-0 px-3 py-1 first:pl-0 sm:last:pr-0"
+						className="min-w-0 rounded-xl bg-(--panel) px-3 py-2"
 					>
-						<dt className="truncate text-xs font-semibold uppercase tracking-widest opacity-60">
+						<dt className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-(--muted)">
 							{label}
 						</dt>
-						<dd className="mt-0.5 truncate text-base font-medium sm:text-lg">
+						<dd className="mt-0.5 truncate text-sm font-semibold">
 							{label === "NEX" && onChange ? (
 								<RpgInlineSelect
 									label="NEX"
