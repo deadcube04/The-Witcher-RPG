@@ -114,7 +114,7 @@ export function RpgInput({
 						rows={4}
 						aria-invalid={!!error}
 						aria-describedby={error ? `${id}-error` : undefined}
-						className="rounded-xl!"
+						className="rounded-xl! [&_textarea]:text-base!"
 					/>
 				) : (
 					<Input
@@ -125,7 +125,7 @@ export function RpgInput({
 						disabled={disabled}
 						aria-invalid={!!error}
 						aria-describedby={error ? `${id}-error` : undefined}
-						className="min-h-11! rounded-xl!"
+						className="min-h-11! rounded-xl! [&_input]:text-base!"
 					/>
 				)
 			}
