@@ -110,6 +110,7 @@ export function RitualCard({
 			title={definition.name}
 			subtitle={`${definition.circle}º círculo · ${details.label} · ${definition.source.kind === "official" ? "Oficial" : "Homebrew"}`}
 			className={details.classes}
+			animateLayout={false}
 			summary={
 				definition.tiers ? (
 					<div className="grid grid-cols-3 gap-2">

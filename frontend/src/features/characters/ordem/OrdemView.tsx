@@ -1,22 +1,8 @@
-import {
-	PiBrainThin,
-	PiHeartbeatThin,
-	PiLightningThin,
-	PiPersonSimpleRunThin,
-	PiPersonSimpleThrowThin,
-} from "react-icons/pi";
 import { RpgResourceBar } from "@/components/data-display/RpgResourceBar";
 import { RpgAttributeNumber } from "@/components/primitives/RpgControls";
 import type { CharacterInput } from "@/shared/contracts/character-sheet";
 import { attributeFields } from "@/features/characters/ordem/fields";
 
-const attributeIcons = {
-	agility: PiPersonSimpleRunThin,
-	strength: PiPersonSimpleThrowThin,
-	intellect: PiBrainThin,
-	presence: PiLightningThin,
-	vigor: PiHeartbeatThin,
-};
 const resourceFields = [
 	{ key: "health", label: "Vida" },
 	{ key: "sanity", label: "Sanidade" },
@@ -77,18 +63,13 @@ export function OrdemView({
 					</h2>
 					<dl className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3 xl:grid-cols-5">
 						{attributeFields.map((field) => {
-							const Icon = attributeIcons[field.key];
 							return (
 								<div
 									key={field.key}
 									className="min-w-0 rounded-xl bg-(--panel) px-1 py-2 text-center ring-1 ring-(--edge)/45"
 								>
-									<dt className="flex flex-col items-center gap-1 text-[11px]">
-										<Icon
-											aria-hidden="true"
-											className="size-4 text-(--accent)"
-										/>
-										<span className="truncate">{field.label}</span>
+								<dt className="truncate text-xs font-medium">
+									{field.label}
 									</dt>
 									<dd className="mt-1 flex justify-center">
 										{onChange ? (

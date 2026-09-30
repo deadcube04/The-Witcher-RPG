@@ -11,6 +11,7 @@ export function RpgExpandableCard({
 	subtitle,
 	summary,
 	children,
+	animateLayout = true,
 	className = "",
 }: {
 	id: string;
@@ -21,13 +22,14 @@ export function RpgExpandableCard({
 	subtitle: string;
 	summary: ReactNode;
 	children: ReactNode;
+	animateLayout?: boolean;
 	className?: string;
 }) {
 	const reduced = useReducedMotion();
 	const regionId = `${id}-details`;
 	return (
 		<motion.article
-			layout={!reduced}
+			layout={animateLayout && !reduced}
 			className={`overflow-hidden rounded-xl border border-(--edge) bg-(--canvas) shadow-lg ${className}`}
 		>
 			<div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-3 sm:p-4">
@@ -61,10 +63,29 @@ export function RpgExpandableCard({
 				{expanded && (
 					<motion.div
 						id={regionId}
-						initial={reduced ? false : { opacity: 0, y: -8, scaleY: 0.98 }}
-						animate={{ opacity: 1, y: 0, scaleY: 1 }}
-						exit={reduced ? undefined : { opacity: 0, y: -8, scaleY: 0.98 }}
-						transition={{ duration: reduced ? 0 : 0.2 }}
+						initial={
+							reduced
+								? false
+								: animateLayout
+									? { opacity: 0, y: -8, scaleY: 0.98 }
+									: { opacity: 0, height: 0 }
+						}
+						animate={
+							animateLayout
+								? { opacity: 1, y: 0, scaleY: 1 }
+								: { opacity: 1, height: "auto" }
+						}
+						exit={
+							reduced
+								? undefined
+								: animateLayout
+									? { opacity: 0, y: -8, scaleY: 0.98 }
+									: { opacity: 0, height: 0 }
+						}
+						transition={{
+							duration: reduced ? 0 : 0.24,
+							ease: [0.32, 0.72, 0, 1],
+						}}
 						className="origin-top overflow-hidden"
 					>
 						<div className="space-y-4 border-t border-(--edge) p-4">

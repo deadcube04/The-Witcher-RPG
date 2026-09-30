@@ -54,17 +54,21 @@ export function RpgButton({
 }
 type FieldProps = {
 	label: string;
+	labelAccessory?: ReactNode;
 	error?: string;
 	hint?: string;
 	children: (id: string) => ReactNode;
 };
-export function RpgField({ label, error, hint, children }: FieldProps) {
+export function RpgField({ label, labelAccessory, error, hint, children }: FieldProps) {
 	const id = useId();
 	return (
 		<div className="min-w-0 space-y-2">
-			<label htmlFor={id} className="block text-sm font-semibold">
-				{label}
-			</label>
+			<div className="flex min-w-0 items-center justify-between gap-2">
+				<label htmlFor={id} className="block text-sm font-semibold">
+					{label}
+				</label>
+				{labelAccessory}
+			</div>
 			{children(id)}
 			{hint && <p className="text-xs opacity-75">{hint}</p>}
 			{error && (
@@ -77,6 +81,7 @@ export function RpgField({ label, error, hint, children }: FieldProps) {
 }
 type InputProps = {
 	label: string;
+	labelAccessory?: ReactNode;
 	value: string;
 	onChange: (value: string) => void;
 	onBlur?: () => void;
@@ -87,6 +92,7 @@ type InputProps = {
 };
 export function RpgInput({
 	label,
+	labelAccessory,
 	value,
 	onChange,
 	onBlur,
@@ -96,7 +102,7 @@ export function RpgInput({
 	hint,
 }: InputProps) {
 	return (
-		<RpgField label={label} error={error} hint={hint}>
+	<RpgField label={label} labelAccessory={labelAccessory} error={error} hint={hint}>
 			{(id) =>
 				multiline ? (
 					<Input.TextArea

@@ -13,7 +13,6 @@ export function CharacterDetailPage() {
 	const { characterId = "" } = useParams({ strict: false });
 	const character = useQuery(queries.character(characterId));
 	const campaigns = useQuery(queries.campaigns);
-	const systems = useQuery(queries.systems);
 	useEffect(() => {
 		if (character.data)
 			rememberAccess({
@@ -22,8 +21,7 @@ export function CharacterDetailPage() {
 				name: character.data.name,
 			});
 	}, [character.data]);
-	if (character.isPending || campaigns.isPending || systems.isPending)
-		return <RpgSkeleton />;
+	if (character.isPending || campaigns.isPending) return <RpgSkeleton />;
 	if (character.isError)
 		return (
 			<RpgErrorState
@@ -38,15 +36,7 @@ export function CharacterDetailPage() {
 				retry={() => void campaigns.refetch()}
 			/>
 		);
-	if (systems.isError)
-		return (
-			<RpgErrorState
-				error={systems.error}
-				retry={() => void systems.refetch()}
-			/>
-		);
 	const item = character.data;
-	const system = systems.data.find((entry) => entry.id === item.systemId);
 	const campaign = campaigns.data.find((entry) => entry.id === item.campaignId);
 	const campaignReference = campaign ? (
 		<Link
@@ -55,14 +45,11 @@ export function CharacterDetailPage() {
 		>
 			{campaign.name}
 		</Link>
-	) : (
-		"Ficha standalone · sem campanha"
-	);
+	) : null;
 	return (
 		<EditableCharacterSheet
 			key={item.id}
 			character={item}
-			systemName={system?.name ?? "Personagem"}
 			campaignReference={campaignReference}
 		/>
 	);

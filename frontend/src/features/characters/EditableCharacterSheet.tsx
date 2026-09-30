@@ -19,7 +19,6 @@ import type { AutoSaveStatus } from "@/features/characters/useAutoSaveIndicator"
 
 type Props = {
 	character: CharacterSheet;
-	systemName: string;
 	campaignReference: ReactNode;
 };
 
@@ -40,7 +39,6 @@ function createDraft(character: CharacterSheet): CharacterInput {
 
 export function EditableCharacterSheet({
 	character,
-	systemName,
 	campaignReference,
 }: Props) {
 	const [draft, setDraft] = useState<CharacterInput>(() =>
@@ -164,10 +162,9 @@ export function EditableCharacterSheet({
 				</div>
 			</header>
 			<div className="min-w-0 rounded-[2rem] bg-(--edge)/30 p-1">
-				<div className="grid min-w-0 gap-5 rounded-[calc(2rem-0.25rem)] bg-(--surface) p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center">
+				<div className="grid min-w-0 gap-5 rounded-[calc(2rem-0.25rem)] bg-(--surface) p-4 sm:p-5 xl:grid-cols-[28rem_minmax(0,1fr)] xl:items-center">
 					<CharacterIdentity
 						character={draft}
-						systemName={systemName}
 						campaignReference={campaignReference}
 						onChange={updateDraft}
 					/>

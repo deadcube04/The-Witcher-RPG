@@ -5,12 +5,10 @@ import type { CharacterInput } from "@/shared/contracts/character-sheet";
 
 export function CharacterIdentity({
 	character,
-	systemName,
 	campaignReference,
 	onChange,
 }: {
 	character: CharacterInput;
-	systemName: string;
 	campaignReference: ReactNode;
 	onChange: (character: CharacterInput) => void;
 }) {
@@ -26,17 +24,18 @@ export function CharacterIdentity({
 				onChange={(imageUrl) => onChange({ ...character, imageUrl })}
 			/>
 			<div className="min-w-0 space-y-2">
-				<p className="font-mono text-[11px] uppercase tracking-[0.2em] text-(--accent)">
-					{systemName}
-				</p>
 				<div className="max-w-xs">
 					<RpgInput
 						label="Nome do personagem"
+						labelAccessory={campaignReference && (
+							<span className="truncate font-mono text-[11px] uppercase tracking-[0.12em] text-(--accent)">
+								{campaignReference}
+							</span>
+						)}
 						value={character.name}
 						onChange={(name) => onChange({ ...character, name })}
 					/>
 				</div>
-				<p className="truncate text-xs text-(--muted)">{campaignReference}</p>
 			</div>
 		</section>
 	);

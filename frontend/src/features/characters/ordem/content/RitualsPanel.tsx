@@ -182,12 +182,11 @@ export function RitualsPanel({ characterId }: { characterId: string }) {
 					</p>
 				</RpgEmptyState>
 			) : (
-				<motion.div layout={!reduced} className="space-y-3">
+				<div className="space-y-3">
 					<AnimatePresence initial={false}>
 						{visible.map((ritual) => (
 							<motion.div
 								key={ritual.entry.id}
-								layout={!reduced}
 								initial={reduced ? false : { opacity: 0, x: 16 }}
 								animate={{ opacity: 1, x: 0 }}
 								exit={reduced ? undefined : { opacity: 0, x: 16 }}
@@ -220,7 +219,7 @@ export function RitualsPanel({ characterId }: { characterId: string }) {
 							</motion.div>
 						))}
 					</AnimatePresence>
-				</motion.div>
+				</div>
 			)}
 			<CatalogPickerModal
 				open={catalogOpen}

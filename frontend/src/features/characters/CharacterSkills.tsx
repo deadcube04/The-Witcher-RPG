@@ -82,13 +82,7 @@ export function CharacterSkills({
 	return (
 		<section aria-label="Perícias" className="min-w-0">
 			{feedback.holder}
-			<div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-				<div>
-					<h2 className="text-xl font-semibold">Perícias</h2>
-					<p role="status" className="mt-1 text-xs text-(--muted)">
-						{visibleSkills.length} de {skills.length} perícias
-					</p>
-				</div>
+			<div className="mb-4">
 				<div className="w-full sm:w-64">
 					<RpgInput
 						label="Buscar perícia"
