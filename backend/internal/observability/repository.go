@@ -13,7 +13,7 @@ import (
 )
 
 type groupRow struct {
-	ID               string     `gorm:"column:id;primaryKey"`
+	ID               string     `gorm:"column:id;primaryKey;default:gen_random_uuid()"`
 	Fingerprint      string     `gorm:"column:fingerprint"`
 	Method           string     `gorm:"column:method"`
 	Route            string     `gorm:"column:route"`
@@ -31,7 +31,7 @@ type groupRow struct {
 func (groupRow) TableName() string { return "public.application_error_groups" }
 
 type occurrenceRow struct {
-	ID              string            `gorm:"column:id;primaryKey"`
+	ID              string            `gorm:"column:id;primaryKey;default:gen_random_uuid()"`
 	GroupID         string            `gorm:"column:group_id"`
 	RequestID       string            `gorm:"column:request_id"`
 	UserID          *string           `gorm:"column:user_id"`
