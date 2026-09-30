@@ -1,18 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { RpgSelect } from "@/components/primitives/RpgControls";
 import { queries } from "@/shared/api/queries";
+import type { Campaign } from "@/shared/contracts/campaign";
 import type { OrdemData } from "../../../shared/contracts/character-sheet";
 
 export function OrdemIdentity({
 	value,
 	onChange,
 	disabled,
+	campaign,
 }: {
 	value: OrdemData;
 	onChange: (value: OrdemData) => void;
 	disabled?: boolean;
+	campaign?: Campaign;
 }) {
 	const options = useQuery(queries.characterOptions);
+	const classes = (options.data?.classes ?? []).filter((entry) => !campaign || campaign.settings.classes.mode === "all" || campaign.settings.classes.allowedIds.includes(entry.id));
+	const origins = (options.data?.origins ?? []).filter((entry) => !campaign || campaign.settings.origins.mode === "all" || campaign.settings.origins.allowedIds.includes(entry.id));
 	return (
 		<section className="space-y-5">
 			<h3 className="border-b border-(--edge) pb-3 text-xl">
@@ -35,7 +40,7 @@ export function OrdemIdentity({
 					disabled={disabled || options.isPending || !!options.error}
 					options={[
 						{ value: "", label: "Não definida" },
-						...(options.data?.classes ?? []).map((entry) => ({
+						...classes.map((entry) => ({
 							value: entry.id,
 							label: entry.name,
 						})),
@@ -50,7 +55,7 @@ export function OrdemIdentity({
 					disabled={disabled || options.isPending || !!options.error}
 					options={[
 						{ value: "", label: "Não definida" },
-						...(options.data?.origins ?? []).map((entry) => ({
+						...origins.map((entry) => ({
 							value: entry.id,
 							label: entry.name,
 						})),

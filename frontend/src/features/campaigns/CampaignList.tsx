@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { PiArrowRightThin, PiPencilSimpleThin } from "react-icons/pi";
+import { PiArrowRightThin } from "react-icons/pi";
 import {
 	ArchiveEyebrow,
 	ArrowMark,
@@ -34,7 +34,7 @@ export function CampaignList({
 	return (
 		<div className="space-y-6">
 			<MediaFrame
-				src={systemArt(featuredSystem?.slug)}
+				src={featured.coverImageUrl || systemArt(featuredSystem?.slug)}
 				alt="Ilustração do sistema da campanha"
 				className="min-h-[25rem]"
 			>
@@ -96,13 +96,6 @@ export function CampaignList({
 										</span>
 									</Link>
 									<div className="flex items-center gap-2">
-										<Link
-											to={`/campaigns/${campaign.id}/edit`}
-											aria-label={`Editar ${campaign.name}`}
-											className="grid size-11 place-items-center rounded-full border border-(--edge) hover:text-(--accent)"
-										>
-											<PiPencilSimpleThin />
-										</Link>
 										<CampaignDeleteAction campaign={campaign} />
 										<PiArrowRightThin
 											aria-hidden="true"

@@ -59,7 +59,7 @@ export function CampaignDetailPage() {
 				← Todas as campanhas
 			</Link>
 			<MediaFrame
-				src={systemArt(system?.slug)}
+				src={item.coverImageUrl || systemArt(system?.slug)}
 				alt="Ilustração da campanha"
 				priority
 				className="min-h-[30rem]"
@@ -74,12 +74,6 @@ export function CampaignDetailPage() {
 							{item.name}
 						</h1>
 						<div className="mt-7 flex flex-wrap gap-3">
-							<Link
-								to={`/campaigns/${item.id}/edit`}
-								className="inline-flex min-h-11 items-center rounded-full border border-white/30 bg-black/20 px-5 text-sm text-white hover:border-white/60"
-							>
-								Editar campanha
-							</Link>
 							<CampaignDeleteAction campaign={item} />
 						</div>
 					</div>

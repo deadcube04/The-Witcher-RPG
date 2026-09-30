@@ -101,6 +101,7 @@ func (s *Character) prepare(ctx context.Context, in *domain.CharacterInput, old 
 	if slug != "ordem-paranormal" || in.SystemData.Kind != "ordem-paranormal" {
 		return ErrPreview
 	}
+	d := &in.SystemData
 	if in.CampaignID != nil {
 		ok, err := s.repo.CampaignMatches(ctx, *in.CampaignID, in.SystemID)
 		if err != nil {
@@ -109,8 +110,14 @@ func (s *Character) prepare(ctx context.Context, in *domain.CharacterInput, old 
 		if !ok {
 			return ErrSystemMismatch
 		}
+		allowed, err := s.repo.CampaignAllows(ctx, *in.CampaignID, d.ClassID, d.OriginID)
+		if err != nil {
+			return err
+		}
+		if !allowed {
+			return apperr.ErrCampaignRestriction
+		}
 	}
-	d := &in.SystemData
 	if d.ClassID == "" {
 		return ErrInvalid
 	}

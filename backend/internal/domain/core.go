@@ -27,19 +27,36 @@ type System struct {
 }
 
 type Campaign struct {
-	ID          string    `json:"id"`
-	OwnerID     string    `json:"ownerId"`
-	SystemID    string    `json:"systemId"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID            string           `json:"id"`
+	OwnerID       string           `json:"ownerId"`
+	SystemID      string           `json:"systemId"`
+	Name          string           `json:"name"`
+	Description   string           `json:"description"`
+	CoverImageURL string           `json:"coverImageUrl"`
+	SheetMode     string           `json:"sheetMode"`
+	Settings      CampaignSettings `json:"settings"`
+	Status        string           `json:"status"`
+	CreatedAt     time.Time        `json:"createdAt"`
+	UpdatedAt     time.Time        `json:"updatedAt"`
 }
 
 type CampaignInput struct {
-	SystemID    string `json:"systemId" binding:"required,uuid"`
-	Name        string `json:"name" binding:"required,min=1,max=160"`
-	Description string `json:"description" binding:"max=10000"`
-	Status      string `json:"status" binding:"required,oneof=active archived"`
+	SystemID      string            `json:"systemId" binding:"required,uuid"`
+	Name          string            `json:"name" binding:"required,min=1,max=160"`
+	Description   string            `json:"description" binding:"max=10000"`
+	CoverImageURL string            `json:"coverImageUrl"`
+	SheetMode     string            `json:"sheetMode"`
+	Settings      *CampaignSettings `json:"settings"`
+	ImportStatus  string            `json:"-"`
+}
+
+type CampaignSelection struct {
+	Mode       string   `json:"mode"`
+	AllowedIDs []string `json:"allowedIds"`
+}
+
+type CampaignSettings struct {
+	Kind    string            `json:"kind"`
+	Classes CampaignSelection `json:"classes"`
+	Origins CampaignSelection `json:"origins"`
 }

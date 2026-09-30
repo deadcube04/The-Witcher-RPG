@@ -27,7 +27,6 @@ func (a *API) register(r *gin.RouterGroup) {
 	r.GET("/campaigns", a.listCampaigns)
 	r.POST("/campaigns", a.createCampaign)
 	r.GET("/campaigns/:id", a.getCampaign)
-	r.PATCH("/campaigns/:id", a.patchCampaign)
 	r.DELETE("/campaigns/:id", a.deleteCampaign)
 	r.GET("/ordem/character-options", a.characterOptions)
 	r.GET("/character-sheets", a.listCharacters)
@@ -187,7 +186,7 @@ func (a *API) getCampaign(c *gin.Context) {
 }
 func (a *API) createCampaign(c *gin.Context) {
 	var in domain.CampaignInput
-	if c.ShouldBindJSON(&in) != nil {
+	if c.ShouldBindJSON(&in) != nil || in.Settings == nil || (in.SheetMode != "guided" && in.SheetMode != "free") {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}
@@ -197,58 +196,6 @@ func (a *API) createCampaign(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, value)
-}
-func (a *API) patchCampaign(c *gin.Context) {
-	id := c.Param("id")
-	if !validID(id) {
-		writeError(c, 400, "INVALID_REQUEST")
-		return
-	}
-	var in struct {
-		SystemID    *string `json:"systemId"`
-		Name        *string `json:"name"`
-		Description *string `json:"description"`
-		Status      *string `json:"status"`
-	}
-	if c.ShouldBindJSON(&in) != nil {
-		writeError(c, 400, "INVALID_REQUEST")
-		return
-	}
-	fields := make(map[string]any)
-	if in.SystemID != nil {
-		if !validID(*in.SystemID) {
-			writeError(c, 400, "INVALID_REQUEST")
-			return
-		}
-		fields["rpg_system_id"] = *in.SystemID
-	}
-	if in.Name != nil {
-		if len(*in.Name) == 0 || len(*in.Name) > 160 {
-			writeError(c, 400, "INVALID_REQUEST")
-			return
-		}
-		fields["name"] = *in.Name
-	}
-	if in.Description != nil {
-		fields["description"] = *in.Description
-	}
-	if in.Status != nil {
-		if *in.Status != "active" && *in.Status != "archived" {
-			writeError(c, 400, "INVALID_REQUEST")
-			return
-		}
-		fields["status"] = *in.Status
-	}
-	if len(fields) == 0 {
-		writeError(c, 400, "INVALID_REQUEST")
-		return
-	}
-	value, err := a.campaigns.Update(c.Request.Context(), id, fields)
-	if err != nil {
-		a.failure(c, err, "CAMPAIGN_NOT_FOUND")
-		return
-	}
-	c.JSON(http.StatusOK, value)
 }
 func (a *API) deleteCampaign(c *gin.Context) {
 	id := c.Param("id")

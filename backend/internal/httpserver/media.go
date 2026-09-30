@@ -32,7 +32,7 @@ func (a *API) uploadImage(c *gin.Context) {
 		return
 	}
 	purpose := form.Value["purpose"][0]
-	if purpose != "profile" && purpose != "character" {
+	if purpose != "profile" && purpose != "character" && purpose != "campaign" {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}

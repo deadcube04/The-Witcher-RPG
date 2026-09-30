@@ -34,12 +34,6 @@ export function CampaignCard({
 				>
 					Abrir campanha
 				</Link>
-				<Link
-					to={`/campaigns/${campaign.id}/edit`}
-					className="py-3 text-sm underline"
-				>
-					Editar
-				</Link>
 				<CampaignDeleteAction campaign={campaign} />
 			</div>
 		</RpgCard>

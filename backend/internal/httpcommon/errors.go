@@ -30,6 +30,8 @@ func Failure(c *gin.Context, logger *slog.Logger, err error, missing string) {
 		WriteError(c, http.StatusConflict, "CONFLICT")
 	case errors.Is(err, apperr.ErrSystemMismatch):
 		WriteError(c, http.StatusBadRequest, "SYSTEM_MISMATCH")
+	case errors.Is(err, apperr.ErrCampaignRestriction):
+		WriteError(c, http.StatusConflict, "CAMPAIGN_OPTION_UNAVAILABLE")
 	case errors.Is(err, apperr.ErrInUse):
 		WriteError(c, http.StatusConflict, "CONTENT_IN_USE")
 	case errors.Is(err, apperr.ErrAlreadyAdded):
@@ -54,6 +56,8 @@ func ErrorMessage(code string) string {
 		return "Sistema não encontrado."
 	case "SYSTEM_MISMATCH":
 		return "A ficha e a campanha precisam usar o mesmo sistema."
+	case "CAMPAIGN_OPTION_UNAVAILABLE":
+		return "A classe ou origem não está disponível nesta campanha."
 	case "CONTENT_NOT_FOUND":
 		return "Este conteúdo não está mais disponível."
 	case "CONTENT_IN_USE":

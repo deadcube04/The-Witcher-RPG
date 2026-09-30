@@ -89,11 +89,6 @@ export const campaignApi = {
 			method: "POST",
 			body: JSON.stringify(input),
 		}),
-	update: (id: string, input: Partial<CampaignInput>) =>
-		request(`/campaigns/${encodeURIComponent(id)}`, campaignSchema, {
-			method: "PATCH",
-			body: JSON.stringify(input),
-		}),
 	remove: (id: string) =>
 		request(`/campaigns/${encodeURIComponent(id)}`, z.undefined(), {
 			method: "DELETE",

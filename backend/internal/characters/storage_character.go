@@ -168,6 +168,32 @@ func (s *Repository) CampaignMatches(ctx context.Context, id, systemID string) (
 	return count == 1, err
 }
 
+func (s *Repository) CampaignAllows(ctx context.Context, campaignID, classID string, originID *string) (bool, error) {
+	var settings struct{ ClassMode, OriginMode string }
+	if err := s.DB.WithContext(ctx).Table("ordem.campaign_settings").Select("class_mode, origin_mode").Where("campaign_id = ?", campaignID).Take(&settings).Error; err != nil {
+		return false, err
+	}
+	if settings.ClassMode == "selected" {
+		var count int64
+		if err := s.DB.WithContext(ctx).Table("ordem.campaign_allowed_class").Where("campaign_id = ? AND class_id = ?", campaignID, classID).Count(&count).Error; err != nil {
+			return false, err
+		}
+		if count == 0 {
+			return false, nil
+		}
+	}
+	if settings.OriginMode == "selected" && originID != nil {
+		var count int64
+		if err := s.DB.WithContext(ctx).Table("ordem.campaign_allowed_origin").Where("campaign_id = ? AND origin_id = ?", campaignID, *originID).Count(&count).Error; err != nil {
+			return false, err
+		}
+		if count == 0 {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
 func (s *Repository) CharacterOptions(ctx context.Context, systemID string) (domain.CharacterOptions, error) {
 	out := domain.CharacterOptions{Classes: []domain.Option{}, Origins: []domain.Option{}, Attributes: []domain.Option{}, Resources: []domain.Option{}, Skills: []domain.Option{}, NEX: []domain.NEXOption{}, TrainingLevels: []domain.TrainingOption{}}
 	for _, pair := range []struct {

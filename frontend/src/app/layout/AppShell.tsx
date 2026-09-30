@@ -14,7 +14,6 @@ import { useColorMode } from "@/features/themes/useColorMode";
 const pageContext = [
 	[/^\/$/, ["NEXUS", "Início"]],
 	[/^\/campaigns\/new/, ["Campanhas", "Nova campanha"]],
-	[/^\/campaigns\/[^/]+\/edit/, ["Campanhas", "Editar campanha"]],
 	[/^\/campaigns\/[^/]+/, ["Campanhas", "Detalhes"]],
 	[/^\/campaigns/, ["NEXUS", "Campanhas"]],
 	[/^\/characters\/new/, ["Fichas", "Novo personagem"]],

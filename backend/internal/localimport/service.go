@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"RPG-manager/backend/internal/apperr"
-	"RPG-manager/backend/internal/domain"
 	"RPG-manager/backend/internal/dbscope"
+	"RPG-manager/backend/internal/domain"
 )
 
 type Importer struct{ repo *Repository }
@@ -78,10 +78,16 @@ func decodeImport[T any](raw json.RawMessage) (T, error) {
 func (s *Importer) applyOne(ctx context.Context, local *Repository, operations *domainSession, item domain.ImportRecord) (string, error) {
 	switch item.Kind {
 	case "campaign":
-		in, err := decodeImport[domain.CampaignInput](item.Payload)
+		legacy, err := decodeImport[struct {
+			SystemID    string `json:"systemId"`
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			Status      string `json:"status"`
+		}](item.Payload)
 		if err != nil {
 			return "", err
 		}
+		in := domain.CampaignInput{SystemID: legacy.SystemID, Name: legacy.Name, Description: legacy.Description, ImportStatus: legacy.Status}
 		v, err := operations.campaigns.Create(ctx, in)
 		return v.ID, err
 	case "character":

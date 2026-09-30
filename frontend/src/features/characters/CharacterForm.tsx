@@ -85,7 +85,15 @@ export function CharacterForm({
 							campaigns={campaigns}
 							disabled={pending}
 							systemLocked={systemLocked}
-							onCampaignChange={(id) => form.setFieldValue("campaignId", id)}
+							onCampaignChange={(id) => {
+								form.setFieldValue("campaignId", id);
+								const campaign = campaigns.find((entry) => entry.id === id);
+								const data = form.state.values.systemData;
+								if (!campaign || data.kind !== "ordem-paranormal") return;
+								const classAllowed = campaign.settings.classes.mode === "all" || (data.classId !== null && campaign.settings.classes.allowedIds.includes(data.classId));
+								const originAllowed = campaign.settings.origins.mode === "all" || data.originId === null || campaign.settings.origins.allowedIds.includes(data.originId);
+								if (!classAllowed || !originAllowed) form.setFieldValue("systemData", { ...data, classId: classAllowed ? data.classId : null, originId: originAllowed ? data.originId : null });
+							}}
 							onSystemChange={(id) => {
 								const system = systems.find((entry) => entry.id === id);
 								const definition =
@@ -114,11 +122,14 @@ export function CharacterForm({
 						<>
 							<section>
 								{Editor ? (
-									<Editor
-										value={field.state.value}
-										onChange={field.handleChange}
-										disabled={pending}
-									/>
+									<form.Subscribe selector={(state) => state.values.campaignId}>
+										{(campaignId) => <Editor
+											value={field.state.value}
+											onChange={field.handleChange}
+											disabled={pending}
+											campaign={campaigns.find((entry) => entry.id === campaignId)}
+										/>}
+									</form.Subscribe>
 								) : (
 									<p className="border border-(--edge) p-5 text-sm">
 										Cadastro narrativo disponível. As regras específicas deste

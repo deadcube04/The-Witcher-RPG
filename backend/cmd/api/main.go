@@ -74,7 +74,7 @@ func run(logger *slog.Logger) error {
 	}
 	systemService := systems.NewService(systems.NewRepository(db))
 	accountService := account.NewService(accountRepository, systemService, imageStorage, userID)
-	campaignService := campaigns.NewService(campaigns.NewRepository(db, userID), systemService)
+	campaignService := campaigns.NewService(campaigns.NewRepository(db, userID), systemService, imageStorage)
 	characterService := characters.NewCharacter(store, imageStorage)
 	skillService := characters.NewSkills(store)
 	inventoryEntries := characters.NewInventoryEntries(store)

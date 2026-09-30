@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { Campaign } from "@/shared/contracts/campaign";
 import { z } from "zod";
 import {
 	type CharacterInput,
@@ -12,6 +13,7 @@ export type SheetEditorProps = {
 	value: CharacterInput["systemData"];
 	onChange: (value: CharacterInput["systemData"]) => void;
 	disabled?: boolean;
+	campaign?: Campaign;
 };
 export type SheetViewProps = {
 	value: CharacterInput["systemData"];

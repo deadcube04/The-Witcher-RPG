@@ -12,4 +12,4 @@ export const imageUrlSchema = z.string().max(2048).refine((raw) => {
  } catch { return false; }
 }, "Use uma imagem enviada ou uma URL HTTPS válida.");
 export const imageUploadSchema = z.strictObject({ imageUrl: imageUrlSchema });
-export type ImagePurpose = "profile" | "character";
+export type ImagePurpose = "profile" | "character" | "campaign";

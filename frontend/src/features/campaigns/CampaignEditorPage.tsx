@@ -1,142 +1,101 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { RpgErrorState, RpgSkeleton } from "@/components/feedback/RemoteState";
 import { PageHeader } from "@/components/navigation/PageHeader";
+import { RpgButton } from "@/components/primitives/RpgControls";
 import { campaignApi } from "@/shared/api/domains";
+import { uploadImage } from "@/shared/api/media";
 import { keys, queries, useDomainMutation } from "@/shared/api/queries";
-import type { CampaignInput } from "@/shared/contracts/campaign";
+import { campaignInputSchema, type CampaignInput } from "@/shared/contracts/campaign";
+import type { RpgSystem } from "@/shared/contracts/rpg-system";
 import { CampaignForm } from "@/features/campaigns/CampaignForm";
+import { CampaignSettingsStep } from "@/features/campaigns/CampaignSettingsStep";
 import {
-	ArchiveEyebrow,
-	ArchivePanel,
-	MediaFrame,
-} from "@/components/layout/ArchiveSurface";
-import { systemArt } from "@/shared/lib/system-art";
+	clearCampaignDraft, newCampaignDraft, readCampaignDraft, readDraftCover,
+	saveCampaignDraft, saveDraftCover, type CampaignDraft,
+} from "@/features/campaigns/campaign-draft";
 
 export function CampaignEditorPage() {
-	const { campaignId = "" } = useParams({ strict: false });
-	const navigate = useNavigate();
 	const systems = useQuery(queries.systems);
 	const preferences = useQuery(queries.preferences);
-	const campaign = useQuery({
-		...queries.campaign(campaignId),
-		enabled: !!campaignId,
-	});
-	const characters = useQuery(queries.characters);
-	const mutation = useDomainMutation(
-		(input: CampaignInput) =>
-			campaignId
-				? campaignApi.update(campaignId, input)
-				: campaignApi.create(input),
-		[keys.campaigns],
-	);
-	if (
-		systems.isPending ||
-		preferences.isPending ||
-		characters.isPending ||
-		(campaignId && campaign.isPending)
-	)
-		return <RpgSkeleton />;
-	const error =
-		systems.error ??
-		preferences.error ??
-		characters.error ??
-		(campaignId ? campaign.error : null);
-	if (error)
-		return (
-			<RpgErrorState
-				error={error}
-				retry={() => {
-					void systems.refetch();
-					void preferences.refetch();
-					void characters.refetch();
-					if (campaignId) void campaign.refetch();
-				}}
-			/>
-		);
-	if (!systems.data || !preferences.data) return null;
-	const selectedSystem = systems.data.find(
-		(entry) =>
-			entry.id === (campaign.data?.systemId ?? preferences.data.activeSystemId),
-	);
-	if (!campaignId && selectedSystem?.status === "preview")
-		return (
-			<div className="space-y-4 p-6">
-				<h1 className="text-2xl">Sistema em prévia</h1>
-				<p>A criação de campanhas está disponível em Ordem Paranormal 1.1.</p>
-				<Link to="/campaigns" className="underline">
-					Voltar para campanhas
-				</Link>
-			</div>
-		);
-	const initial: CampaignInput = campaign.data
-		? {
-				name: campaign.data.name,
-				systemId: campaign.data.systemId,
-				description: campaign.data.description,
-				status: campaign.data.status,
+	if (systems.isPending || preferences.isPending) return <RpgSkeleton />;
+	const remoteError = systems.error ?? preferences.error;
+	if (remoteError) return <RpgErrorState error={remoteError} retry={() => { void systems.refetch(); void preferences.refetch(); }} />;
+	if (!systems.data || !preferences.data) return <RpgSkeleton />;
+	const selected = systems.data.find((item) => item.id === preferences.data.activeSystemId && item.status === "available") ?? systems.data.find((item) => item.status === "available");
+	if (!selected) return <RpgErrorState error={new Error("Nenhum sistema permite criar campanhas atualmente.")} />;
+	return <CampaignCreation systems={systems.data} initialSystemId={selected.id} />;
+}
+
+function CampaignCreation({ systems, initialSystemId }: { systems: RpgSystem[]; initialSystemId: string }) {
+	const navigate = useNavigate();
+	const [draft, setDraft] = useState<CampaignDraft>(() => readCampaignDraft() ?? newCampaignDraft(initialSystemId));
+	const [cover, setCover] = useState<Blob | null>(null);
+	const [coverReady, setCoverReady] = useState(false);
+	const [coverUrl, setCoverUrl] = useState("");
+	const [submitting, setSubmitting] = useState(false);
+	const [submissionError, setSubmissionError] = useState<Error | null>(null);
+	const options = useQuery({ ...queries.characterOptions, enabled: draft.step === "settings" });
+	const mutation = useDomainMutation((input: CampaignInput) => campaignApi.create(input), [keys.campaigns]);
+	useEffect(() => { saveCampaignDraft(draft); }, [draft]);
+	useEffect(() => {
+		let active = true;
+		void readDraftCover(draft.id).then((blob) => {
+			if (!active) return;
+			setCover(blob);
+			setCoverUrl(blob ? URL.createObjectURL(blob) : "");
+			setCoverReady(true);
+		}).catch(() => { if (active) setCoverReady(true); });
+		return () => { active = false; };
+	}, [draft.id]);
+	useEffect(() => () => { if (coverUrl) URL.revokeObjectURL(coverUrl); }, [coverUrl]);
+	const updateDraft = (next: CampaignDraft) => { saveCampaignDraft(next); setDraft(next); };
+	const updateCover = async (blob: Blob | null) => {
+		await saveDraftCover(draft.id, blob);
+		setCover(blob);
+		setCoverUrl(blob ? URL.createObjectURL(blob) : "");
+		updateDraft({ ...draft, uploadedCoverUrl: "" });
+	};
+	const discard = async () => {
+		await saveDraftCover(draft.id, null).catch(() => undefined);
+		clearCampaignDraft();
+		await navigate({ to: "/campaigns" });
+	};
+	const create = async (sheetMode: "guided" | "free") => {
+		setSubmitting(true);
+		setSubmissionError(null);
+		try {
+			let coverImageUrl = draft.uploadedCoverUrl;
+			if (cover && !coverImageUrl) {
+				coverImageUrl = await uploadImage(cover, "campaign");
+				updateDraft({ ...draft, sheetMode, uploadedCoverUrl: coverImageUrl });
 			}
-		: {
-				name: "",
-				description: "",
-				systemId: preferences.data.activeSystemId,
-				status: "active",
-			};
-	return (
-		<>
-			<Link
-				to={campaignId ? `/campaigns/${campaignId}` : "/campaigns"}
-				className="mb-6 inline-block py-2 text-sm underline"
-			>
-				← Voltar para campanhas
-			</Link>
-			<PageHeader
-				eyebrow="Campanhas / Registro"
-				title={campaignId ? "Editar campanha" : "Uma nova história"}
-			/>
-			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
-				<ArchivePanel className="p-5 md:p-8" label="Dados da campanha">
-					<CampaignForm
-						initial={initial}
-						systems={systems.data.filter(
-							(entry) => entry.status === "available",
-						)}
-						pending={mutation.isPending}
-						error={mutation.error}
-						systemLocked={
-							!!characters.data?.some(
-								(sheet) => sheet.campaignId === campaignId,
-							)
-						}
-						onSave={async (input) => {
-							const saved = await mutation
-								.mutateAsync(input)
-								.catch(() => undefined);
-							if (saved) await navigate({ to: `/campaigns/${saved.id}` });
-						}}
-					/>
-				</ArchivePanel>
-				<div className="space-y-4 xl:sticky xl:top-24">
-					<MediaFrame
-						src={systemArt(
-							systems.data.find((entry) => entry.id === initial.systemId)?.slug,
-						)}
-						alt="Prévia visual da campanha"
-						className="min-h-64"
-					>
-						<div className="flex min-h-64 flex-col justify-between p-6">
-							<ArchiveEyebrow>Prévia da campanha</ArchiveEyebrow>
-							<p className="font-serif text-3xl leading-none text-white">
-								{initial.name || "Uma história sem título"}
-							</p>
-						</div>
-					</MediaFrame>
-					<p className="px-2 text-xs leading-6 text-(--muted)">
-						A imagem representa o universo selecionado. Nenhum campo de mídia é
-						necessário.
-					</p>
-				</div>
-			</div>
-		</>
-	);
+			const input = campaignInputSchema.parse({
+				systemId: draft.systemId, name: draft.name, description: draft.description,
+				coverImageUrl, sheetMode,
+				settings: { kind: "ordem-paranormal", classes: draft.classes, origins: draft.origins },
+			});
+			const created = await mutation.mutateAsync(input);
+			clearCampaignDraft();
+			await saveDraftCover(draft.id, null).catch(() => undefined);
+			await navigate({ to: `/campaigns/${created.id}` });
+		} catch (reason: unknown) {
+			setSubmissionError(reason instanceof Error ? reason : new Error("Não foi possível criar a campanha."));
+		} finally { setSubmitting(false); }
+	};
+	if (!coverReady) return <RpgSkeleton />;
+	const system = systems.find((item) => item.id === draft.systemId && item.status === "available");
+	if (!system) return <RpgErrorState error={new Error("O sistema deste rascunho não está disponível.")} retry={() => { void discard(); }} />;
+	if (system.slug !== "ordem-paranormal") return <RpgErrorState error={new Error("A configuração de campanhas deste sistema ainda não está disponível.")} />;
+	if (draft.step === "settings" && options.isPending) return <RpgSkeleton />;
+	if (draft.step === "settings" && options.isError) return <RpgErrorState error={options.error} retry={() => void options.refetch()} />;
+	return <div className="space-y-6">
+		<div className="flex flex-wrap items-center justify-between gap-3">
+			<Link to="/campaigns" className="text-sm underline">← Todas as campanhas</Link>
+			<RpgButton secondary disabled={submitting} onClick={() => { void discard(); }}>Descartar rascunho</RpgButton>
+		</div>
+		<PageHeader eyebrow="Campanhas / Novo registro" title={draft.step === "core" ? "Uma nova história" : "Defina os detalhes"} description={draft.step === "core" ? "Comece pelos dados da campanha. A prévia acompanha o que você escrever." : "Escolha o que os jogadores poderão usar em Ordem Paranormal."} />
+		{draft.step === "core" ? <CampaignForm draft={draft} systems={systems} coverUrl={coverUrl || draft.uploadedCoverUrl} hasCover={!!cover || !!draft.uploadedCoverUrl} onDraft={updateDraft} onCover={updateCover} onNext={() => updateDraft({ ...draft, step: "settings" })} /> : options.data && <CampaignSettingsStep draft={draft} system={system} options={options.data} coverUrl={coverUrl || draft.uploadedCoverUrl} pending={submitting} error={submissionError} onDraft={updateDraft} onBack={() => updateDraft({ ...draft, step: "core" })} onCreate={create} />}
+	</div>;
 }

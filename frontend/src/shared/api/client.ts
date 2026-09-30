@@ -5,6 +5,7 @@ const messages: Record<ErrorCode, string> = {
 	INVALID_REQUEST: "Confira os campos informados.",
 	USER_NOT_FOUND: "Perfil não encontrado.",
 	CAMPAIGN_NOT_FOUND: "Campanha não encontrada.",
+	CAMPAIGN_OPTION_UNAVAILABLE: "A classe ou origem não está disponível nesta campanha.",
 	CHARACTER_NOT_FOUND: "Ficha não encontrada.",
 	RPG_SYSTEM_NOT_FOUND: "Sistema não encontrado.",
 	SYSTEM_MISMATCH: "A ficha e a campanha precisam usar o mesmo sistema.",
