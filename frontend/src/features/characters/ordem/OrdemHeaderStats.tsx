@@ -24,16 +24,15 @@ export function OrdemHeaderStats({
 	onChange?: (value: OrdemData) => void;
 }) {
 	const options = useQuery(queries.characterOptions);
-	const nexOptions = (options.data?.nex ?? []).map((entry) => ({
+	const nexOptions = (value.progressionMode === "nex" ? options.data?.nex ?? [] : [{ value: 0 }, ...(options.data?.nex ?? [])]).map((entry) => ({
 		value: String(entry.value),
 		label: `${entry.value}%`,
 	}));
 	const stats = [
-		["NEX", `${value.nex}%`],
+		[value.progressionMode === "survivor" ? "Estágio" : "NEX", value.progressionMode === "survivor" ? String(value.survivorStage ?? 1) : `${value.nex}%`],
 		[
 			"Classe",
-			options.data?.classes.find((entry) => entry.id === value.classId)?.name ??
-				"Não definida",
+			value.progressionMode === "survivor" ? "Sobrevivente" : options.data?.classes.find((entry) => entry.id === value.classId)?.name ?? "Não definida",
 		],
 		[
 			"Origem",

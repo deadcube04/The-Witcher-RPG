@@ -17,47 +17,59 @@ type Attributes struct {
 	Vigor     int `json:"vigor"`
 }
 type Resources struct {
-	Health Resource `json:"health"`
-	Effort Resource `json:"effort"`
-	Sanity Resource `json:"sanity"`
+	Health        Resource  `json:"health"`
+	Effort        Resource  `json:"effort"`
+	Sanity        Resource  `json:"sanity"`
+	Determination *Resource `json:"determination"`
 }
 type OrdemData struct {
-	Kind        string     `json:"kind"`
-	NEX         int        `json:"nex"`
-	ClassID     string     `json:"classId"`
-	OriginID    *string    `json:"originId"`
-	CreditLimit *string    `json:"creditLimit"`
-	Attributes  Attributes `json:"attributes"`
-	Resources   Resources  `json:"resources"`
-	PELimit     int        `json:"peLimit"`
+	Kind            string     `json:"kind"`
+	NEX             int        `json:"nex"`
+	ProgressionMode string     `json:"progressionMode"`
+	Level           *int       `json:"level"`
+	Patent          *string    `json:"patent"`
+	SurvivorClassID *string    `json:"survivorClassId"`
+	SurvivorStage   *int       `json:"survivorStage"`
+	SurvivorTrailID *string    `json:"survivorTrailId"`
+	TrailID         *string    `json:"trailId"`
+	ClassID         string     `json:"classId"`
+	OriginID        *string    `json:"originId"`
+	CreditLimit     *string    `json:"creditLimit"`
+	Attributes      Attributes `json:"attributes"`
+	Resources       Resources  `json:"resources"`
+	PELimit         int        `json:"peLimit"`
 }
 type Character struct {
-	ID          string    `json:"id"`
-	OwnerID     string    `json:"ownerId"`
-	Name        string    `json:"name"`
-	SystemID    string    `json:"systemId"`
-	CampaignID  *string   `json:"campaignId"`
-	Description string    `json:"description"`
-	ImageURL    string    `json:"imageUrl"`
-	Appearance  string    `json:"appearance"`
-	Personality string    `json:"personality"`
-	Background  string    `json:"background"`
-	Objective   string    `json:"objective"`
-	SystemData  OrdemData `json:"systemData"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID                string    `json:"id"`
+	OwnerID           string    `json:"ownerId"`
+	Name              string    `json:"name"`
+	SystemID          string    `json:"systemId"`
+	CampaignID        *string   `json:"campaignId"`
+	SupplementID      *string   `json:"supplementId"`
+	SupplementRuleIDs []string  `json:"supplementRuleIds"`
+	Description       string    `json:"description"`
+	ImageURL          string    `json:"imageUrl"`
+	Appearance        string    `json:"appearance"`
+	Personality       string    `json:"personality"`
+	Background        string    `json:"background"`
+	Objective         string    `json:"objective"`
+	SystemData        OrdemData `json:"systemData"`
+	CreatedAt         time.Time `json:"createdAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
 }
 type CharacterInput struct {
-	Name        string    `json:"name" binding:"required,min=1,max=160"`
-	SystemID    string    `json:"systemId" binding:"required,uuid"`
-	CampaignID  *string   `json:"campaignId"`
-	Description string    `json:"description"`
-	ImageURL    string    `json:"imageUrl"`
-	Appearance  string    `json:"appearance"`
-	Personality string    `json:"personality"`
-	Background  string    `json:"background"`
-	Objective   string    `json:"objective"`
-	SystemData  OrdemData `json:"systemData"`
+	Name              string    `json:"name" binding:"required,min=1,max=160"`
+	SystemID          string    `json:"systemId" binding:"required,uuid"`
+	CampaignID        *string   `json:"campaignId"`
+	SupplementID      *string   `json:"supplementId"`
+	SupplementRuleIDs []string  `json:"supplementRuleIds"`
+	Description       string    `json:"description"`
+	ImageURL          string    `json:"imageUrl"`
+	Appearance        string    `json:"appearance"`
+	Personality       string    `json:"personality"`
+	Background        string    `json:"background"`
+	Objective         string    `json:"objective"`
+	SystemData        OrdemData `json:"systemData"`
 }
 type ClassRule struct {
 	InitialPVBase      int
@@ -74,16 +86,24 @@ type ClassRule struct {
 type CharacterOptions struct {
 	Classes        []Option         `json:"classes"`
 	Origins        []Option         `json:"origins"`
+	Trails         []TrailOption    `json:"trails"`
 	Attributes     []Option         `json:"attributes"`
 	Resources      []Option         `json:"resources"`
 	Skills         []Option         `json:"skills"`
 	NEX            []NEXOption      `json:"nex"`
 	TrainingLevels []TrainingOption `json:"trainingLevels"`
 }
+type TrailOption struct {
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	ClassID      string  `json:"classId"`
+	SupplementID *string `json:"supplementId"`
+}
 type Option struct {
-	ID   string `json:"id"`
-	Slug string `json:"slug"`
-	Name string `json:"name"`
+	ID           string  `json:"id"`
+	Slug         string  `json:"slug"`
+	Name         string  `json:"name"`
+	SupplementID *string `json:"supplementId"`
 }
 type NEXOption struct {
 	Value   int `json:"value"`

@@ -131,6 +131,8 @@ function characterInput(value: CharacterInput): CharacterInput {
 		imageUrl: value.imageUrl,
 		systemId: value.systemId,
 		campaignId: value.campaignId,
+		supplementId: value.supplementId,
+		supplementRuleIds: value.supplementRuleIds,
 		description: value.description,
 		appearance: value.appearance,
 		personality: value.personality,

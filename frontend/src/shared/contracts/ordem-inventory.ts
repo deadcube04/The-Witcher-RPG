@@ -43,6 +43,14 @@ const definitionFields = {
 	source: contentSourceSchema,
 	createdAt: z.iso.datetime().nullable(),
 	updatedAt: z.iso.datetime().nullable(),
+	supplementId: idSchema.nullable(),
+	sourcePage: z.number().int().nullable(),
+	exactSpaces: z.number().nullable(),
+	printedCategory: z.string().nullable(),
+	ammunitionCapacity: z.number().int().nullable(),
+	variantGroup: z.string().nullable(),
+	itemGroup: z.string().nullable(),
+	specialRule: z.string().nullable(),
 };
 
 const inventoryDefinitionBaseSchema = inventoryBaseSchema.extend({
@@ -99,6 +107,7 @@ export const characterInventoryEntrySchema = z.strictObject({
 export const characterInventoryItemSchema = z.strictObject({
 	entry: characterInventoryEntrySchema,
 	definition: ordemInventoryDefinitionSchema,
+	effectiveCategory: z.number().int().nullable(),
 	linkedAttackCount: z.number().int().min(0),
 });
 

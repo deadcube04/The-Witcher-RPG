@@ -25,6 +25,7 @@ export const ordemAttackDefinitionSchema = ordemAttackInputSchema.extend({
 	id: idSchema,
 	systemId: idSchema,
 	source: contentSourceSchema,
+	supplementId: idSchema.nullable(),
 	createdAt: z.iso.datetime().nullable(),
 	updatedAt: z.iso.datetime().nullable(),
 });

@@ -72,7 +72,7 @@ export function InventoryPanel({ characterId }: { characterId: string }) {
 		useState<OrdemInventoryDefinition | null>(null);
 	const inventory = useQuery(queries.inventory(characterId));
 	const catalog = useQuery({
-		...queries.inventoryCatalog(catalogQuery),
+		...queries.inventoryCatalog(catalogQuery, characterId),
 		enabled: catalogOpen,
 	});
 	const domains = [
@@ -263,7 +263,7 @@ export function InventoryPanel({ characterId }: { characterId: string }) {
 					add.mutate(definition.id, { onSuccess: () => setCatalogOpen(false) })
 				}
 				renderMeta={(definition) =>
-					`${inventoryKindLabel(definition.kind)} · ${definition.spaces} espaço(s)`
+					`${inventoryKindLabel(definition.kind)} · ${definition.exactSpaces ?? definition.spaces ?? "—"} espaço(s)${definition.supplementId ? ` · Sobrevivendo ao Horror, p. ${definition.sourcePage ?? "—"}` : ""}`
 				}
 				renderActions={(definition) => (
 					<>

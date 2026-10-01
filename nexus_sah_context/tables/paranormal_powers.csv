@@ -1,0 +1,9 @@
+﻿name,element,prerequisite
+Absorver Conhecimento,Conhecimento,—
+Antecipar Vitalidade,Morte,—
+Apatia Herege,Conhecimento,Conhecimento 1
+Aura de Pavor,Morte,—
+Conexão Empática,Energia,Energia 1
+Espreitar da Besta,Sangue,—
+Instintos Sanguinários,Sangue,—
+Valer-se do Caos,Energia,—

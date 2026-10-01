@@ -13,6 +13,8 @@ import {
 	preferencesApi,
 	ritualApi,
 	systemsApi,
+	supplementApi,
+	supplementReviewApi,
 	userApi,
 } from "@/shared/api/domains";
 import type { ErrorFilter } from "@/shared/contracts/application-error";
@@ -21,13 +23,18 @@ export const keys = {
 	user: ["user", "current"] as const,
 	preferences: ["preferences"] as const,
 	systems: ["systems"] as const,
+	supplements: ["ordem", "supplements"] as const,
+	supplementIssues: (id: string, state: string) => ["admin", "supplements", id, "issues", state] as const,
 	campaigns: ["campaigns"] as const,
 	campaign: (id: string) => ["campaigns", id] as const,
 	characters: ["characters"] as const,
 	characterOptions: ["ordem", "character-options"] as const,
 	character: (id: string) => ["characters", id] as const,
 	skills: (id: string) => ["characters", id, "skills"] as const,
+	powers: (id: string) => ["characters", id, "powers"] as const,
+	supplementReference: (id: string) => ["characters", id, "supplement-reference"] as const,
 	inventory: (id: string) => ["characters", id, "inventory"] as const,
+	modifications: (id: string, entryId: string) => ["characters", id, "inventory", entryId, "modifications"] as const,
 	rituals: (id: string) => ["characters", id, "rituals"] as const,
 	attacks: (id: string) => ["characters", id, "attacks"] as const,
 	adminErrorGroups: (filter: ErrorFilter) => ["admin", "errors", "groups", filter] as const,
@@ -37,12 +44,12 @@ export const keys = {
 	bestiaryOptions: ["ordem", "bestiary", "options"] as const,
 	bestiaryList: (filters: object) => ["ordem", "bestiary", "list", filters] as const,
 	bestiaryEntry: (id: string, filters: object) => ["ordem", "bestiary", "entry", id, filters] as const,
-	inventoryCatalog: (query: string, kind?: string) =>
-		["ordem", "catalog", "inventory", query, kind ?? "all"] as const,
-	ritualCatalog: (query: string, element?: string) =>
-		["ordem", "catalog", "rituals", query, element ?? "all"] as const,
-	attackCatalog: (query: string, source?: string) =>
-		["ordem", "catalog", "attacks", query, source ?? "all"] as const,
+	inventoryCatalog: (query: string, kind?: string, characterId?: string) =>
+		["ordem", "catalog", "inventory", query, kind ?? "all", characterId ?? ""] as const,
+	ritualCatalog: (query: string, element?: string, characterId?: string) =>
+		["ordem", "catalog", "rituals", query, element ?? "all", characterId ?? ""] as const,
+	attackCatalog: (query: string, source?: string, characterId?: string) =>
+		["ordem", "catalog", "attacks", query, source ?? "all", characterId ?? ""] as const,
 };
 export const queries = {
 	user: queryOptions({
@@ -61,6 +68,8 @@ export const queries = {
 		queryKey: keys.systems,
 		queryFn: ({ signal }) => systemsApi.list(signal),
 	}),
+	supplements: queryOptions({ queryKey: keys.supplements, queryFn: ({ signal }) => supplementApi.list(signal) }),
+	supplementIssues: (id: string, state: "open" | "resolved") => queryOptions({ queryKey: keys.supplementIssues(id, state), queryFn: ({ signal }) => supplementReviewApi.issues(id, state, signal) }),
 	campaigns: queryOptions({
 		queryKey: keys.campaigns,
 		queryFn: ({ signal }) => campaignApi.list(signal),
@@ -87,11 +96,14 @@ export const queries = {
 		queryKey: keys.skills(id),
 		queryFn: ({ signal }) => characterApi.skills(id, signal),
 	}),
+	powers: (id: string) => queryOptions({ queryKey: keys.powers(id), queryFn: ({ signal }) => characterApi.powers(id, signal) }),
+	supplementReference: (id: string) => queryOptions({ queryKey: keys.supplementReference(id), queryFn: ({ signal }) => characterApi.supplementReference(id, signal) }),
 	inventory: (id: string) =>
 		queryOptions({
 			queryKey: keys.inventory(id),
 			queryFn: ({ signal }) => inventoryApi.list(id, signal),
 		}),
+	modifications: (id: string, entryId: string) => queryOptions({ queryKey: keys.modifications(id, entryId), queryFn: ({ signal }) => inventoryApi.modifications(id, entryId, signal) }),
 	rituals: (id: string) =>
 		queryOptions({
 			queryKey: keys.rituals(id),
@@ -118,20 +130,20 @@ export const queries = {
 		queryKey: keys.adminErrorRetention,
 		queryFn: ({ signal }) => errorAdminApi.retention(signal),
 	}),
-	inventoryCatalog: (query: string, kind?: Parameters<typeof inventoryApi.catalog>[1]) =>
+	inventoryCatalog: (query: string, characterId: string, kind?: Parameters<typeof inventoryApi.catalog>[1]) =>
 		queryOptions({
-			queryKey: keys.inventoryCatalog(query, kind),
-			queryFn: ({ signal }) => inventoryApi.catalog(query, kind, signal),
+			queryKey: keys.inventoryCatalog(query, kind, characterId),
+			queryFn: ({ signal }) => inventoryApi.catalog(query, kind, signal, characterId),
 		}),
-	ritualCatalog: (query: string, element?: string) =>
+	ritualCatalog: (query: string, characterId: string, element?: string) =>
 		queryOptions({
-			queryKey: keys.ritualCatalog(query, element),
-			queryFn: ({ signal }) => ritualApi.catalog(query, element, signal),
+			queryKey: keys.ritualCatalog(query, element, characterId),
+			queryFn: ({ signal }) => ritualApi.catalog(query, element, signal, characterId),
 		}),
-	attackCatalog: (query: string, source?: string) =>
+	attackCatalog: (query: string, characterId: string, source?: string) =>
 		queryOptions({
-			queryKey: keys.attackCatalog(query, source),
-			queryFn: ({ signal }) => attackApi.catalog(query, source, signal),
+			queryKey: keys.attackCatalog(query, source, characterId),
+			queryFn: ({ signal }) => attackApi.catalog(query, source, signal, characterId),
 		}),
 };
 export function useDomainMutation<TInput, TResult>(

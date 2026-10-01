@@ -1,0 +1,551 @@
+source:
+  title: Ordem Paranormal RPG - Sobrevivendo ao Horror v1
+  pdf_pages: 226
+  edition: 1ª edição, julho de 2024
+counts:
+  new_origins: 20
+  new_trails: 9
+  new_general_powers: 34
+  new_paranormal_powers: 8
+  new_rituals: 16
+  new_cursed_items: 19
+  new_paranormal_threats: 12
+  reality_threats: 9
+  animals: 8
+origins:
+- name: Amigo dos Animais
+  trained_skills: Adestramento e Percepção
+  power: Companheiro Animal
+  pdf_page: 8
+- name: Astronauta
+  trained_skills: Ciências e Fortitude
+  power: Acostumado ao Extremo
+  pdf_page: 9
+- name: Chef do Outro Lado
+  trained_skills: Ocultismo e Profissão (cozinheiro)
+  power: Fome do Outro Lado
+  pdf_page: 9
+- name: Colegial
+  trained_skills: Atualidades e Tecnologia
+  power: Poder da Amizade
+  pdf_page: 10
+- name: Cosplayer
+  trained_skills: Artes e Vontade
+  power: Não É Fantasia, É Cosplay!
+  pdf_page: 10
+- name: Diplomata
+  trained_skills: Atualidades e Diplomacia
+  power: Conexões
+  pdf_page: 10
+- name: Explorador
+  trained_skills: Fortitude e Sobrevivência
+  power: Manual do Sobrevivente
+  pdf_page: 10
+- name: Experimento
+  trained_skills: Atletismo e Fortitude
+  power: Mutação
+  pdf_page: 10
+- name: Fanático por Criaturas
+  trained_skills: Investigação e Ocultismo
+  power: Conhecimento Oculto
+  pdf_page: 11
+- name: Fotógrafo
+  trained_skills: Artes e Percepção
+  power: Através da Lente
+  pdf_page: 11
+- name: Inventor Paranormal
+  trained_skills: Profissão (engenheiro) e Vontade
+  power: Invenção Paranormal
+  pdf_page: 11
+- name: Jovem Místico
+  trained_skills: Ocultismo e Religião
+  power: A Culpa é das Estrelas
+  pdf_page: 12
+- name: Legista do Turno da Noite
+  trained_skills: Ciências e Medicina
+  power: Luto Habitual
+  pdf_page: 12
+- name: Mateiro
+  trained_skills: Percepção e Sobrevivência
+  power: Mapa Celeste
+  pdf_page: 13
+- name: Mergulhador
+  trained_skills: Atletismo e Fortitude
+  power: Fôlego de Nadador
+  pdf_page: 13
+- name: Motorista
+  trained_skills: Pilotagem e Reflexos
+  power: Mãos no Volante
+  pdf_page: 14
+- name: Nerd Entusiasta
+  trained_skills: Ciências e Tecnologia
+  power: O Inteligentão
+  pdf_page: 14
+- name: Profetizado
+  trained_skills: Vontade e mais uma ligada à premonição
+  power: Luta ou Fuga
+  pdf_page: 14
+- name: Psicólogo
+  trained_skills: Intuição e Profissão (psicólogo)
+  power: Terapia
+  pdf_page: 14
+- name: Repórter Investigativo
+  trained_skills: Atualidades e Investigação
+  power: Encontrar a Verdade
+  pdf_page: 14
+trails:
+- class: Combatente
+  name: Agente Secreto
+  features:
+  - nex: 10%
+    name: Carteirada
+  - nex: 40%
+    name: O Sorriso
+  - nex: 65%
+    name: Método Investigativo
+  - nex: 99%
+    name: Multifacetado
+- class: Combatente
+  name: Caçador
+  features:
+  - nex: 10%
+    name: Rastrear o Paranormal
+  - nex: 40%
+    name: Estudar Fraquezas
+  - nex: 65%
+    name: Atacar das Sombras
+  - nex: 99%
+    name: Estudar a Presa
+- class: Combatente
+  name: Monstruoso
+  features:
+  - nex: 10%
+    name: Ser Amaldiçoado
+  - nex: 40%
+    name: Ser Macabro
+  - nex: 65%
+    name: Ser Assustador
+  - nex: 99%
+    name: Ser Aterrorizante
+- class: Especialista
+  name: Bibliotecário
+  features:
+  - nex: 10%
+    name: Conhecimento Prático
+  - nex: 40%
+    name: Leitor Contumaz
+  - nex: 65%
+    name: Rato de Biblioteca
+  - nex: 99%
+    name: A Força do Saber
+- class: Especialista
+  name: Perseverante
+  features:
+  - nex: 10%
+    name: Soluções Improvisadas
+  - nex: 40%
+    name: Fuga Obstinada
+  - nex: 65%
+    name: Determinação Inquestionável
+  - nex: 99%
+    name: Só Mais um Passo...
+- class: Especialista
+  name: Muambeiro
+  features:
+  - nex: 10%
+    name: Mascate
+  - nex: 40%
+    name: Fabricação Própria
+  - nex: 65%
+    name: Laboratório de Campo
+  - nex: 99%
+    name: Achado Conveniente
+- class: Ocultista
+  name: Exorcista
+  features:
+  - nex: 10%
+    name: Revelação do Mal
+  - nex: 40%
+    name: Poder da Fé
+  - nex: 65%
+    name: Parareligiosidade
+  - nex: 99%
+    name: Chagas da Resistência
+- class: Ocultista
+  name: Possuído
+  features:
+  - nex: 10%
+    name: Poder Não Desejado
+  - nex: 40%
+    name: As Sombras Dentro de Mim
+  - nex: 65%
+    name: Ele Me Ensina
+  - nex: 99%
+    name: Tornamo-nos Um
+- class: Ocultista
+  name: Parapsicólogo
+  features:
+  - nex: 10%
+    name: Terapia
+  - nex: 40%
+    name: Palavras-chave
+  - nex: 65%
+    name: Reprogramação Mental
+  - nex: 99%
+    name: A Sanidade Está Lá Fora
+general_powers:
+- name: Acrobático
+  prerequisite: Agi 2
+- name: Ás do Volante
+  prerequisite: Agi 2
+- name: Atlético
+  prerequisite: For 2
+- name: Atraente
+  prerequisite: Pre 2
+- name: Dedos Ágeis
+  prerequisite: Agi 2
+- name: Detector de Mentiras
+  prerequisite: Pre 2
+- name: Especialista em Emergências
+  prerequisite: Int 2
+- name: Estigmado
+  prerequisite: —
+- name: Foco em Perícia
+  prerequisite: Treinado na perícia
+- name: Inventário Organizado
+  prerequisite: Int 2
+- name: Informado
+  prerequisite: Int 2
+- name: Interrogador
+  prerequisite: For 2
+- name: Mentiroso Nato
+  prerequisite: Pre 2
+- name: Observador
+  prerequisite: Int 2
+- name: Pai de Pet
+  prerequisite: Pre 2
+- name: Palavras de Devoção
+  prerequisite: Pre 2
+- name: Parceiro
+  prerequisite: Treinado em Diplomacia; NEX 30%
+- name: Pensamento Tático
+  prerequisite: Int 2
+- name: Personalidade Esotérica
+  prerequisite: Int 2
+- name: Persuasivo
+  prerequisite: Pre 2
+- name: Pesquisador Científico
+  prerequisite: Int 2
+- name: Proativo
+  prerequisite: Agi 2
+- name: Provisões de Emergência
+  prerequisite: —
+- name: Racionalidade Inflexível
+  prerequisite: Int 3
+- name: Rato de Computador
+  prerequisite: Int 2
+- name: Resposta Rápida
+  prerequisite: Agi 2
+- name: Talentoso
+  prerequisite: Pre 2
+- name: Teimosia Obstinada
+  prerequisite: Pre 2
+- name: Tenacidade
+  prerequisite: Vig 2
+- name: Sentidos Aguçados
+  prerequisite: Pre 2
+- name: Sobrevivencialista
+  prerequisite: Int 2
+- name: Sorrateiro
+  prerequisite: Agi 2
+- name: Vitalidade Reforçada
+  prerequisite: Vig 2
+- name: Vontade Inabalável
+  prerequisite: Pre 2
+paranormal_powers:
+- name: Absorver Conhecimento
+  element: Conhecimento
+  prerequisite: —
+- name: Antecipar Vitalidade
+  element: Morte
+  prerequisite: —
+- name: Apatia Herege
+  element: Conhecimento
+  prerequisite: Conhecimento 1
+- name: Aura de Pavor
+  element: Morte
+  prerequisite: —
+- name: Conexão Empática
+  element: Energia
+  prerequisite: Energia 1
+- name: Espreitar da Besta
+  element: Sangue
+  prerequisite: —
+- name: Instintos Sanguinários
+  element: Sangue
+  prerequisite: —
+- name: Valer-se do Caos
+  element: Energia
+  prerequisite: —
+rituals:
+- name: Esfolar
+  element: Sangue
+  circle: 1
+  pdf_page: 49
+- name: Sede de Adrenalina
+  element: Sangue
+  circle: 2
+  pdf_page: 50
+- name: Odor da Caçada
+  element: Sangue
+  circle: 3
+  pdf_page: 50
+- name: Martírio de Sangue
+  element: Sangue
+  circle: 4
+  pdf_page: 51
+- name: Apagar as Luzes
+  element: Morte
+  circle: 1
+  pdf_page: 51
+- name: Língua Morta
+  element: Morte
+  circle: 2
+  pdf_page: 52
+- name: Fedor Pútrido
+  element: Morte
+  circle: 3
+  pdf_page: 53
+- name: Singularidade Temporal
+  element: Morte
+  circle: 4
+  pdf_page: 53
+- name: Desfazer Sinapses
+  element: Conhecimento
+  circle: 1
+  pdf_page: 54
+- name: Aurora da Verdade
+  element: Conhecimento
+  circle: 2
+  pdf_page: 54
+- name: Relembrar Fragmento
+  element: Conhecimento
+  circle: 3
+  pdf_page: 55
+- name: Pronunciar Sigilo
+  element: Conhecimento
+  circle: 4
+  pdf_page: 55
+- name: Overclock
+  element: Energia
+  circle: 1
+  pdf_page: 56
+- name: Tremeluzir
+  element: Energia
+  circle: 2
+  pdf_page: 56
+- name: Mutar
+  element: Energia
+  circle: 3
+  pdf_page: 57
+- name: Milagre Ionizante
+  element: Energia
+  circle: 3
+  pdf_page: 57
+cursed_items:
+- name: Ampulheta do Tempo Sofrido
+  element: Morte
+  category: II
+  spaces: '1'
+- name: Arreio Neural
+  element: Energia
+  category: II
+  spaces: '1'
+- name: Câmera Obscura
+  element: Conhecimento
+  category: III
+  spaces: '1'
+- name: Centrifugador Existencial
+  element: Energia
+  category: III
+  spaces: '1'
+- name: Conector de Membros
+  element: Sangue
+  category: III
+  spaces: '1'
+- name: Dose d’A Praga
+  element: Sangue
+  category: III
+  spaces: '1'
+- name: Enxame Fantasmagórico
+  element: Conhecimento
+  category: III
+  spaces: '1'
+- name: Espelho Refletor
+  element: Energia
+  category: II
+  spaces: '1'
+- name: Fuzil Alheio
+  element: Energia
+  category: IV
+  spaces: '2'
+- name: Injeção de Lodo
+  element: Morte
+  category: II
+  spaces: 0,5
+- name: Instantâneo Mortal
+  element: Morte
+  category: II
+  spaces: 0,5
+- name: Mandíbula Agonizante
+  element: Sangue
+  category: II
+  spaces: '1'
+- name: A Primeira Adaga
+  element: Medo
+  category: III
+  spaces: '1'
+- name: Projétil de Lodo, curto
+  element: Morte
+  category: I
+  spaces: '1'
+- name: Projétil de Lodo, longo
+  element: Morte
+  category: II
+  spaces: '1'
+- name: Rádio Chiador
+  element: Morte
+  category: II
+  spaces: '1'
+- name: Repositório do Fracasso
+  element: Conhecimento
+  category: II
+  spaces: '1'
+- name: Retalho Tenebroso
+  element: Sangue
+  category: II
+  spaces: '1'
+- name: Tablet do Saber Custoso
+  element: Conhecimento
+  category: II
+  spaces: '1'
+paranormal_threats:
+- name: Sepultado
+  element: Morte
+  vd: 20
+  pdf_page: 128
+- name: Mescla
+  element: Sangue
+  vd: 60
+  pdf_page: 130
+- name: Espectro Inesquecido
+  element: 'variável; exemplo: Energia + Conhecimento + Morte'
+  vd: 4 × NEX do Marcado
+  pdf_page: 132
+- name: Uivar
+  element: Energia
+  vd: 100
+  pdf_page: 136
+- name: Derretido
+  element: Sangue + Energia
+  vd: 80
+  pdf_page: 138
+- name: Melancolia
+  element: Conhecimento + Sangue + Morte
+  vd: 140
+  pdf_page: 140
+- name: Quibungo
+  element: Sangue
+  vd: 160
+  pdf_page: 144
+- name: Profundo
+  element: Energia + Sangue
+  vd: 200
+  pdf_page: 148
+- name: Memento Mori
+  element: Morte + Conhecimento
+  vd: 260
+  pdf_page: 150
+- name: Rascunho
+  element: Conhecimento + Energia
+  vd: 300
+  pdf_page: 152
+- name: Medusa
+  element: Conhecimento + Morte
+  vd: 320
+  pdf_page: 154
+- name: Amigo Imaginário
+  element: Morte + Sangue
+  vd: 360
+  pdf_page: 157
+reality_threats:
+- name: Bêbado Local
+  vd: 10
+- name: Burocrata
+  vd: 10
+- name: Fazendeiro Isolado
+  vd: 20
+- name: Investigador
+  vd: 40
+- name: Médico
+  vd: 20
+- name: Religioso
+  vd: 40
+- name: Predador Sofisticado
+  vd: 60
+- name: Caçador de Gente
+  vd: 80
+- name: Artista da Morte
+  vd: 140
+animals:
+- name: Ariranha
+  vd: 20
+- name: Cavalo
+  vd: 10
+- name: Enxame de Tocandiras
+  vd: 20
+- name: Gorila
+  vd: 40
+- name: Leão
+  vd: 60
+- name: Lobo
+  vd: 20
+- name: Touro
+  vd: 20
+- name: Urso Pardo
+  vd: 60
+rules:
+- name: Novas ações de investigação
+  pdf_page: 82
+- name: Eventos de investigação
+  pdf_page: 83
+- name: Medo em jogo / efeitos de medo
+  pdf_page: 88
+- name: Perseguições
+  pdf_page: 91
+- name: Furtividade
+  pdf_page: 93
+- name: Fabricação em campo
+  pdf_page: 95
+- name: Vida além da Ordem / folgas / interesses pessoais
+  pdf_page: 95
+- name: NEX & Experiência
+  pdf_page: 99
+- name: Jogando sem Sanidade
+  pdf_page: 105
+- name: Ferimentos Debilitantes
+  pdf_page: 106
+- name: Jogando sem Mapa
+  pdf_page: 107
+- name: Evolução por Patentes
+  pdf_page: 109
+- name: Os Limites da Compreensão Humana
+  pdf_page: 114
+- name: Conjuração Complexa
+  pdf_page: 115
+- name: Conjurando Rituais Desconhecidos
+  pdf_page: 118
+- name: Desastres Paranormais
+  pdf_page: 118
+- name: Combate Narrativo
+  pdf_page: 120

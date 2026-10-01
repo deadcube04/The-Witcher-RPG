@@ -8,6 +8,7 @@ import { rememberAccess } from "@/shared/lib/recent-access";
 import { CampaignDeleteAction } from "@/features/campaigns/CampaignDeleteAction";
 import { ArchiveEyebrow, MediaFrame } from "@/components/layout/ArchiveSurface";
 import { systemArt } from "@/shared/lib/system-art";
+import { CampaignRulesEditor } from "@/features/campaigns/CampaignRulesEditor";
 
 export function CampaignDetailPage() {
 	const { campaignId = "" } = useParams({ strict: false });
@@ -79,6 +80,7 @@ export function CampaignDetailPage() {
 					</div>
 				</div>
 			</MediaFrame>
+			<CampaignRulesEditor campaign={item} />
 			<div className="grid gap-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(20rem,1.25fr)]">
 				<div>
 					<ArchiveEyebrow>Sinopse do registro</ArchiveEyebrow>

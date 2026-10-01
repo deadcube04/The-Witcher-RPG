@@ -28,6 +28,8 @@ function createDraft(character: CharacterSheet): CharacterInput {
 		imageUrl: character.imageUrl,
 		systemId: character.systemId,
 		campaignId: character.campaignId,
+		supplementId: character.supplementId,
+		supplementRuleIds: character.supplementRuleIds,
 		description: character.description,
 		appearance: character.appearance,
 		personality: character.personality,

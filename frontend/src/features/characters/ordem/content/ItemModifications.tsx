@@ -1,0 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+import { RpgButton } from "@/components/primitives/RpgControls";
+import { inventoryApi } from "@/shared/api/domains";
+import { keys, queries, useDomainMutation } from "@/shared/api/queries";
+
+export function ItemModifications({ characterId, entryId }: { characterId: string; entryId: string }) {
+	const query = useQuery(queries.modifications(characterId, entryId));
+	const mutation = useDomainMutation((value: { id: string; selected: boolean }) => inventoryApi.setModification(characterId, entryId, value.id, value.selected), [keys.modifications(characterId, entryId), keys.inventory(characterId)]);
+	return <section className="space-y-3 rounded-xl border border-(--edge)/50 bg-(--panel) p-4" aria-label="Modificações do suplemento"><h4 className="font-serif text-lg">Modificações</h4>{query.isPending ? <p role="status" className="text-xs text-(--muted)">Carregando modificações…</p> : query.error ? <p role="alert" className="text-xs text-(--danger)">{query.error.message}</p> : query.data.length === 0 ? <p className="text-xs leading-5 text-(--muted)">Nenhuma modificação liberada ou revisada para este item.</p> : query.data.map((option) => <div key={option.id} className="flex flex-wrap items-start justify-between gap-3 border-t border-(--edge)/40 pt-3"><div className="max-w-xl"><p className="font-semibold">{option.name} <span className="font-mono text-[10px] font-normal text-(--muted)">p. {option.sourcePage}</span></p><p className="mt-1 text-xs leading-5 text-(--muted)">{option.effectSummary}</p><p className="mt-1 font-mono text-[10px] text-(--accent)">Categoria +{option.categoryIncrease}</p></div><RpgButton secondary disabled={mutation.isPending || (!option.applicable && !option.selected)} onClick={() => mutation.mutate({ id: option.id, selected: !option.selected })}>{option.selected ? "Remover" : option.applicable ? "Aplicar" : "Não aplicável"}</RpgButton></div>)}{mutation.error && <p role="alert" className="text-xs text-(--danger)">{mutation.error.message}</p>}</section>;
+}

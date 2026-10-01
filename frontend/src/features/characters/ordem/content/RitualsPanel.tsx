@@ -63,7 +63,7 @@ export function RitualsPanel({ characterId }: { characterId: string }) {
 		useState<OrdemRitualDefinition | null>(null);
 	const rituals = useQuery(queries.rituals(characterId));
 	const catalog = useQuery({
-		...queries.ritualCatalog(catalogQuery),
+		...queries.ritualCatalog(catalogQuery, characterId),
 		enabled: catalogOpen,
 	});
 	const domains = [

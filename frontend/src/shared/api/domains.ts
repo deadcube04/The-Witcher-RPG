@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { type CampaignInput, campaignSchema } from "@/shared/contracts/campaign";
+import { type CampaignInput, campaignSchema, ordemCampaignSettingsSchema } from "@/shared/contracts/campaign";
+import { supplementSchema, reviewIssueSchema, reviewCandidateSchema, supplementReferenceSchema } from "@/shared/contracts/supplement";
+import { supplementPowerSchema } from "@/shared/contracts/supplement-power";
+import { supplementModificationSchema } from "@/shared/contracts/supplement-modification";
 import {
 	type CharacterInput,
 	characterSchema,
@@ -89,12 +92,28 @@ export const campaignApi = {
 			method: "POST",
 			body: JSON.stringify(input),
 		}),
+	updateSettings: (id: string, settings: z.infer<typeof ordemCampaignSettingsSchema>) =>
+		request(`/campaigns/${encodeURIComponent(id)}/settings`, campaignSchema, { method: "PATCH", body: JSON.stringify(settings) }),
 	remove: (id: string) =>
 		request(`/campaigns/${encodeURIComponent(id)}`, z.undefined(), {
 			method: "DELETE",
 		}),
 };
+export const supplementApi = {
+	list: (signal?: AbortSignal) => request("/ordem/supplements", z.array(supplementSchema), { signal }),
+};
+export const supplementReviewApi = {
+	linkTarget: (supplementId: string, issueId: string, input: { targetKind: string; targetId: string; fieldName: string }) => request(`/admin/supplements/${encodeURIComponent(supplementId)}/issues/${encodeURIComponent(issueId)}/target`, z.undefined(), { method: "PUT", body: JSON.stringify(input) }),
+	issues: (supplementId: string, state: "open" | "resolved", signal?: AbortSignal) => request(withSearch(`/admin/supplements/${encodeURIComponent(supplementId)}/issues`, { state }), z.array(reviewIssueSchema), { signal }),
+	source: (supplementId: string, issueId: string, signal?: AbortSignal) => request(`/admin/supplements/${encodeURIComponent(supplementId)}/issues/${encodeURIComponent(issueId)}/source`, z.strictObject({ pdfPage: z.number().int(), sourceFile: z.string(), rawText: z.string(), sha256: z.string() }), { signal }),
+	candidates: (supplementId: string, issueId: string, signal?: AbortSignal) => request(`/admin/supplements/${encodeURIComponent(supplementId)}/issues/${encodeURIComponent(issueId)}/candidates`, z.array(reviewCandidateSchema), { signal }),
+	currentValue: (supplementId: string, kind: string, targetId: string, field: string, signal?: AbortSignal) => request(withSearch(`/admin/supplements/${encodeURIComponent(supplementId)}/targets/${encodeURIComponent(kind)}/${encodeURIComponent(targetId)}`, { field }), z.strictObject({ value: z.string() }), { signal }),
+	resolve: (supplementId: string, issueId: string, input: { targetKind: string; targetId: string; fieldName: string; expectedValue: string; newValue: string; justification: string }) => request(`/admin/supplements/${encodeURIComponent(supplementId)}/issues/${encodeURIComponent(issueId)}/resolve`, z.undefined(), { method: "POST", body: JSON.stringify(input) }),
+};
 export const characterApi = {
+	supplementReference: (id: string, signal?: AbortSignal) => request(`/character-sheets/${encodeURIComponent(id)}/supplement-reference`, supplementReferenceSchema, { signal }),
+	powers: (id: string, signal?: AbortSignal) => request(`/character-sheets/${encodeURIComponent(id)}/powers`, z.array(supplementPowerSchema), { signal }),
+	setPower: (id: string, powerId: string, selected: boolean) => request(`/character-sheets/${encodeURIComponent(id)}/powers/${encodeURIComponent(powerId)}`, z.undefined(), { method: "PUT", body: JSON.stringify({ selected }) }),
 	options: (signal?: AbortSignal) => request("/ordem/character-options", characterOptionsSchema, { signal }),
 	skills: (id: string, signal?: AbortSignal) => request(`/character-sheets/${encodeURIComponent(id)}/skills`, z.array(characterSkillSchema), { signal }),
 	updateSkills: (id: string, updates: CharacterSkillUpdate[]) => request(`/character-sheets/${encodeURIComponent(id)}/skills`, z.array(characterSkillSchema), { method: "PUT", body: JSON.stringify(updates) }),
@@ -121,9 +140,11 @@ export const characterApi = {
 };
 
 export const inventoryApi = {
-	catalog: (query = "", kind?: InventoryKind, signal?: AbortSignal) =>
+	modifications: (characterId: string, entryId: string, signal?: AbortSignal) => request(`/character-sheets/${encodeURIComponent(characterId)}/inventory/${encodeURIComponent(entryId)}/modifications`, z.array(supplementModificationSchema), { signal }),
+	setModification: (characterId: string, entryId: string, modificationId: string, selected: boolean) => request(`/character-sheets/${encodeURIComponent(characterId)}/inventory/${encodeURIComponent(entryId)}/modifications/${encodeURIComponent(modificationId)}`, z.undefined(), { method: "PUT", body: JSON.stringify({ selected }) }),
+	catalog: (query = "", kind?: InventoryKind, signal?: AbortSignal, characterId?: string) =>
 		request(
-			withSearch("/ordem/catalog/inventory", { query, kind }),
+			withSearch("/ordem/catalog/inventory", { query, kind, characterId }),
 			z.array(ordemInventoryDefinitionSchema),
 			{ signal },
 		),
@@ -185,9 +206,9 @@ export const inventoryApi = {
 };
 
 export const ritualApi = {
-	catalog: (query = "", element?: string, signal?: AbortSignal) =>
+	catalog: (query = "", element?: string, signal?: AbortSignal, characterId?: string) =>
 		request(
-			withSearch("/ordem/catalog/rituals", { query, element }),
+			withSearch("/ordem/catalog/rituals", { query, element, characterId }),
 			z.array(ordemRitualDefinitionSchema),
 			{ signal },
 		),
@@ -235,9 +256,9 @@ export const ritualApi = {
 };
 
 export const attackApi = {
-	catalog: (query = "", source?: string, signal?: AbortSignal) =>
+	catalog: (query = "", source?: string, signal?: AbortSignal, characterId?: string) =>
 		request(
-			withSearch("/ordem/catalog/attacks", { query, source }),
+			withSearch("/ordem/catalog/attacks", { query, source, characterId }),
 			z.array(ordemAttackDefinitionSchema),
 			{ signal },
 		),

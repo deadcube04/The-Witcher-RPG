@@ -27,7 +27,7 @@ export function OrdemView({
 						Recursos
 					</h2>
 					<div className="grid min-w-0 gap-3 md:grid-cols-3">
-						{resourceFields.map((field) => {
+						{resourceFields.filter((field) => !value.resources.determination || field.key === "health").map((field) => {
 							const resource = value.resources[field.key];
 							return (
 								<RpgResourceBar
@@ -53,6 +53,7 @@ export function OrdemView({
 								/>
 							);
 						})}
+						{value.resources.determination && <RpgResourceBar label="Determinação" tone="effort" current={value.resources.determination.current} maximum={value.resources.determination.maximum} temporary={value.resources.determination.temporary} editable={Boolean(onChange)} onChange={onChange ? (next) => onChange({ ...value, resources: { ...value.resources, determination: { ...value.resources.determination!, ...next } } }) : undefined} />}
 					</div>
 				</div>
 			</section>

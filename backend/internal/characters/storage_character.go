@@ -44,6 +44,35 @@ func (s *Repository) Character(ctx context.Context, id string) (domain.Character
 	}
 	c := domain.Character{ID: row.ID, OwnerID: s.UserID, Name: row.Name, SystemID: row.RpgSystemID, CampaignID: row.CampaignID, ImageURL: deref(row.ImageURL), Description: deref(row.Description), Appearance: deref(row.Appearance), Personality: deref(row.Personality), Background: deref(row.Background), Objective: deref(row.Objective), CreatedAt: utcTime(row.CreatedAt), UpdatedAt: utcTime(row.UpdatedAt)}
 	c.SystemData.Kind = "ordem-paranormal"
+	c.SystemData.ProgressionMode = "nex"
+	c.SupplementRuleIDs = []string{}
+	if row.CampaignID == nil {
+		var supplementID string
+		if err := s.DB.WithContext(ctx).Table("ordem.character_supplement").Select("supplement_id").Where("character_id=?", id).Scan(&supplementID).Error; err != nil {
+			return domain.Character{}, err
+		}
+		if supplementID != "" {
+			c.SupplementID = &supplementID
+		}
+		if err := s.DB.WithContext(ctx).Table("ordem.character_supplement_rule").Select("rule_id").Where("character_id=?", id).Scan(&c.SupplementRuleIDs).Error; err != nil {
+			return domain.Character{}, err
+		}
+	}
+	var progression struct {
+		Mode            string
+		Level           *int
+		Patent          *string
+		SurvivorClassID *string
+		SurvivorStage   *int
+		SurvivorTrailID *string
+	}
+	if err := s.DB.WithContext(ctx).Table("ordem.character_progression_runtime").Select("mode, level, patent, survivor_class_id, survivor_stage, survivor_trail_id").Where("character_id=?", id).Scan(&progression).Error; err != nil {
+		return domain.Character{}, err
+	}
+	if progression.Mode != "" {
+		c.SystemData.ProgressionMode, c.SystemData.Level, c.SystemData.Patent = progression.Mode, progression.Level, progression.Patent
+		c.SystemData.SurvivorClassID, c.SystemData.SurvivorStage, c.SystemData.SurvivorTrailID = progression.SurvivorClassID, progression.SurvivorStage, progression.SurvivorTrailID
+	}
 	var detail struct{ CreditLimit *string }
 	if err := s.DB.WithContext(ctx).Table("ordem.character_detail").Select("credit_limit").Where("character_id = ?", id).Take(&detail).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.Character{}, err
@@ -54,6 +83,13 @@ func (s *Repository) Character(ctx context.Context, id string) (domain.Character
 		return domain.Character{}, err
 	}
 	c.SystemData.ClassID = classID
+	var trailID string
+	if err := s.DB.WithContext(ctx).Table("ordem.character_supplement_trail").Select("archetype_id").Where("character_id=?", id).Scan(&trailID).Error; err != nil {
+		return domain.Character{}, err
+	}
+	if trailID != "" {
+		c.SystemData.TrailID = &trailID
+	}
 	var originID string
 	if err := s.DB.WithContext(ctx).Table("core.character_origin").Select("origin_id").Where("character_id = ?", id).Scan(&originID).Error; err != nil {
 		return domain.Character{}, err
@@ -67,8 +103,22 @@ func (s *Repository) Character(ctx context.Context, id string) (domain.Character
 	}
 	c.SystemData.NEX = nex
 	var peLimit int
-	if err := s.DB.WithContext(ctx).Table("ordem.nex_rule").Select("pe_limit").Where("nex = ?", nex).Scan(&peLimit).Error; err != nil {
+	limitNEX := nex
+	if c.SystemData.ProgressionMode == "level-nex" && c.SystemData.Level != nil {
+		limitNEX = *c.SystemData.Level * 5
+		if limitNEX >= 100 {
+			limitNEX = 99
+		}
+	}
+	if err := s.DB.WithContext(ctx).Table("ordem.nex_rule").Select("pe_limit").Where("nex = ?", limitNEX).Scan(&peLimit).Error; err != nil {
 		return domain.Character{}, err
+	}
+	if c.SystemData.ProgressionMode == "survivor" {
+		peLimit = 1
+	}
+	if c.SystemData.ProgressionMode == "patent" && c.SystemData.Patent != nil {
+		limits := map[string]int{"recruta": 1, "operador": 3, "agente-especial": 6, "oficial-de-operacoes": 10, "agente-de-elite": 15}
+		peLimit = limits[*c.SystemData.Patent]
 	}
 	c.SystemData.PELimit = peLimit
 	var attrs []struct {
@@ -112,6 +162,13 @@ func (s *Repository) Character(ctx context.Context, id string) (domain.Character
 		case "sanidade":
 			c.SystemData.Resources.Sanity = value
 		}
+	}
+	var determination struct{ CurrentValue, MaxValue, TemporaryValue, MaxAdjustment int }
+	if err := s.DB.WithContext(ctx).Table("ordem.character_determination").Select("current_value, max_value, temporary_value, max_adjustment").Where("character_id=?", id).Scan(&determination).Error; err != nil {
+		return domain.Character{}, err
+	}
+	if determination.MaxValue > 0 {
+		c.SystemData.Resources.Determination = &domain.Resource{Current: determination.CurrentValue, Maximum: determination.MaxValue, Temporary: determination.TemporaryValue, MaxAdjustment: determination.MaxAdjustment, BaseMaximum: determination.MaxValue - determination.MaxAdjustment}
 	}
 	return c, nil
 }
@@ -173,7 +230,7 @@ func (s *Repository) CampaignAllows(ctx context.Context, campaignID, classID str
 	if err := s.DB.WithContext(ctx).Table("ordem.campaign_settings").Select("class_mode, origin_mode").Where("campaign_id = ?", campaignID).Take(&settings).Error; err != nil {
 		return false, err
 	}
-	if settings.ClassMode == "selected" {
+	if settings.ClassMode == "selected" && classID != "" {
 		var count int64
 		if err := s.DB.WithContext(ctx).Table("ordem.campaign_allowed_class").Where("campaign_id = ? AND class_id = ?", campaignID, classID).Count(&count).Error; err != nil {
 			return false, err
@@ -195,14 +252,21 @@ func (s *Repository) CampaignAllows(ctx context.Context, campaignID, classID str
 }
 
 func (s *Repository) CharacterOptions(ctx context.Context, systemID string) (domain.CharacterOptions, error) {
-	out := domain.CharacterOptions{Classes: []domain.Option{}, Origins: []domain.Option{}, Attributes: []domain.Option{}, Resources: []domain.Option{}, Skills: []domain.Option{}, NEX: []domain.NEXOption{}, TrainingLevels: []domain.TrainingOption{}}
+	out := domain.CharacterOptions{Classes: []domain.Option{}, Origins: []domain.Option{}, Trails: []domain.TrailOption{}, Attributes: []domain.Option{}, Resources: []domain.Option{}, Skills: []domain.Option{}, NEX: []domain.NEXOption{}, TrainingLevels: []domain.TrainingOption{}}
 	for _, pair := range []struct {
 		table  string
 		target *[]domain.Option
 	}{{"core.class_definition", &out.Classes}, {"core.origin_definition", &out.Origins}, {"core.attribute_definition", &out.Attributes}, {"core.resource_definition", &out.Resources}, {"core.skill_definition", &out.Skills}} {
-		if err := s.DB.WithContext(ctx).Table(pair.table).Select("id, slug, name").Where("rpg_system_id = ?", systemID).Order("name").Find(pair.target).Error; err != nil {
+		columns := "id, slug, name, supplement_id"
+		if pair.table != "core.origin_definition" {
+			columns = "id, slug, name, NULL::uuid AS supplement_id"
+		}
+		if err := s.DB.WithContext(ctx).Table(pair.table).Select(columns).Where("rpg_system_id = ?", systemID).Order("name").Find(pair.target).Error; err != nil {
 			return out, err
 		}
+	}
+	if err := s.DB.WithContext(ctx).Table("core.archetype_definition").Select("id, name, class_id, supplement_id").Where("rpg_system_id=?", systemID).Order("name").Scan(&out.Trails).Error; err != nil {
+		return out, err
 	}
 	if err := s.DB.WithContext(ctx).Table("ordem.nex_rule").Select("nex AS value, pe_limit").Order("nex").Find(&out.NEX).Error; err != nil {
 		return out, err
@@ -223,6 +287,9 @@ func (s *Repository) CreateCharacter(ctx context.Context, in domain.CharacterInp
 		if err := tx.Exec("INSERT INTO core.character_sheet(character_id, owner_user_id) VALUES (?, ?)", id, s.UserID).Error; err != nil {
 			return err
 		}
+		if err := writeStandaloneSupplement(tx, id, in.CampaignID, in.SupplementID, in.SupplementRuleIDs); err != nil {
+			return err
+		}
 		return s.writeCharacterData(tx, id, in.SystemID, in.SystemData)
 	})
 	if err != nil {
@@ -240,6 +307,9 @@ func (s *Repository) UpdateCharacter(ctx context.Context, id string, in domain.C
 		if result.RowsAffected == 0 {
 			return apperr.ErrNotFound
 		}
+		if err := writeStandaloneSupplement(tx, id, in.CampaignID, in.SupplementID, in.SupplementRuleIDs); err != nil {
+			return err
+		}
 		return s.writeCharacterData(tx, id, in.SystemID, in.SystemData)
 	})
 	if err != nil {
@@ -249,6 +319,15 @@ func (s *Repository) UpdateCharacter(ctx context.Context, id string, in domain.C
 }
 
 func (s *Repository) writeCharacterData(tx *gorm.DB, id, systemID string, d domain.OrdemData) error {
+	if err := tx.Exec("DELETE FROM ordem.character_determination WHERE character_id=?", id).Error; err != nil {
+		return err
+	}
+	if err := tx.Exec("DELETE FROM ordem.character_progression_runtime WHERE character_id=?", id).Error; err != nil {
+		return err
+	}
+	if err := tx.Exec("DELETE FROM ordem.character_supplement_trail WHERE character_id=?", id).Error; err != nil {
+		return err
+	}
 	for _, table := range []string{"ordem.character_detail", "core.character_class", "core.character_origin", "core.character_progression", "core.character_attribute", "core.character_resource"} {
 		if err := tx.Exec("DELETE FROM "+table+" WHERE character_id = ?", id).Error; err != nil {
 			return err
@@ -257,8 +336,15 @@ func (s *Repository) writeCharacterData(tx *gorm.DB, id, systemID string, d doma
 	if err := tx.Exec("INSERT INTO ordem.character_detail(character_id, credit_limit) VALUES (?, ?)", id, d.CreditLimit).Error; err != nil {
 		return err
 	}
-	if err := tx.Exec("INSERT INTO core.character_class(character_id, class_id, rpg_system_id) VALUES (?, ?, ?)", id, d.ClassID, systemID).Error; err != nil {
-		return err
+	if d.ProgressionMode != "survivor" {
+		if err := tx.Exec("INSERT INTO core.character_class(character_id, class_id, rpg_system_id) VALUES (?, ?, ?)", id, d.ClassID, systemID).Error; err != nil {
+			return err
+		}
+		if d.TrailID != nil {
+			if err := tx.Exec("INSERT INTO ordem.character_supplement_trail(character_id,archetype_id) VALUES (?,?)", id, *d.TrailID).Error; err != nil {
+				return err
+			}
+		}
 	}
 	if d.OriginID != nil {
 		if err := tx.Exec("INSERT INTO core.character_origin(character_id, origin_id, rpg_system_id) VALUES (?, ?, ?)", id, *d.OriginID, systemID).Error; err != nil {
@@ -269,7 +355,16 @@ func (s *Repository) writeCharacterData(tx *gorm.DB, id, systemID string, d doma
 	if err := tx.Table("core.progression_definition").Select("id").Where("rpg_system_id = ? AND slug = 'nex'", systemID).Scan(&progressionID).Error; err != nil {
 		return err
 	}
-	if err := tx.Exec("INSERT INTO core.character_progression(character_id, progression_id, value, rpg_system_id) VALUES (?, ?, ?, ?)", id, progressionID, d.NEX, systemID).Error; err != nil {
+	if d.ProgressionMode != "survivor" {
+		if err := tx.Exec("INSERT INTO core.character_progression(character_id, progression_id, value, rpg_system_id) VALUES (?, ?, ?, ?)", id, progressionID, d.NEX, systemID).Error; err != nil {
+			return err
+		}
+	}
+	mode := d.ProgressionMode
+	if mode == "" {
+		mode = "nex"
+	}
+	if err := tx.Exec("INSERT INTO ordem.character_progression_runtime(character_id,mode,level,patent,survivor_class_id,survivor_stage,survivor_trail_id) VALUES (?,?,?,?,?,?,?)", id, mode, d.Level, d.Patent, d.SurvivorClassID, d.SurvivorStage, d.SurvivorTrailID).Error; err != nil {
 		return err
 	}
 	attrs := []struct {
@@ -304,6 +399,29 @@ func (s *Repository) writeCharacterData(tx *gorm.DB, id, systemID string, d doma
 			return err
 		}
 	}
+	if d.Resources.Determination != nil {
+		r := d.Resources.Determination
+		if err := tx.Exec("INSERT INTO ordem.character_determination(character_id,current_value,max_value,temporary_value,max_adjustment) VALUES (?,?,?,?,?)", id, r.Current, r.Maximum, r.Temporary, r.MaxAdjustment).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func writeStandaloneSupplement(tx *gorm.DB, id string, campaignID, supplementID *string, ruleIDs []string) error {
+	if err := tx.Exec("DELETE FROM ordem.character_supplement WHERE character_id=?", id).Error; err != nil {
+		return err
+	}
+	if campaignID == nil && supplementID != nil {
+		if err := tx.Exec("INSERT INTO ordem.character_supplement(character_id,supplement_id) VALUES (?,?)", id, *supplementID).Error; err != nil {
+			return err
+		}
+		for _, ruleID := range ruleIDs {
+			if err := tx.Exec("INSERT INTO ordem.character_supplement_rule(character_id,rule_id) VALUES (?,?)", id, ruleID).Error; err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -316,7 +434,7 @@ func (s *Repository) DeleteCharacter(ctx context.Context, id string) error {
 		if count == 0 {
 			return apperr.ErrNotFound
 		}
-		for _, table := range []string{"core.character_attack", "core.character_item", "core.character_ability", "core.character_skill", "core.character_resource", "core.character_attribute", "core.character_progression", "core.character_origin", "core.character_class", "ordem.character_detail", "core.character_sheet"} {
+		for _, table := range []string{"core.character_attack", "core.character_item", "core.character_ability", "core.character_skill", "ordem.character_item_modification", "ordem.character_supplement_trail", "ordem.character_determination", "ordem.character_progression_runtime", "ordem.character_supplement_rule", "ordem.character_supplement", "core.character_resource", "core.character_attribute", "core.character_progression", "core.character_origin", "core.character_class", "ordem.character_detail", "core.character_sheet"} {
 			if err := tx.Exec("DELETE FROM "+table+" WHERE character_id = ?", id).Error; err != nil {
 				return err
 			}

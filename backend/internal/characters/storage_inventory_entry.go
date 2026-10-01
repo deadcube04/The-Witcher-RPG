@@ -24,6 +24,7 @@ type InventoryEntry struct {
 type InventoryItem struct {
 	Entry             InventoryEntry      `json:"entry"`
 	Definition        InventoryDefinition `json:"definition"`
+	EffectiveCategory *int                `json:"effectiveCategory"`
 	LinkedAttackCount int                 `json:"linkedAttackCount"`
 }
 
@@ -56,13 +57,33 @@ func (s *Repository) InventoryEntries(ctx context.Context, characterID string) (
 	for _, d := range defs {
 		byID[d.ID] = d
 	}
+	var categoryIncreases []struct {
+		InventoryEntryID string
+		Increase         int
+	}
+	if err := s.DB.WithContext(ctx).Table("ordem.character_item_modification AS cim").
+		Select("cim.inventory_entry_id, COALESCE(sum(m.category_increase), 0)::int AS increase").
+		Joins("JOIN ordem.item_modification AS m ON m.id=cim.modification_id").
+		Joins("JOIN core.character_item AS ci ON ci.id=cim.inventory_entry_id").
+		Where("ci.character_id=?", characterID).Group("cim.inventory_entry_id").Scan(&categoryIncreases).Error; err != nil {
+		return nil, fmt.Errorf("inventory categories: %w", err)
+	}
+	increases := make(map[string]int, len(categoryIncreases))
+	for _, row := range categoryIncreases {
+		increases[row.InventoryEntryID] = row.Increase
+	}
 	out := make([]InventoryItem, 0, len(rows))
 	for _, r := range rows {
 		d, ok := byID[r.DefinitionID]
 		if !ok {
 			continue
 		}
-		out = append(out, InventoryItem{Entry: InventoryEntry{ID: r.ID, CharacterID: r.CharacterID, DefinitionID: r.DefinitionID, Quantity: r.Quantity, Equipped: r.Equipped, Notes: deref(r.Notes), CreatedAt: utcTime(r.CreatedAt), UpdatedAt: utcTime(r.UpdatedAt)}, Definition: d, LinkedAttackCount: r.LinkedAttackCount})
+		var effectiveCategory *int
+		if d.Category != nil {
+			value := *d.Category + increases[r.ID]
+			effectiveCategory = &value
+		}
+		out = append(out, InventoryItem{Entry: InventoryEntry{ID: r.ID, CharacterID: r.CharacterID, DefinitionID: r.DefinitionID, Quantity: r.Quantity, Equipped: r.Equipped, Notes: deref(r.Notes), CreatedAt: utcTime(r.CreatedAt), UpdatedAt: utcTime(r.UpdatedAt)}, Definition: d, EffectiveCategory: effectiveCategory, LinkedAttackCount: r.LinkedAttackCount})
 	}
 	return out, nil
 }
@@ -102,6 +123,9 @@ func (s *Repository) AddInventory(ctx context.Context, characterID, definitionID
 	if d.SystemID != c.SystemID {
 		return InventoryEntry{}, apperr.ErrNotFound
 	}
+	if err := s.SupplementDefinitionAllowed(ctx, c, "core.item_definition", definitionID, "items"); err != nil {
+		return InventoryEntry{}, err
+	}
 	var id string
 	err = s.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var existing struct {
@@ -138,6 +162,9 @@ func (s *Repository) UpdateInventoryEntry(ctx context.Context, characterID, entr
 		}
 		if d.SystemID != c.SystemID {
 			return InventoryEntry{}, apperr.ErrNotFound
+		}
+		if err := s.SupplementDefinitionAllowed(ctx, c, "core.item_definition", id.(string), "items"); err != nil {
+			return InventoryEntry{}, err
 		}
 	}
 	fields["updated_at"] = time.Now()

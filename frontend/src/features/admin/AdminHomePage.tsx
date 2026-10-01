@@ -37,6 +37,7 @@ export function AdminHomePage() {
 					/>
 				</Link>
 			</section>
+			<section className="mt-5 max-w-3xl rounded-[2rem] bg-(--edge)/35 p-1.5"><Link to="/admin/supplements" className="block rounded-[calc(2rem-0.375rem)] bg-(--surface) p-6 focus-visible:outline-2 focus-visible:outline-(--accent) md:p-8"><ArchiveEyebrow>Catálogo oficial</ArchiveEyebrow><span className="mt-2 block font-serif text-3xl">Pendências do suplemento</span><span className="mt-2 block text-sm text-(--muted)">Revise trechos incertos e corrija os dados oficiais com histórico.</span></Link></section>
 		</AdminAccess>
 	);
 }

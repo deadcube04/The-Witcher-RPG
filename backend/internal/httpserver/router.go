@@ -20,6 +20,7 @@ import (
 	"RPG-manager/backend/internal/localimport"
 	"RPG-manager/backend/internal/media"
 	"RPG-manager/backend/internal/observability"
+	"RPG-manager/backend/internal/supplements"
 	"RPG-manager/backend/internal/systems"
 
 	"github.com/gin-contrib/cors"
@@ -43,6 +44,7 @@ type API struct {
 	homebrew         *content.Homebrew
 	importer         *localimport.Importer
 	errors           *observability.Service
+	supplements      *supplements.Service
 	userID           string
 }
 
@@ -63,6 +65,7 @@ type Dependencies struct {
 	Homebrew         *content.Homebrew
 	Importer         *localimport.Importer
 	Errors           *observability.Service
+	Supplements      *supplements.Service
 	UserID           string
 }
 
@@ -93,12 +96,13 @@ func New(deps Dependencies, origins []string) (http.Handler, error) {
 	}
 	r.Use(bodyLimit(1<<20), requestLog(logger, deps.Errors, deps.UserID), gin.CustomRecovery(recoverRequest(logger)), localRequest(allow))
 	r.Use(cors.New(cors.Config{AllowOrigins: keys(allow), AllowMethods: []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"}, AllowHeaders: []string{"Accept", "Content-Type", "X-Request-ID"}, ExposeHeaders: []string{"X-Request-ID"}, MaxAge: 12 * time.Hour}))
-	a := &API{media: deps.Media, store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, bestiary: deps.Bestiary, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer, errors: deps.Errors, userID: deps.UserID}
+	a := &API{media: deps.Media, store: store, logger: logger, account: deps.Account, systems: deps.Systems, campaigns: deps.Campaigns, characters: deps.Characters, skills: deps.Skills, inventoryEntries: deps.InventoryEntries, ritualEntries: deps.RitualEntries, attackEntries: deps.AttackEntries, bestiary: deps.Bestiary, catalog: deps.Catalog, homebrew: deps.Homebrew, importer: deps.Importer, errors: deps.Errors, supplements: deps.Supplements, userID: deps.UserID}
 	r.GET("/api/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
 	r.GET("/api/ready", a.ready)
 	v1 := r.Group("/api/v1")
 	a.register(v1)
 	a.registerErrorAdmin(v1.Group("/admin/errors", a.adminRequired))
+	a.registerSupplementAdmin(v1.Group("/admin/supplements", a.adminRequired))
 	return r, nil
 }
 

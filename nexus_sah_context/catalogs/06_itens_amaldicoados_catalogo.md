@@ -1,0 +1,30 @@
+# Catálogo de Itens Amaldiçoados
+
+| Item | Elemento | Categoria | Espaços |
+|---|---|---:|---:|
+| Ampulheta do Tempo Sofrido | Morte | II | 1 |
+| Arreio Neural | Energia | II | 1 |
+| Câmera Obscura | Conhecimento | III | 1 |
+| Centrifugador Existencial | Energia | III | 1 |
+| Conector de Membros | Sangue | III | 1 |
+| Dose d’A Praga | Sangue | III | 1 |
+| Enxame Fantasmagórico | Conhecimento | III | 1 |
+| Espelho Refletor | Energia | II | 1 |
+| Fuzil Alheio | Energia | IV | 2 |
+| Injeção de Lodo | Morte | II | 0,5 |
+| Instantâneo Mortal | Morte | II | 0,5 |
+| Mandíbula Agonizante | Sangue | II | 1 |
+| A Primeira Adaga | Medo | III | 1 |
+| Projétil de Lodo, curto | Morte | I | 1 |
+| Projétil de Lodo, longo | Morte | II | 1 |
+| Rádio Chiador | Morte | II | 1 |
+| Repositório do Fracasso | Conhecimento | II | 1 |
+| Retalho Tenebroso | Sangue | II | 1 |
+| Tablet do Saber Custoso | Conhecimento | II | 1 |
+
+## Inconsistência textual importante
+
+A tabela do livro (página PDF 59) lista **“Tablet do saber custoso”**, enquanto o título da descrição na página PDF 61 aparece como **“Tábula do Saber Custoso”**. Preserve essa divergência como dado de fonte até decidir uma normalização explícita.
+
+> Efeitos completos estão em `sections/08_itens_amaldicoados.md`.
+

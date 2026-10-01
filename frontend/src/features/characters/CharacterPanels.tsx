@@ -8,6 +8,8 @@ import type { CharacterSkill } from "@/shared/contracts/character-skill";
 import { AttacksPanel } from "@/features/characters/ordem/content/AttacksPanel";
 import { InventoryPanel } from "@/features/characters/ordem/content/InventoryPanel";
 import { RitualsPanel } from "@/features/characters/ordem/content/RitualsPanel";
+import { PowersPanel } from "@/features/characters/ordem/content/PowersPanel";
+import { SupplementReferencePanel } from "@/features/characters/ordem/content/SupplementReferencePanel";
 
 type Props = {
 	character: CharacterInput;
@@ -71,6 +73,7 @@ export function CharacterPanels({
 								<RpgSheetTabs
 									secondary
 									items={[
+										{ key: "powers", label: "Poderes", children: character.systemData.kind === "ordem-paranormal" ? <PowersPanel characterId={characterId} progression={character.systemData} /> : <UnavailablePanel name="Poderes" /> },
 										{
 											key: "attacks",
 											label: "Ataques",
@@ -102,6 +105,11 @@ export function CharacterPanels({
 							) : (
 								<UnavailablePanel name="Inventário" />
 							),
+						},
+						{
+							key: "supplement-reference",
+							label: "Suplemento",
+							children: ordem ? <SupplementReferencePanel characterId={characterId} /> : <UnavailablePanel name="Suplemento" />,
 						},
 						{
 							key: "narrative",

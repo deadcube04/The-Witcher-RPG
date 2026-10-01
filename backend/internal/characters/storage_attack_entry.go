@@ -131,6 +131,11 @@ func (s *Repository) AddAttack(ctx context.Context, characterID, definitionID st
 	if d.SystemID != c.SystemID {
 		return AttackEntry{}, apperr.ErrNotFound
 	}
+	if d.SourceItemDefinitionID != nil {
+		if err := s.SupplementDefinitionAllowed(ctx, c, "core.item_definition", *d.SourceItemDefinitionID, "items"); err != nil {
+			return AttackEntry{}, err
+		}
+	}
 	if err := s.validateAttackLink(ctx, characterID, d, inventoryID); err != nil {
 		return AttackEntry{}, err
 	}
@@ -183,6 +188,11 @@ func (s *Repository) UpdateAttackEntry(ctx context.Context, characterID, entryID
 	}
 	if d.SystemID != c.SystemID {
 		return AttackEntry{}, apperr.ErrNotFound
+	}
+	if d.SourceItemDefinitionID != nil {
+		if err := s.SupplementDefinitionAllowed(ctx, c, "core.item_definition", *d.SourceItemDefinitionID, "items"); err != nil {
+			return AttackEntry{}, err
+		}
 	}
 	inventoryID := current.SourceInventoryEntryID
 	if v, ok := fields["source_inventory_entry_id"]; ok {

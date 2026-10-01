@@ -90,6 +90,9 @@ func (s *Repository) AddRitual(ctx context.Context, characterID, definitionID st
 	if d.SystemID != c.SystemID {
 		return RitualEntry{}, apperr.ErrNotFound
 	}
+	if err := s.SupplementDefinitionAllowed(ctx, c, "core.ability_definition", definitionID, "rituals"); err != nil {
+		return RitualEntry{}, err
+	}
 	var count int64
 	if err := s.DB.WithContext(ctx).Table("core.character_ability").Where("character_id=? AND ability_id=?", characterID, definitionID).Count(&count).Error; err != nil {
 		return RitualEntry{}, err
@@ -116,6 +119,9 @@ func (s *Repository) UpdateRitualEntry(ctx context.Context, characterID, entryID
 		}
 		if d.SystemID != c.SystemID {
 			return RitualEntry{}, apperr.ErrNotFound
+		}
+		if err := s.SupplementDefinitionAllowed(ctx, c, "core.ability_definition", id.(string), "rituals"); err != nil {
+			return RitualEntry{}, err
 		}
 	}
 	fields["updated_at"] = time.Now()

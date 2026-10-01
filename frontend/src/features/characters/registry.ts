@@ -14,6 +14,10 @@ export type SheetEditorProps = {
 	onChange: (value: CharacterInput["systemData"]) => void;
 	disabled?: boolean;
 	campaign?: Campaign;
+	supplementId?: string | null;
+	onSupplementChange?: (value: string | null) => void;
+	supplementRuleIds?: string[];
+	onSupplementRulesChange?: (value: string[]) => void;
 };
 export type SheetViewProps = {
 	value: CharacterInput["systemData"];

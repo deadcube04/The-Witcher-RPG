@@ -27,6 +27,7 @@ import (
 	"RPG-manager/backend/internal/localimport"
 	"RPG-manager/backend/internal/media"
 	"RPG-manager/backend/internal/observability"
+	"RPG-manager/backend/internal/supplements"
 	"RPG-manager/backend/internal/systems"
 )
 
@@ -82,6 +83,7 @@ func run(logger *slog.Logger) error {
 	attackEntries := characters.NewAttackEntries(store)
 	bestiaryService := bestiary.NewService(bestiary.NewRepository(db))
 	catalogService := content.NewCatalog(store)
+	supplementService := supplements.NewService(db, userID)
 	homebrewService := content.NewHomebrew(store)
 	importService := localimport.NewImporter(store)
 	errorRepository := observability.NewGORMRepository(db)
@@ -112,7 +114,7 @@ func run(logger *slog.Logger) error {
 		Media: imageStorage, Store: store, Logger: logger, Account: accountService, Errors: errorService, UserID: userID, Systems: systemService, Campaigns: campaignService,
 		Characters: characterService, Skills: skillService, InventoryEntries: inventoryEntries,
 		RitualEntries: ritualEntries, AttackEntries: attackEntries, Catalog: catalogService,
-		Bestiary: bestiaryService, Homebrew: homebrewService, Importer: importService,
+		Bestiary: bestiaryService, Homebrew: homebrewService, Importer: importService, Supplements: supplementService,
 	}, origins)
 	if err != nil {
 		return err

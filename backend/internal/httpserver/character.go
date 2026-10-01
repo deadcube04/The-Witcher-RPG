@@ -41,7 +41,7 @@ func (a *API) getCharacter(c *gin.Context) {
 }
 func (a *API) createCharacter(c *gin.Context) {
 	var in domain.CharacterInput
-	if c.ShouldBindJSON(&in) != nil || !validID(in.SystemID) || (in.CampaignID != nil && !validID(*in.CampaignID)) || !validID(in.SystemData.ClassID) {
+	if c.ShouldBindJSON(&in) != nil || !validCharacterInputIDs(in) {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}
@@ -68,7 +68,7 @@ func (a *API) patchCharacter(c *gin.Context) {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}
-	in := domain.CharacterInput{Name: current.Name, SystemID: current.SystemID, CampaignID: current.CampaignID, ImageURL: current.ImageURL, Description: current.Description, Appearance: current.Appearance, Personality: current.Personality, Background: current.Background, Objective: current.Objective, SystemData: current.SystemData}
+	in := domain.CharacterInput{Name: current.Name, SystemID: current.SystemID, CampaignID: current.CampaignID, SupplementID: current.SupplementID, SupplementRuleIDs: current.SupplementRuleIDs, ImageURL: current.ImageURL, Description: current.Description, Appearance: current.Appearance, Personality: current.Personality, Background: current.Background, Objective: current.Objective, SystemData: current.SystemData}
 	for key, raw := range fields {
 		var target any
 		switch key {
@@ -80,6 +80,10 @@ func (a *API) patchCharacter(c *gin.Context) {
 			target = &in.SystemID
 		case "campaignId":
 			target = &in.CampaignID
+		case "supplementId":
+			target = &in.SupplementID
+		case "supplementRuleIds":
+			target = &in.SupplementRuleIDs
 		case "description":
 			target = &in.Description
 		case "appearance":
@@ -103,7 +107,7 @@ func (a *API) patchCharacter(c *gin.Context) {
 			return
 		}
 	}
-	if !validID(in.SystemID) || !validID(in.SystemData.ClassID) {
+	if !validCharacterInputIDs(in) {
 		writeError(c, 400, "INVALID_REQUEST")
 		return
 	}
@@ -113,6 +117,26 @@ func (a *API) patchCharacter(c *gin.Context) {
 		return
 	}
 	c.JSON(200, value)
+}
+
+func validCharacterInputIDs(in domain.CharacterInput) bool {
+	if !validID(in.SystemID) || (in.CampaignID != nil && !validID(*in.CampaignID)) || (in.SupplementID != nil && !validID(*in.SupplementID)) {
+		return false
+	}
+	if in.SystemData.ProgressionMode != "survivor" && !validID(in.SystemData.ClassID) {
+		return false
+	}
+	for _, id := range in.SupplementRuleIDs {
+		if !validID(id) {
+			return false
+		}
+	}
+	for _, id := range []*string{in.SystemData.OriginID, in.SystemData.TrailID, in.SystemData.SurvivorClassID, in.SystemData.SurvivorTrailID} {
+		if id != nil && !validID(*id) {
+			return false
+		}
+	}
+	return true
 }
 func (a *API) deleteCharacter(c *gin.Context) {
 	id := c.Param("id")

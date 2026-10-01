@@ -25,6 +25,7 @@ const pageContext = [
 	[/^\/systems/, ["NEXUS", "Universos"]],
 	[/^\/settings/, ["NEXUS", "Preferências"]],
 	[/^\/admin\/errors/, ["Administração", "Erros da aplicação"]],
+	[/^\/admin\/supplements/, ["Administração", "Pendências do suplemento"]],
 	[/^\/admin/, ["Administração", "Painel"]],
 ] as const;
 

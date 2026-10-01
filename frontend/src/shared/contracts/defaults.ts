@@ -3,6 +3,13 @@ export function createOrdemData(): OrdemData {
 	return {
 		kind: "ordem-paranormal",
 		nex: 5,
+		progressionMode: "nex",
+		level: null,
+		patent: null,
+		survivorClassId: null,
+		survivorStage: null,
+		survivorTrailId: null,
+		trailId: null,
 		classId: null,
 		originId: null,
 		creditLimit: null,
@@ -18,6 +25,7 @@ export function createOrdemData(): OrdemData {
 			health: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
 			effort: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
 			sanity: { current: 0, maximum: 0, temporary: 0, baseMaximum: 0, maxAdjustment: 0 },
+			determination: null,
 		},
 	};
 }
@@ -31,6 +39,8 @@ export function createCharacterInput(
 		imageUrl: "",
 		systemId,
 		campaignId,
+		supplementId: null,
+		supplementRuleIds: [],
 		description: "",
 		appearance: "",
 		personality: "",

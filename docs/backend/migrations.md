@@ -9,6 +9,8 @@ As migrações são SQL versionado em `backend/migrations`:
 3. `202609250003_local_import.sql`: mapa de importação idempotente por usuário, tipo e ID local.
 4. `202609250004_public_user_tables.sql`: move `core.users`, `core.user_preferences` e `core.local_import_map` para o schema `public`. As chaves estrangeiras existentes acompanham as tabelas no PostgreSQL. O backend atual consulta `public.users`, `public.user_preferences` e `public.local_import_map`, portanto precisa das quatro migrações aplicadas.
 
+As migrations `202609300001_sah_structure.sql` e `202609300002_sah_data.sql` integram o suplemento **Sobrevivendo ao Horror** ao banco de Ordem Paranormal. Consulte [modelo e conteúdo](sobrevivendo-ao-horror-modelo.md) e [aplicação, conferência e rollback](sobrevivendo-ao-horror-operacao.md).
+
 Não rode migrações na inicialização da API. Após carregar `DATABASE_URL` no PowerShell:
 
 ```powershell

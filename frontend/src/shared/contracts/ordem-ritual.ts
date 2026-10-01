@@ -48,6 +48,9 @@ export const ordemRitualDefinitionSchema = ordemRitualInputSchema.extend({
 	source: contentSourceSchema,
 	createdAt: z.iso.datetime().nullable(),
 	updatedAt: z.iso.datetime().nullable(),
+	supplementId: idSchema.nullable(),
+	sourcePage: z.number().int().nullable(),
+	versions: z.array(z.strictObject({ version: z.enum(["normal", "discente", "verdadeiro"]), sourcePage: z.number().int(), additionalPeCost: z.number().int().nullable(), requiredCircle: z.number().int().nullable(), affinityRequired: z.boolean(), effectText: z.string() })),
 });
 
 export const characterRitualEntrySchema = z.strictObject({

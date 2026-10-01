@@ -37,6 +37,7 @@ function CampaignCreation({ systems, initialSystemId }: { systems: RpgSystem[]; 
 	const [submitting, setSubmitting] = useState(false);
 	const [submissionError, setSubmissionError] = useState<Error | null>(null);
 	const options = useQuery({ ...queries.characterOptions, enabled: draft.step === "settings" });
+	const supplements = useQuery({ ...queries.supplements, enabled: draft.step === "settings" });
 	const mutation = useDomainMutation((input: CampaignInput) => campaignApi.create(input), [keys.campaigns]);
 	useEffect(() => { saveCampaignDraft(draft); }, [draft]);
 	useEffect(() => {
@@ -74,7 +75,7 @@ function CampaignCreation({ systems, initialSystemId }: { systems: RpgSystem[]; 
 			const input = campaignInputSchema.parse({
 				systemId: draft.systemId, name: draft.name, description: draft.description,
 				coverImageUrl, sheetMode,
-				settings: { kind: "ordem-paranormal", classes: draft.classes, origins: draft.origins },
+				settings: { kind: "ordem-paranormal", classes: draft.classes, origins: draft.origins, supplement: draft.supplement },
 			});
 			const created = await mutation.mutateAsync(input);
 			clearCampaignDraft();
@@ -90,12 +91,14 @@ function CampaignCreation({ systems, initialSystemId }: { systems: RpgSystem[]; 
 	if (system.slug !== "ordem-paranormal") return <RpgErrorState error={new Error("A configuração de campanhas deste sistema ainda não está disponível.")} />;
 	if (draft.step === "settings" && options.isPending) return <RpgSkeleton />;
 	if (draft.step === "settings" && options.isError) return <RpgErrorState error={options.error} retry={() => void options.refetch()} />;
+	if (draft.step === "settings" && supplements.isPending) return <RpgSkeleton />;
+	if (draft.step === "settings" && supplements.isError) return <RpgErrorState error={supplements.error} retry={() => void supplements.refetch()} />;
 	return <div className="space-y-6">
 		<div className="flex flex-wrap items-center justify-between gap-3">
 			<Link to="/campaigns" className="text-sm underline">← Todas as campanhas</Link>
 			<RpgButton secondary disabled={submitting} onClick={() => { void discard(); }}>Descartar rascunho</RpgButton>
 		</div>
 		<PageHeader eyebrow="Campanhas / Novo registro" title={draft.step === "core" ? "Uma nova história" : "Defina os detalhes"} description={draft.step === "core" ? "Comece pelos dados da campanha. A prévia acompanha o que você escrever." : "Escolha o que os jogadores poderão usar em Ordem Paranormal."} />
-		{draft.step === "core" ? <CampaignForm draft={draft} systems={systems} coverUrl={coverUrl || draft.uploadedCoverUrl} hasCover={!!cover || !!draft.uploadedCoverUrl} onDraft={updateDraft} onCover={updateCover} onNext={() => updateDraft({ ...draft, step: "settings" })} /> : options.data && <CampaignSettingsStep draft={draft} system={system} options={options.data} coverUrl={coverUrl || draft.uploadedCoverUrl} pending={submitting} error={submissionError} onDraft={updateDraft} onBack={() => updateDraft({ ...draft, step: "core" })} onCreate={create} />}
+		{draft.step === "core" ? <CampaignForm draft={draft} systems={systems} coverUrl={coverUrl || draft.uploadedCoverUrl} hasCover={!!cover || !!draft.uploadedCoverUrl} onDraft={updateDraft} onCover={updateCover} onNext={() => updateDraft({ ...draft, step: "settings" })} /> : options.data && supplements.data && <CampaignSettingsStep draft={draft} system={system} options={options.data} supplements={supplements.data} coverUrl={coverUrl || draft.uploadedCoverUrl} pending={submitting} error={submissionError} onDraft={updateDraft} onBack={() => updateDraft({ ...draft, step: "core" })} onCreate={create} />}
 	</div>;
 }

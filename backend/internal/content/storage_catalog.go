@@ -18,6 +18,14 @@ type InventoryDefinition struct {
 	Kind               string            `json:"kind"`
 	Category           *int              `json:"category"`
 	Spaces             *int              `json:"spaces"`
+	SupplementID       *string           `json:"supplementId"`
+	SourcePage         *int              `json:"sourcePage"`
+	ExactSpaces        *float64          `json:"exactSpaces"`
+	PrintedCategory    *string           `json:"printedCategory"`
+	AmmunitionCapacity *int              `json:"ammunitionCapacity"`
+	VariantGroup       *string           `json:"variantGroup"`
+	ItemGroup          *string           `json:"itemGroup"`
+	SpecialRule        *string           `json:"specialRule"`
 	DamageExpression   *string           `json:"damageExpression,omitempty"`
 	CriticalThreshold  *int              `json:"criticalThreshold,omitempty"`
 	CriticalMultiplier *int              `json:"criticalMultiplier,omitempty"`
@@ -28,7 +36,7 @@ type InventoryDefinition struct {
 }
 
 func (d InventoryDefinition) MarshalJSON() ([]byte, error) {
-	value := map[string]any{"id": d.ID, "systemId": d.SystemID, "source": d.Source, "name": d.Name, "description": d.Description, "kind": d.Kind, "category": d.Category, "spaces": d.Spaces, "createdAt": d.CreatedAt, "updatedAt": d.UpdatedAt}
+	value := map[string]any{"id": d.ID, "systemId": d.SystemID, "source": d.Source, "name": d.Name, "description": d.Description, "kind": d.Kind, "category": d.Category, "spaces": d.Spaces, "supplementId": d.SupplementID, "sourcePage": d.SourcePage, "exactSpaces": d.ExactSpaces, "printedCategory": d.PrintedCategory, "ammunitionCapacity": d.AmmunitionCapacity, "variantGroup": d.VariantGroup, "itemGroup": d.ItemGroup, "specialRule": d.SpecialRule, "createdAt": d.CreatedAt, "updatedAt": d.UpdatedAt}
 	if d.Kind == "weapon" {
 		value["damageExpression"] = d.DamageExpression
 		value["criticalThreshold"] = d.CriticalThreshold
@@ -40,20 +48,28 @@ func (d InventoryDefinition) MarshalJSON() ([]byte, error) {
 }
 
 type inventoryRow struct {
-	ID          string
-	SystemID    string
-	OwnerUserID *string
-	Name        string
-	Description *string
-	TypeSlug    *string
-	Category    *int
-	Spaces      *int
-	Damage      *string
-	Critical    *string
-	RangeText   *string
-	DamageType  *string
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
+	ID                 string
+	SystemID           string
+	OwnerUserID        *string
+	Name               string
+	Description        *string
+	TypeSlug           *string
+	Category           *int
+	Spaces             *int
+	SupplementID       *string
+	SourcePage         *int
+	ExactSpaces        *float64
+	PrintedCategory    *string
+	AmmunitionCapacity *int
+	VariantGroup       *string
+	ItemGroup          *string
+	SpecialRule        *string
+	Damage             *string
+	Critical           *string
+	RangeText          *string
+	DamageType         *string
+	CreatedAt          *time.Time
+	UpdatedAt          *time.Time
 }
 
 func contentSource(owner *string) map[string]string {
@@ -103,7 +119,7 @@ func critical(raw *string) (*int, *int) {
 }
 func mapInventory(r inventoryRow) InventoryDefinition {
 	source := contentSource(r.OwnerUserID)
-	out := InventoryDefinition{ID: r.ID, SystemID: r.SystemID, Source: source, Name: r.Name, Description: deref(r.Description), Kind: mapKind(r.TypeSlug), Category: r.Category, Spaces: r.Spaces, CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)}
+	out := InventoryDefinition{ID: r.ID, SystemID: r.SystemID, Source: source, Name: r.Name, Description: deref(r.Description), Kind: mapKind(r.TypeSlug), Category: r.Category, Spaces: r.Spaces, SupplementID: r.SupplementID, SourcePage: r.SourcePage, ExactSpaces: r.ExactSpaces, PrintedCategory: r.PrintedCategory, AmmunitionCapacity: r.AmmunitionCapacity, VariantGroup: r.VariantGroup, ItemGroup: r.ItemGroup, SpecialRule: r.SpecialRule, CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)}
 	if r.Damage != nil {
 		out.Kind = "weapon"
 	}
@@ -118,8 +134,9 @@ func mapInventory(r inventoryRow) InventoryDefinition {
 func (s *Repository) InventoryCatalog(ctx context.Context, systemID, query, kind string) ([]InventoryDefinition, error) {
 	var rows []inventoryRow
 	db := s.DB.WithContext(ctx).Table("core.item_definition AS i").Select(`i.id, i.rpg_system_id AS system_id, i.owner_user_id, i.name, i.description, t.slug AS type_slug,
-		r.inventory_category AS category, r.spaces, w.damage, w.critical, w.range_text, w.damage_type, i.created_at, i.updated_at`).
-		Joins("LEFT JOIN core.item_type AS t ON t.id=i.item_type_id").Joins("LEFT JOIN ordem.item_rule AS r ON r.item_id=i.id").Joins("LEFT JOIN ordem.weapon AS w ON w.item_id=i.id").
+		r.inventory_category AS category, r.spaces, w.damage, w.critical, w.range_text, w.damage_type, i.created_at, i.updated_at,
+		i.supplement_id, i.supplement_page_start AS source_page, sd.exact_spaces, sd.printed_category, sd.ammunition_capacity, sd.variant_group, sd.item_group, sd.special_rule`).
+		Joins("LEFT JOIN core.item_type AS t ON t.id=i.item_type_id").Joins("LEFT JOIN ordem.item_rule AS r ON r.item_id=i.id").Joins("LEFT JOIN ordem.weapon AS w ON w.item_id=i.id").Joins("LEFT JOIN ordem.supplement_item_detail AS sd ON sd.item_id=i.id").
 		Where("i.rpg_system_id=? AND (i.owner_user_id IS NULL OR i.owner_user_id=?)", systemID, s.UserID)
 	if query != "" {
 		db = db.Where("i.name ILIKE ?", "%"+query+"%")
@@ -164,6 +181,17 @@ type RitualDefinition struct {
 	Tiers          *RitualTiers      `json:"tiers"`
 	CreatedAt      *time.Time        `json:"createdAt"`
 	UpdatedAt      *time.Time        `json:"updatedAt"`
+	SupplementID   *string           `json:"supplementId"`
+	SourcePage     *int              `json:"sourcePage"`
+	Versions       []RitualVersion   `json:"versions"`
+}
+type RitualVersion struct {
+	Version          string `json:"version"`
+	SourcePage       int    `json:"sourcePage"`
+	AdditionalPECost *int   `json:"additionalPeCost"`
+	RequiredCircle   *int   `json:"requiredCircle"`
+	AffinityRequired bool   `json:"affinityRequired"`
+	EffectText       string `json:"effectText"`
 }
 type ritualRow struct {
 	ID             string
@@ -181,12 +209,14 @@ type ritualRow struct {
 	ResistanceText *string
 	CreatedAt      *time.Time
 	UpdatedAt      *time.Time
+	SupplementID   *string
+	SourcePage     *int
 }
 
 func (s *Repository) RitualCatalog(ctx context.Context, systemID, query, element string) ([]RitualDefinition, error) {
 	var rows []ritualRow
 	db := s.DB.WithContext(ctx).Table("core.ability_definition AS a").Select(`a.id, a.rpg_system_id AS system_id, a.owner_user_id, a.name, a.description, e.slug AS element,
-		r.circle, r.execution, r.range_text, r.target_text, r.area_text, r.duration_text, r.resistance_text, a.created_at, a.updated_at`).
+		r.circle, r.execution, r.range_text, r.target_text, r.area_text, r.duration_text, r.resistance_text, a.created_at, a.updated_at, a.supplement_id, a.supplement_page_start AS source_page`).
 		Joins("JOIN ordem.ritual AS r ON r.ability_id=a.id").Joins("JOIN ordem.element AS e ON e.id=r.element_id").
 		Where("a.rpg_system_id=? AND (a.owner_user_id IS NULL OR a.owner_user_id=?)", systemID, s.UserID)
 	if query != "" {
@@ -230,7 +260,12 @@ func (s *Repository) RitualCatalog(ctx context.Context, systemID, query, element
 	out := make([]RitualDefinition, 0, len(rows))
 	for _, r := range rows {
 		source := contentSource(r.OwnerUserID)
-		value := RitualDefinition{ID: r.ID, SystemID: r.SystemID, Source: source, Name: r.Name, Description: deref(r.Description), Element: elementToEnglish(r.Element), Circle: r.Circle, Execution: deref(r.Execution), RangeText: deref(r.RangeText), TargetText: deref(r.TargetText), AreaText: deref(r.AreaText), DurationText: deref(r.DurationText), ResistanceText: deref(r.ResistanceText), CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)}
+		value := RitualDefinition{ID: r.ID, SystemID: r.SystemID, Source: source, Name: r.Name, Description: deref(r.Description), Element: elementToEnglish(r.Element), Circle: r.Circle, Execution: deref(r.Execution), RangeText: deref(r.RangeText), TargetText: deref(r.TargetText), AreaText: deref(r.AreaText), DurationText: deref(r.DurationText), ResistanceText: deref(r.ResistanceText), SupplementID: r.SupplementID, SourcePage: r.SourcePage, Versions: []RitualVersion{}, CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)}
+		if r.SupplementID != nil {
+			if err := s.DB.WithContext(ctx).Table("ordem.supplement_ritual_version").Select("version, source_page, additional_pe_cost, required_circle, affinity_required, effect_text").Where("ability_id=?", r.ID).Order("source_page, version").Scan(&value.Versions).Error; err != nil {
+				return nil, err
+			}
+		}
 		if tiers := tiersByID[r.ID]; len(tiers) == 3 {
 			value.Tiers = &RitualTiers{Normal: tiers["normal"], Discente: tiers["discente"], Verdadeiro: tiers["verdadeiro"]}
 		}
@@ -287,6 +322,7 @@ type AttackDefinition struct {
 	RangeText              string            `json:"rangeText"`
 	Special                string            `json:"special"`
 	SourceItemDefinitionID *string           `json:"sourceItemDefinitionId"`
+	SupplementID           *string           `json:"supplementId"`
 	CreatedAt              *time.Time        `json:"createdAt"`
 	UpdatedAt              *time.Time        `json:"updatedAt"`
 }
@@ -306,6 +342,7 @@ type attackRow struct {
 	RangeText              string
 	Special                string
 	SourceItemDefinitionID *string
+	SupplementID           *string
 	CreatedAt              *time.Time
 	UpdatedAt              *time.Time
 }
@@ -314,7 +351,7 @@ func (s *Repository) AttackCatalog(ctx context.Context, systemID, query, source 
 	var rows []attackRow
 	db := s.DB.WithContext(ctx).Table("ordem.attack_definition AS a").Select(`a.id, a.rpg_system_id AS system_id, a.owner_user_id, a.name, a.description, a.skill_id, sk.name AS skill_name,
 		a.test_expression, a.damage_expression, a.damage_type, a.critical_threshold, a.critical_multiplier, a.range_text, a.special,
-		a.source_item_id AS source_item_definition_id, a.created_at, a.updated_at`).Joins("LEFT JOIN core.skill_definition AS sk ON sk.id=a.skill_id").Where("a.rpg_system_id=? AND (a.owner_user_id IS NULL OR a.owner_user_id=?)", systemID, s.UserID)
+		a.source_item_id AS source_item_definition_id, a.created_at, a.updated_at, si.supplement_id`).Joins("LEFT JOIN core.skill_definition AS sk ON sk.id=a.skill_id").Joins("LEFT JOIN core.item_definition AS si ON si.id=a.source_item_id").Where("a.rpg_system_id=? AND (a.owner_user_id IS NULL OR a.owner_user_id=?)", systemID, s.UserID)
 	if query != "" {
 		db = db.Where("a.name ILIKE ?", "%"+query+"%")
 	}
@@ -333,7 +370,7 @@ func (s *Repository) AttackCatalog(ctx context.Context, systemID, query, source 
 	out := make([]AttackDefinition, 0, len(rows))
 	for _, r := range rows {
 		src := contentSource(r.OwnerUserID)
-		out = append(out, AttackDefinition{ID: r.ID, SystemID: r.SystemID, Source: src, Name: r.Name, Description: r.Description, SkillID: r.SkillID, SkillName: deref(r.SkillName), TestExpression: r.TestExpression, DamageExpression: r.DamageExpression, DamageType: r.DamageType, CriticalThreshold: r.CriticalThreshold, CriticalMultiplier: r.CriticalMultiplier, RangeText: r.RangeText, Special: r.Special, SourceItemDefinitionID: r.SourceItemDefinitionID, CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)})
+		out = append(out, AttackDefinition{ID: r.ID, SystemID: r.SystemID, Source: src, Name: r.Name, Description: r.Description, SkillID: r.SkillID, SkillName: deref(r.SkillName), TestExpression: r.TestExpression, DamageExpression: r.DamageExpression, DamageType: r.DamageType, CriticalThreshold: r.CriticalThreshold, CriticalMultiplier: r.CriticalMultiplier, RangeText: r.RangeText, Special: r.Special, SourceItemDefinitionID: r.SourceItemDefinitionID, SupplementID: r.SupplementID, CreatedAt: utcTimePtr(r.CreatedAt), UpdatedAt: utcTimePtr(r.UpdatedAt)})
 	}
 	return out, nil
 }

@@ -1,0 +1,17 @@
+﻿name,element,circle,pdf_page,metadata
+Esfolar,Sangue,1,49,Execução padrão; Alcance curto; Alvo 1 ser; Duração instantânea; Resistência Reflexos parcial
+Sede de Adrenalina,Sangue,2,50,Execução reação; Alcance pessoal; Alvo você; Duração instantânea
+Odor da Caçada,Sangue,3,50,Execução ação padrão; Alcance pessoal; Alvo você; Duração cena
+Martírio de Sangue,Sangue,4,51,Execução padrão; Alcance pessoal; Alvo você; Duração veja texto
+Apagar as Luzes,Morte,1,51,Execução padrão; Alcance pessoal; Alvo você; Duração
+Língua Morta,Morte,2,52,Execução padrão; Alcance toque; Alvo 1 cadáver; Duração sustentada
+Fedor Pútrido,Morte,3,53,Execução ação padrão; Alcance pessoal; Alvo você; Duração
+Singularidade Temporal,Morte,4,53,Execução padrão; Alcance curto; Alvo 1 objeto não paranormal Médio; Duração instantânea; Resistência veja texto
+Desfazer Sinapses,Conhecimento,1,54,Execução padrão; Alcance curto; Alvo 1 ser; Duração instantânea; Resistência Vontade parcial
+Aurora da Verdade,Conhecimento,2,54,Execução padrão; Alcance curto; Área esfera com 3m de raio; Duração sustentada; Resistência Vontade parcial
+Relembrar Fragmento,Conhecimento,3,55,Execução padrão; Alcance toque; Alvo 1 objeto; Duração instantânea
+Pronunciar Sigilo,Conhecimento,4,55,Execução padrão; Alcance curto; Alvo 1 ser; Duração instantânea/ veja texto; Resistência Vontade parcial
+Overclock,Energia,1,56,Execução reação; Alcance pessoal; Alvo você; Duração instantânea
+Tremeluzir,Energia,2,56,Execução ação padrão; Alcance pessoal; Alvo você; Duração sustentada
+Mutar,Energia,3,57,Execução padrão; Alcance pessoal; Alvo você; Duração cena
+Milagre Ionizante,Energia,3,57,Execução ação completa; Alcance toque; Alvo 1 ser; Duração instantânea

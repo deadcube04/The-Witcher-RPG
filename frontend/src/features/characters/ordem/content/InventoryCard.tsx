@@ -22,6 +22,7 @@ import type {
 	InventoryKind,
 } from "@/shared/contracts/ordem-inventory";
 import { parseDiceExpression } from "@/features/dice/roll";
+import { ItemModifications } from "@/features/characters/ordem/content/ItemModifications";
 
 const kindDetails: Record<InventoryKind, { label: string; icon: IconType }> = {
 	weapon: { label: "Arma", icon: PiSwordThin },
@@ -58,8 +59,7 @@ export function InventoryCard({
 	const definition = item.definition;
 	const details = kindDetails[definition.kind];
 	const Icon = details.icon;
-	const category =
-		definition.category === null ? "—" : String(definition.category);
+	const category = item.effectiveCategory === null ? "—" : String(item.effectiveCategory);
 	return (
 		<RpgExpandableCard
 			id={`inventory-${item.entry.id}`}
@@ -74,7 +74,7 @@ export function InventoryCard({
 					<RpgStatChip label="Quantidade" value={String(item.entry.quantity)} />
 					<RpgStatChip
 						label="Espaços"
-						value={definition.spaces === null ? "Não cadastrado" : String(definition.spaces * item.entry.quantity)}
+						value={definition.exactSpaces !== null ? String(definition.exactSpaces * item.entry.quantity) : definition.spaces === null ? "Não cadastrado" : String(definition.spaces * item.entry.quantity)}
 					/>
 					<div className="hidden sm:block">
 						<RpgStatChip
@@ -88,6 +88,7 @@ export function InventoryCard({
 			<p className="text-sm leading-6 opacity-75">
 				{definition.description || "Sem descrição."}
 			</p>
+			{definition.supplementId && <div className="grid gap-2 rounded-xl border border-(--accent)/25 bg-(--panel) p-4 text-xs leading-5 sm:grid-cols-2"><p>Sobrevivendo ao Horror · página {definition.sourcePage ?? "—"}</p>{definition.printedCategory && <p>Categoria impressa: {definition.printedCategory}</p>}{definition.ammunitionCapacity && <p>Capacidade: {definition.ammunitionCapacity}</p>}{definition.variantGroup && <p>Variante: {definition.variantGroup}</p>}{definition.itemGroup && <p>Grupo: {definition.itemGroup}</p>}{definition.specialRule && <p className="whitespace-pre-wrap sm:col-span-2">{definition.specialRule}</p>}</div>}
 			{definition.kind === "weapon" ? (
 				<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 					<RpgStatChip
@@ -111,6 +112,7 @@ export function InventoryCard({
 					<RpgStatChip label="Tipo" value={definition.damageType || "—"} />
 				</div>
 			) : null}
+			<ItemModifications characterId={item.entry.characterId} entryId={item.entry.id} />
 			<div className="flex flex-wrap items-center gap-3">
 				<RpgButton
 					secondary

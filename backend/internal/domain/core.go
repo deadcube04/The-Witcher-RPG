@@ -56,7 +56,14 @@ type CampaignSelection struct {
 }
 
 type CampaignSettings struct {
-	Kind    string            `json:"kind"`
-	Classes CampaignSelection `json:"classes"`
-	Origins CampaignSelection `json:"origins"`
+	Kind       string              `json:"kind"`
+	Classes    CampaignSelection   `json:"classes"`
+	Origins    CampaignSelection   `json:"origins"`
+	Supplement *SupplementSettings `json:"supplement"`
+}
+
+type SupplementSettings struct {
+	ID         string   `json:"id"`
+	Categories []string `json:"categories"`
+	RuleIDs    []string `json:"ruleIds"`
 }

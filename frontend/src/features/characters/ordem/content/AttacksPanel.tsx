@@ -71,7 +71,7 @@ export function AttacksPanel({ characterId }: { characterId: string }) {
 		useState<OrdemAttackDefinition | null>(null);
 	const attacks = useQuery(queries.attacks(characterId));
 	const catalog = useQuery({
-		...queries.attackCatalog(catalogQuery),
+		...queries.attackCatalog(catalogQuery, characterId),
 		enabled: catalogOpen,
 	});
 	const domains = [

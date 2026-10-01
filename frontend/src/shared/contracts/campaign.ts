@@ -11,6 +11,11 @@ export const ordemCampaignSettingsSchema = z.strictObject({
 	kind: z.literal("ordem-paranormal"),
 	classes: selectionSchema,
 	origins: selectionSchema,
+	supplement: z.strictObject({
+		id: idSchema,
+		categories: z.array(z.enum(["survivor", "trails", "powers", "rituals", "items", "modifications", "threats"])),
+		ruleIds: z.array(idSchema),
+	}).nullable(),
 });
 
 export const campaignInputSchema = z.strictObject({
@@ -30,3 +35,4 @@ export const campaignSchema = campaignInputSchema.extend({
 export type Campaign = z.infer<typeof campaignSchema>;
 export type CampaignInput = z.infer<typeof campaignInputSchema>;
 export type CampaignSelection = z.infer<typeof selectionSchema>;
+export type SupplementSettings = NonNullable<Campaign["settings"]["supplement"]>;

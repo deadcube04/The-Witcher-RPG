@@ -81,6 +81,12 @@ func (s *Service) Create(ctx context.Context, in domain.CampaignInput) (domain.C
 	if err := s.validateSelection(ctx, in.SystemID, in.Settings.Origins, "core.origin_definition"); err != nil {
 		return domain.Campaign{}, err
 	}
+	if err := s.validateSupplement(ctx, in.SystemID, in.Settings.Supplement); err != nil {
+		return domain.Campaign{}, err
+	}
+	if err := s.validateSupplementOrigins(ctx, in.Settings.Origins, in.Settings.Supplement); err != nil {
+		return domain.Campaign{}, err
+	}
 	if in.CoverImageURL != "" {
 		if s.images == nil {
 			return domain.Campaign{}, apperr.ErrInvalid
@@ -90,6 +96,88 @@ func (s *Service) Create(ctx context.Context, in domain.CampaignInput) (domain.C
 		}
 	}
 	return s.repo.CreateCampaign(ctx, in)
+}
+
+func (s *Service) UpdateSettings(ctx context.Context, id string, settings domain.CampaignSettings) (domain.Campaign, error) {
+	campaign, err := s.repo.Campaign(ctx, id)
+	if err != nil {
+		return domain.Campaign{}, err
+	}
+	if settings.Kind != "ordem-paranormal" {
+		return domain.Campaign{}, apperr.ErrInvalid
+	}
+	if err := s.validateSelection(ctx, campaign.SystemID, settings.Classes, "core.class_definition"); err != nil {
+		return domain.Campaign{}, err
+	}
+	if err := s.validateSelection(ctx, campaign.SystemID, settings.Origins, "core.origin_definition"); err != nil {
+		return domain.Campaign{}, err
+	}
+	if err := s.validateSupplement(ctx, campaign.SystemID, settings.Supplement); err != nil {
+		return domain.Campaign{}, err
+	}
+	if err := s.validateSupplementOrigins(ctx, settings.Origins, settings.Supplement); err != nil {
+		return domain.Campaign{}, err
+	}
+	return s.repo.UpdateSettings(ctx, campaign, settings)
+}
+
+func (s *Service) validateSupplementOrigins(ctx context.Context, origins domain.CampaignSelection, supplement *domain.SupplementSettings) error {
+	if len(origins.AllowedIDs) == 0 {
+		return nil
+	}
+	var rows []struct{ SupplementID *string }
+	if err := s.repo.DB.WithContext(ctx).Table("core.origin_definition").Select("supplement_id").Where("id IN ?", origins.AllowedIDs).Scan(&rows).Error; err != nil {
+		return err
+	}
+	for _, row := range rows {
+		if row.SupplementID != nil && (supplement == nil || *row.SupplementID != supplement.ID) {
+			return apperr.ErrInvalid
+		}
+	}
+	return nil
+}
+
+func (s *Service) validateSupplement(ctx context.Context, systemID string, supplement *domain.SupplementSettings) error {
+	if supplement == nil {
+		return nil
+	}
+	if !campaignIDPattern.MatchString(supplement.ID) || supplement.Categories == nil || supplement.RuleIDs == nil {
+		return apperr.ErrInvalid
+	}
+	valid, err := s.repo.SupplementMatches(ctx, supplement.ID, systemID)
+	if err != nil {
+		return err
+	}
+	if !valid {
+		return apperr.ErrInvalid
+	}
+	allowed := map[string]bool{"survivor": true, "trails": true, "powers": true, "rituals": true, "items": true, "modifications": true, "threats": true}
+	seen := map[string]bool{}
+	for _, category := range supplement.Categories {
+		if !allowed[category] || seen[category] {
+			return apperr.ErrInvalid
+		}
+		seen[category] = true
+	}
+	if seen["survivor"] && !seen["trails"] {
+		return apperr.ErrInvalid
+	}
+	seenRules := map[string]bool{}
+	for _, id := range supplement.RuleIDs {
+		if !campaignIDPattern.MatchString(id) || seenRules[id] {
+			return apperr.ErrInvalid
+		}
+		seenRules[id] = true
+	}
+	expanded, err := s.repo.ExpandRuleIDs(ctx, supplement.ID, supplement.RuleIDs)
+	if err != nil {
+		return err
+	}
+	if err := s.repo.ValidateRules(ctx, supplement.ID, expanded); err != nil {
+		return err
+	}
+	supplement.RuleIDs = expanded
+	return nil
 }
 
 func (s *Service) validateSelection(ctx context.Context, systemID string, selection domain.CampaignSelection, table string) error {

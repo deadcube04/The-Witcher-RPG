@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { CampaignSelection } from "@/shared/contracts/campaign";
+import type { SupplementSettings } from "@/shared/contracts/campaign";
 
 const storageKey = "campaign-creation-draft-v1";
 const databaseName = "nexus-campaign-drafts";
@@ -18,6 +19,7 @@ const draftSchema = z.strictObject({
 	sheetMode: z.enum(["", "guided", "free"]),
 	classes: selectionSchema,
 	origins: selectionSchema,
+	supplement: z.strictObject({ id: z.uuid(), categories: z.array(z.enum(["survivor", "trails", "powers", "rituals", "items", "modifications", "threats"])), ruleIds: z.array(z.uuid()) }).nullable().default(null),
 	uploadedCoverUrl: z.string(),
 });
 
@@ -30,6 +32,7 @@ export type CampaignDraft = {
 	sheetMode: "" | "guided" | "free";
 	classes: CampaignSelection;
 	origins: CampaignSelection;
+	supplement: SupplementSettings | null;
 	uploadedCoverUrl: string;
 };
 
@@ -37,7 +40,7 @@ export function newCampaignDraft(systemId: string): CampaignDraft {
 	return {
 		id: crypto.randomUUID(), step: "core", systemId, name: "", description: "",
 		sheetMode: "", classes: { mode: "all", allowedIds: [] },
-		origins: { mode: "all", allowedIds: [] }, uploadedCoverUrl: "",
+		origins: { mode: "all", allowedIds: [] }, supplement: null, uploadedCoverUrl: "",
 	};
 }
 

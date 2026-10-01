@@ -134,7 +134,7 @@ export function RitualCard({
 						/>
 					</div>
 				) : (
-					<RpgStatChip label="Efeitos" value="Não cadastrados" />
+					<RpgStatChip label="Versões" value={definition.versions.length > 0 ? `${definition.versions.length} publicadas` : "Não cadastradas"} />
 				)
 			}
 		>
@@ -202,10 +202,8 @@ export function RitualCard({
 							</section>
 						);
 					})
-				) : (
-					<p className="text-sm opacity-70">
-						Os efeitos deste ritual ainda não estão cadastrados.
-					</p>
+				) : definition.versions.length > 0 ? definition.versions.map((version) => <section key={version.version} className="space-y-2 rounded-xl border border-white/20 bg-(--surface-raised) p-4"><h4 className="font-semibold capitalize">{version.version} · p. {version.sourcePage}</h4><p className="text-xs opacity-70">{version.additionalPeCost === null ? "Custo adicional não informado" : `+${version.additionalPeCost} PE`}{version.requiredCircle !== null ? ` · exige ${version.requiredCircle}º círculo` : ""}{version.affinityRequired ? " · requer afinidade" : ""}</p><p className="whitespace-pre-wrap text-sm leading-6">{version.effectText}</p></section>) : (
+					<p className="text-sm opacity-70">Os efeitos deste ritual ainda não estão cadastrados.</p>
 				)}
 			</div>
 			<RpgInput

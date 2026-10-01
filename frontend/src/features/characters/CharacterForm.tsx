@@ -49,7 +49,7 @@ export function CharacterForm({
 			),
 		{ message: "Escolha uma campanha do mesmo sistema.", path: ["campaignId"] },
 	).refine(
-		(input) => input.systemData.kind !== "ordem-paranormal" || input.systemData.classId !== null,
+		(input) => input.systemData.kind !== "ordem-paranormal" || input.systemData.progressionMode === "survivor" || Boolean(input.systemData.classId),
 		{ message: "Escolha uma classe.", path: ["systemData", "classId"] },
 	);
 	const form = useForm({
@@ -87,12 +87,14 @@ export function CharacterForm({
 							systemLocked={systemLocked}
 							onCampaignChange={(id) => {
 								form.setFieldValue("campaignId", id);
+								form.setFieldValue("supplementId", null);
+								form.setFieldValue("supplementRuleIds", []);
 								const campaign = campaigns.find((entry) => entry.id === id);
 								const data = form.state.values.systemData;
 								if (!campaign || data.kind !== "ordem-paranormal") return;
 								const classAllowed = campaign.settings.classes.mode === "all" || (data.classId !== null && campaign.settings.classes.allowedIds.includes(data.classId));
 								const originAllowed = campaign.settings.origins.mode === "all" || data.originId === null || campaign.settings.origins.allowedIds.includes(data.originId);
-								if (!classAllowed || !originAllowed) form.setFieldValue("systemData", { ...data, classId: classAllowed ? data.classId : null, originId: originAllowed ? data.originId : null });
+								if (!classAllowed || !originAllowed || (!campaign.settings.supplement && data.progressionMode !== "nex")) form.setFieldValue("systemData", { ...data, classId: classAllowed ? data.classId : null, originId: originAllowed ? data.originId : null, progressionMode: campaign.settings.supplement ? data.progressionMode : "nex", level: campaign.settings.supplement ? data.level : null, patent: campaign.settings.supplement ? data.patent : null, survivorClassId: campaign.settings.supplement ? data.survivorClassId : null, survivorStage: campaign.settings.supplement ? data.survivorStage : null, survivorTrailId: campaign.settings.supplement ? data.survivorTrailId : null });
 							}}
 							onSystemChange={(id) => {
 								const system = systems.find((entry) => entry.id === id);
@@ -128,6 +130,14 @@ export function CharacterForm({
 											onChange={field.handleChange}
 											disabled={pending}
 											campaign={campaigns.find((entry) => entry.id === campaignId)}
+											supplementId={form.state.values.supplementId}
+											onSupplementChange={(supplementId) => {
+												form.setFieldValue("supplementId", supplementId);
+												form.setFieldValue("supplementRuleIds", []);
+								if (!supplementId && form.state.values.systemData.kind === "ordem-paranormal") form.setFieldValue("systemData", { ...form.state.values.systemData, progressionMode: "nex", level: null, patent: null, survivorClassId: null, survivorStage: null, survivorTrailId: null, nex: 5, resources: { ...form.state.values.systemData.resources, determination: null } });
+											}}
+											supplementRuleIds={form.state.values.supplementRuleIds}
+											onSupplementRulesChange={(supplementRuleIds) => form.setFieldValue("supplementRuleIds", supplementRuleIds)}
 										/>}
 									</form.Subscribe>
 								) : (
