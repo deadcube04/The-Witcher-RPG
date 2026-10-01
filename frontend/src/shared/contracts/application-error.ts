@@ -10,18 +10,18 @@ export const errorGroupSchema = z.object({
 	errorCode: z.string(),
 	failureKind: z.string(),
 	state: z.enum(["open", "resolved"]),
-	firstOccurredAt: z.iso.datetime(),
-	lastOccurredAt: z.iso.datetime(),
+	firstOccurredAt: z.iso.datetime({ offset: true }),
+	lastOccurredAt: z.iso.datetime({ offset: true }),
 	totalOccurrences: z.number().int(),
 	availableCount: z.number().int(),
-	resolvedAt: z.iso.datetime().nullable(),
+	resolvedAt: z.iso.datetime({ offset: true }).nullable(),
 });
 export const errorOccurrenceSchema = z.object({
 	id: z.uuid(),
 	groupId: z.uuid(),
 	requestId: z.string(),
 	userId: z.uuid().nullable(),
-	occurredAt: z.iso.datetime(),
+	occurredAt: z.iso.datetime({ offset: true }),
 	method: z.string(),
 	route: z.string(),
 	status: z.number().int(),
@@ -33,7 +33,7 @@ export const errorOccurrenceSchema = z.object({
 	responseHeaders: headersSchema.nullable(),
 	requestBody: errorBodySchema.nullable(),
 	responseBody: errorBodySchema.nullable(),
-	expiresAt: z.iso.datetime().nullable(),
+	expiresAt: z.iso.datetime({ offset: true }).nullable(),
 });
 export const errorPageSchema = <T extends z.ZodType>(item: T) => z.object({
 	items: z.array(item),
